@@ -62,10 +62,10 @@ const FlyerView = () => {
         <div className="bg-black border border-gray-800 rounded-lg p-6 mb-6">
           {/* Header */}
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-3xl font-bold text-primary">R</span>
-              <span className="text-xl font-semibold">Robocorp</span>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-3xl font-bold">EX</span>
             </div>
+            <p className="text-sm text-gray-400 text-center">EventsX</p>
           </div>
 
           {/* Title */}

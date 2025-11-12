@@ -19,10 +19,9 @@ const Header = ({ title, showBack = false, rightAction = null }) => {
           )}
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-primary">R</span>
-              <span className="text-xl font-semibold">EventLite</span>
+              <span className="text-2xl font-bold">EX</span>
             </div>
-            <p className="text-xs text-gray-400">Powered by Robocorp</p>
+            <p className="text-xs text-gray-400">EventsX - Powered by Robocorp</p>
           </div>
         </div>
         {title && (

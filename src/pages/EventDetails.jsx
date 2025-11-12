@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Edit, QrCode, FileText, UserCheck, Download } from 'lucide-react';
 import { getEvent, getAttendeesByEvent } from '../db/database';
 import { format } from 'date-fns';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import TabNavigation from '../components/TabNavigation';
 import { exportToCSV, prepareAttendeeData } from '../utils/csv';
@@ -10,6 +11,7 @@ import { exportToCSV, prepareAttendeeData } from '../utils/csv';
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, canEditEvent, isSuperAdmin } = useAuth();
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [activeTab, setActiveTab] = useState('event');
@@ -31,11 +33,19 @@ const EventDetails = () => {
   };
 
   const handleExportRegistered = () => {
+    if (!isSuperAdmin()) {
+      alert('Export feature is only available for Super Admin. Please contact Robocorpsg@gmail.com');
+      return;
+    }
     const data = prepareAttendeeData(attendees);
     exportToCSV(data, `${event.title}-registered.csv`);
   };
 
   const handleExportAttended = () => {
+    if (!isSuperAdmin()) {
+      alert('Export feature is only available for Super Admin. Please contact Robocorpsg@gmail.com');
+      return;
+    }
     const attended = attendees.filter(a => a.attended);
     const data = prepareAttendeeData(attended, true);
     exportToCSV(data, `${event.title}-attended.csv`);
@@ -61,12 +71,14 @@ const EventDetails = () => {
       <Header
         showBack
         rightAction={
-          <button
-            onClick={() => navigate(`/${id}/edit`)}
-            className="text-white hover:text-gray-300"
-          >
-            <Edit size={20} />
-          </button>
+          canEditEvent(event?.ownerId) ? (
+            <button
+              onClick={() => navigate(`/${id}/edit`)}
+              className="text-white hover:text-gray-300"
+            >
+              <Edit size={20} />
+            </button>
+          ) : null
         }
       />
 

@@ -18,18 +18,18 @@ export const generateA5Flyer = async (event, qrCodeDataURL) => {
   doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
   // Logo/Brand at top
-  doc.setTextColor(220, 38, 38);
+  doc.setTextColor(255, 255, 255);
   doc.setFontSize(24);
   doc.setFont(undefined, 'bold');
-  doc.text('R', margin, 20);
+  doc.text('EX', margin, 20);
   
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.text('EventLite', margin + 10, 20);
-
-  doc.setFontSize(8);
+  doc.setFontSize(10);
   doc.setFont(undefined, 'normal');
-  doc.text('Powered by Robocorp', margin, 26);
+  doc.text('EventsX', margin, 26);
+
+  doc.setFontSize(7);
+  doc.setTextColor(150, 150, 150);
+  doc.text('Powered by Robocorp', margin, 31);
 
   // Event Title
   doc.setFontSize(20);

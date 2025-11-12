@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'EventLite',
-        short_name: 'EventLite',
+        name: 'EventsX',
+        short_name: 'EventsX',
         description: 'Event Management & Registration System',
         theme_color: '#DC2626',
         background_color: '#000000',

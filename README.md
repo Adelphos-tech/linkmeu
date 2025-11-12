@@ -1,6 +1,30 @@
-# EventLite - Event Management & Registration System
+# EventsX - Event Management & Registration System
 
-A modern Progressive Web App (PWA) for managing events, registrations, and attendee check-ins. Built with React, Vite, and IndexedDB for offline-first functionality.
+A modern Progressive Web App (PWA) for managing events, registrations, and attendee check-ins with role-based access control. Built with React, Vite, and IndexedDB for offline-first functionality.
+
+## Super Admin Credentials
+
+- **Email**: Robocorpsg@gmail.com
+- **Password**: [REDACTED]
+
+## User Roles
+
+### Super Admin
+- Full access to all events
+- Can create, edit, and delete any event
+- Export attendee lists (CSV)
+- View all users and statistics
+
+### Event Owner
+- Create and manage their own events
+- Edit only events they created
+- Cannot export attendee lists (must contact super admin)
+- Can register attendees and manage check-ins
+
+### Public Users
+- View all public events
+- Register for events
+- No edit access
 
 ## Features
 

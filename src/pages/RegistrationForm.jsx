@@ -93,9 +93,9 @@ const RegistrationForm = () => {
         {/* Event Info */}
         <div className="bg-dark-lighter rounded-lg p-6 mb-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-3xl font-bold text-primary">R</span>
-            <span className="text-xl font-semibold">Robocorp</span>
+            <span className="text-3xl font-bold">EX</span>
           </div>
+          <p className="text-sm text-gray-400 mb-4">EventsX</p>
 
           <h1 className="text-2xl font-bold mb-3 uppercase">{event.title}</h1>
           

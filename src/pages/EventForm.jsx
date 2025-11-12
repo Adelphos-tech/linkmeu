@@ -3,13 +3,37 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Upload } from 'lucide-react';
 import { saveEvent, getEvent } from '../db/database';
 import { convertImageToBase64, resizeImage } from '../utils/imageUtils';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import DynamicList from '../components/DynamicList';
 
 const EventForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user, canEditEvent } = useAuth();
   const isEdit = !!id;
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    if (isEdit) {
+      checkPermissions();
+    }
+  }, [user, id]);
+
+  const checkPermissions = async () => {
+    try {
+      const event = await getEvent(parseInt(id));
+      if (!canEditEvent(event.ownerId)) {
+        alert('You do not have permission to edit this event');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Error checking permissions:', error);
+    }
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -75,6 +99,7 @@ const EventForm = () => {
       const eventData = {
         ...formData,
         id: isEdit ? parseInt(id) : undefined,
+        ownerId: isEdit ? formData.ownerId : user.id,
         updatedAt: new Date().toISOString(),
       };
 
@@ -83,7 +108,13 @@ const EventForm = () => {
       }
 
       const savedId = await saveEvent(eventData);
-      navigate(`/${isEdit ? id : savedId}`);
+      
+      // Redirect based on user role
+      if (user.role === 'superadmin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Error saving event:', error);
       alert('Failed to save event');
