@@ -231,6 +231,74 @@ const EventDetails = () => {
           </div>
         </div>
 
+        {/* QR Code Section - Always Visible */}
+        <div className="mb-6 bg-dark-lighter rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <QrCode size={20} className="text-primary" />
+            Quick Registration
+          </h3>
+          <p className="text-sm text-gray-400 mb-4">
+            Scan this QR code with your phone to register instantly
+          </p>
+          
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            {qrCodeDataURL ? (
+              <div className="flex-shrink-0">
+                <div className="bg-white p-4 rounded-lg inline-block">
+                  <img 
+                    src={qrCodeDataURL} 
+                    alt="Registration QR Code" 
+                    className="w-32 h-32 md:w-40 md:h-40"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 bg-gray-800 rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                  <p className="text-xs text-gray-400">Loading...</p>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex-1 text-center md:text-left">
+              <p className="text-sm text-gray-300 mb-3">
+                Or copy this registration link:
+              </p>
+              <div className="bg-dark-light border border-gray-700 rounded-lg px-4 py-3 font-mono text-sm text-gray-300 mb-3 break-all">
+                {generateRegistrationURL(id)}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  onClick={() => {
+                    const link = generateRegistrationURL(id);
+                    navigator.clipboard.writeText(link);
+                    alert('✓ Registration link copied to clipboard!');
+                  }}
+                  className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                >
+                  <Copy size={16} />
+                  Copy Link
+                </button>
+                {qrCodeDataURL && (
+                  <button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.download = `${event.title}-registration-qr.png`;
+                      link.href = qrCodeDataURL;
+                      link.click();
+                    }}
+                    className="btn-secondary flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Download size={16} />
+                    Download QR
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'event' && (
@@ -366,7 +434,7 @@ const EventDetails = () => {
         )}
 
         {activeTab === 'flyer' && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <button
               onClick={() => navigate(`/${id}/flyer`)}
               className="btn-primary w-full flex items-center justify-center gap-2"
@@ -381,48 +449,10 @@ const EventDetails = () => {
               <QrCode size={20} />
               Registration Page
             </button>
-            
-            {/* QR Code Section */}
-            <div className="bg-dark-lighter rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <QrCode size={20} className="text-primary" />
-                Registration QR Code
-              </h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Scan this QR code to quickly access the registration page
+            <div className="bg-dark-lighter rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-400">
+                💡 The QR code for registration is now available on the main event page above
               </p>
-              
-              {qrCodeDataURL ? (
-                <div className="text-center space-y-4">
-                  <div className="bg-white p-4 rounded-lg inline-block">
-                    <img 
-                      src={qrCodeDataURL} 
-                      alt="Registration QR Code" 
-                      className="w-48 h-48 mx-auto"
-                    />
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    QR Code for: {generateRegistrationURL(id)}
-                  </div>
-                  <button
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.download = `${event.title}-registration-qr.png`;
-                      link.href = qrCodeDataURL;
-                      link.click();
-                    }}
-                    className="btn-secondary flex items-center justify-center gap-2 mx-auto"
-                  >
-                    <Download size={18} />
-                    Download QR Code
-                  </button>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-                  <p className="text-sm text-gray-400">Generating QR code...</p>
-                </div>
-              )}
             </div>
           </div>
         )}
