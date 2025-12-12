@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Upload } from 'lucide-react';
-import { saveEvent, getEvent } from '../db/database';
+import { saveEvent, getEvent, registerUser, loginUser } from '../db/database';
 import { convertImageToBase64, resizeImage } from '../utils/imageUtils';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -10,14 +10,10 @@ import DynamicList from '../components/DynamicList';
 const EventForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user, canEditEvent } = useAuth();
+  const { user, canEditEvent, login } = useAuth();
   const isEdit = !!id;
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
     if (isEdit) {
       checkPermissions();
     }
@@ -26,9 +22,10 @@ const EventForm = () => {
   const checkPermissions = async () => {
     try {
       const event = await getEvent(parseInt(id));
-      if (!canEditEvent(event.ownerId)) {
-        alert('You do not have permission to edit this event');
-        navigate('/dashboard');
+      // Only super admin can edit events
+      if (!user || !canEditEvent(event.ownerId)) {
+        alert('Only Super Admin can edit events. Events cannot be edited after creation.');
+        navigate('/events');
       }
     } catch (error) {
       console.error('Error checking permissions:', error);
@@ -47,9 +44,15 @@ const EventForm = () => {
     speakers: [],
     sponsors: [],
     media: [],
+    // Creator registration info
+    creatorEmail: '',
+    creatorPassword: '',
+    creatorContact: '',
+    creatorCountryCode: '+65'
   });
 
   const [loading, setLoading] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(!isEdit);
 
   useEffect(() => {
     if (isEdit) {
@@ -94,13 +97,62 @@ const EventForm = () => {
       return;
     }
 
+    // For new events, require registration info
+    if (!isEdit && !user) {
+      if (!formData.creatorEmail || !formData.creatorPassword || !formData.creatorContact) {
+        alert('Please fill in your registration details (Email, Password, Contact)');
+        return;
+      }
+      if (formData.creatorPassword.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+      }
+    }
+
     setLoading(true);
     try {
+      let ownerId = user?.id;
+
+      // Register new user if not logged in
+      if (!isEdit && !user) {
+        try {
+          ownerId = await registerUser({
+            email: formData.creatorEmail,
+            password: formData.creatorPassword,
+            contact: `${formData.creatorCountryCode} ${formData.creatorContact}`
+          });
+
+          // Auto-login the new user
+          const newUser = await loginUser(formData.creatorEmail, formData.creatorPassword);
+          login(newUser);
+        } catch (error) {
+          if (error.message.includes('already exists')) {
+            // Try to login instead
+            try {
+              const existingUser = await loginUser(formData.creatorEmail, formData.creatorPassword);
+              login(existingUser);
+              ownerId = existingUser.id;
+            } catch (loginError) {
+              alert('Email already exists. Please use correct password or use a different email.');
+              setLoading(false);
+              return;
+            }
+          } else {
+            throw error;
+          }
+        }
+      }
+
       const eventData = {
         ...formData,
         id: isEdit ? parseInt(id) : undefined,
-        ownerId: isEdit ? formData.ownerId : user.id,
+        ownerId: ownerId,
         updatedAt: new Date().toISOString(),
+        // Remove creator fields from event data
+        creatorEmail: undefined,
+        creatorPassword: undefined,
+        creatorContact: undefined,
+        creatorCountryCode: undefined
       };
 
       if (!isEdit) {
@@ -109,15 +161,11 @@ const EventForm = () => {
 
       const savedId = await saveEvent(eventData);
       
-      // Redirect based on user role
-      if (user.role === 'superadmin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      // Redirect to events page
+      navigate('/events');
     } catch (error) {
       console.error('Error saving event:', error);
-      alert('Failed to save event');
+      alert('Failed to save event: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -129,9 +177,73 @@ const EventForm = () => {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Info */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Event Date</label>
+          {/* Registration Section - Only for new events when not logged in */}
+          {!isEdit && !user && (
+            <div className="bg-primary/10 border border-primary rounded-lg p-6 space-y-4">
+              <h2 className="text-xl font-semibold text-primary">Your Registration Details</h2>
+              <p className="text-sm text-gray-400">
+                Register to create and manage your event. If you already have an account, use the same email and password.
+              </p>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Email *</label>
+                <input
+                  type="email"
+                  value={formData.creatorEmail}
+                  onChange={(e) => handleChange('creatorEmail', e.target.value)}
+                  placeholder="your@email.com"
+                  required={!user}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Password *</label>
+                <input
+                  type="password"
+                  value={formData.creatorPassword}
+                  onChange={(e) => handleChange('creatorPassword', e.target.value)}
+                  placeholder="At least 6 characters"
+                  required={!user}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Contact Number *</label>
+                <div className="flex gap-2">
+                  <select
+                    value={formData.creatorCountryCode}
+                    onChange={(e) => handleChange('creatorCountryCode', e.target.value)}
+                    className="w-32"
+                  >
+                    <option value="+65">+65 (SG)</option>
+                    <option value="+1">+1 (US)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+91">+91 (IN)</option>
+                    <option value="+86">+86 (CN)</option>
+                    <option value="+81">+81 (JP)</option>
+                    <option value="+82">+82 (KR)</option>
+                    <option value="+61">+61 (AU)</option>
+                  </select>
+                  <input
+                    type="tel"
+                    value={formData.creatorContact}
+                    onChange={(e) => handleChange('creatorContact', e.target.value)}
+                    placeholder="Phone number"
+                    className="flex-1"
+                    required={!user}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Event Details Section */}
+          <div className="bg-dark-lighter border border-gray-800 rounded-lg p-6 space-y-6">
+            <h2 className="text-xl font-semibold">Event Details</h2>
+            
+            {/* Basic Info */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Event Date</label>
             <input
               type="date"
               value={formData.date}
@@ -275,6 +387,9 @@ const EventForm = () => {
               { name: 'logo', label: 'Logo', type: 'image' },
             ]}
           />
+
+          </div>
+          {/* End Event Details Section */}
 
           {/* Submit Button */}
           <button

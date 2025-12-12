@@ -188,44 +188,104 @@ const CheckIn = () => {
           </div>
         )}
 
-        {/* Attendee List */}
-        <div className="space-y-3">
-          {filteredAttendees.length === 0 ? (
-            <p className="text-center text-gray-400 py-8">
-              {searchQuery ? 'No attendees found' : 'No registrations yet'}
-            </p>
-          ) : (
-            filteredAttendees.map((attendee) => (
-              <div
-                key={attendee.id}
-                className="bg-dark-lighter border border-gray-800 rounded-lg p-4"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{attendee.name}</h3>
-                    <p className="text-sm text-gray-400">{attendee.email}</p>
-                    {attendee.contact && (
-                      <p className="text-sm text-gray-400">{attendee.contact}</p>
-                    )}
-                    {attendee.notes && (
-                      <p className="text-sm text-gray-500 mt-1">{attendee.notes}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleMarkAttend(attendee.id, attendee.attended)}
-                    className={`px-4 py-2 rounded font-medium ${
-                      attendee.attended
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-primary hover:bg-primary-dark text-white'
-                    }`}
-                  >
-                    {attendee.attended ? 'Attended' : 'Mark Attend'}
-                  </button>
-                </div>
+        {/* Separate Lists for Registered and Attended */}
+        {filteredAttendees.length === 0 ? (
+          <p className="text-center text-gray-400 py-8">
+            {searchQuery ? 'No attendees found' : 'No registrations yet'}
+          </p>
+        ) : (
+          <div className="space-y-6">
+            {/* List A: Registered (Not Yet Attended) */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-primary">
+                  Registered ({filteredAttendees.filter(a => !a.attended).length})
+                </h2>
+                <span className="text-sm text-gray-400">Waiting to check-in</span>
               </div>
-            ))
-          )}
-        </div>
+              <div className="space-y-3">
+                {filteredAttendees.filter(a => !a.attended).length === 0 ? (
+                  <p className="text-center text-gray-500 py-4 bg-dark-lighter rounded">
+                    All registered attendees have checked in! 🎉
+                  </p>
+                ) : (
+                  filteredAttendees
+                    .filter(a => !a.attended)
+                    .map((attendee) => (
+                      <div
+                        key={attendee.id}
+                        className="bg-dark-lighter border border-gray-800 rounded-lg p-4 hover:border-primary transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg mb-1">{attendee.name}</h3>
+                            <p className="text-sm text-gray-400">{attendee.email}</p>
+                            {attendee.contact && (
+                              <p className="text-sm text-gray-400">{attendee.contact}</p>
+                            )}
+                            {attendee.notes && (
+                              <p className="text-sm text-gray-500 mt-1">{attendee.notes}</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => handleMarkAttend(attendee.id, attendee.attended)}
+                            className="px-6 py-2 rounded font-medium bg-primary hover:bg-primary-dark text-white"
+                          >
+                            Check-in
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+            </div>
+
+            {/* List B: Attended (Checked-in) */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-green-500">
+                  Attended ({filteredAttendees.filter(a => a.attended).length})
+                </h2>
+                <span className="text-sm text-gray-400">Successfully checked in</span>
+              </div>
+              <div className="space-y-3">
+                {filteredAttendees.filter(a => a.attended).length === 0 ? (
+                  <p className="text-center text-gray-500 py-4 bg-dark-lighter rounded">
+                    No attendees checked in yet
+                  </p>
+                ) : (
+                  filteredAttendees
+                    .filter(a => a.attended)
+                    .map((attendee) => (
+                      <div
+                        key={attendee.id}
+                        className="bg-dark-lighter border border-green-800 rounded-lg p-4"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg mb-1">{attendee.name}</h3>
+                            <p className="text-sm text-gray-400">{attendee.email}</p>
+                            {attendee.contact && (
+                              <p className="text-sm text-gray-400">{attendee.contact}</p>
+                            )}
+                            {attendee.notes && (
+                              <p className="text-sm text-gray-500 mt-1">{attendee.notes}</p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => handleMarkAttend(attendee.id, attendee.attended)}
+                            className="px-6 py-2 rounded font-medium bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            ✓ Attended
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

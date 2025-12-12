@@ -3,10 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
-import PublicEvents from './pages/PublicEvents';
-import PublicEventView from './pages/PublicEventView';
+import EventList from './pages/EventList';
 import EventForm from './pages/EventForm';
 import EventDetails from './pages/EventDetails';
 import FlyerView from './pages/FlyerView';
@@ -22,10 +20,8 @@ function App() {
             <Route path="/" element={<Navigate to="/events" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/events" element={<PublicEvents />} />
-            <Route path="/event/:id/view" element={<PublicEventView />} />
+            <Route path="/events" element={<EventList />} />
             <Route path="/new" element={<EventForm />} />
             <Route path="/:id/edit" element={<EventForm />} />
             <Route path="/:id" element={<EventDetails />} />

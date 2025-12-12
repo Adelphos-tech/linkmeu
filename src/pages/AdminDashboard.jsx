@@ -24,6 +24,15 @@ const AdminDashboard = () => {
     navigate('/login');
   };
 
+  // Show loading state
+  if (!events || !users) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black">
       <Header

@@ -8,7 +8,7 @@ db.version(1).stores({
   attendees: '++id, eventId, name, email, contact, attended',
 });
 
-// Initialize super admin on first load
+// Initialize super admin and sample events on first load
 db.on('ready', async () => {
   const superAdmin = await db.users.where('email').equals('Robocorpsg@gmail.com').first();
   if (!superAdmin) {
@@ -20,7 +20,107 @@ db.on('ready', async () => {
       createdAt: new Date().toISOString()
     });
   }
+
+  // Add sample events if database is empty
+  const eventCount = await db.events.count();
+  if (eventCount === 0) {
+    await seedSampleEvents();
+  }
 });
+
+// Seed sample events for demonstration
+const seedSampleEvents = async () => {
+  const sampleEvents = [
+    {
+      id: 1,
+      title: 'Tech Conference 2025',
+      description: 'Annual technology conference featuring the latest innovations in AI, blockchain, and web development.',
+      date: '2025-03-15',
+      venue: 'Singapore Convention Centre',
+      ownerId: 1,
+      organisers: [
+        { name: 'TechCorp Singapore', detail: 'Leading technology company' }
+      ],
+      speakers: [
+        { name: 'Dr. Sarah Chen', title: 'AI Research Director', photo: null },
+        { name: 'Mike Johnson', title: 'Blockchain Expert', photo: null }
+      ],
+      sponsors: [
+        { name: 'TechCorp', logo: null },
+        { name: 'InnovateLab', logo: null }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 2,
+      title: 'Digital Marketing Summit',
+      description: 'Learn the latest digital marketing strategies and network with industry professionals.',
+      date: '2025-04-20',
+      venue: 'Marina Bay Sands',
+      ownerId: 1,
+      organisers: [
+        { name: 'Marketing Pro', detail: 'Digital marketing agency' }
+      ],
+      speakers: [
+        { name: 'Lisa Wong', title: 'Social Media Strategist', photo: null },
+        { name: 'David Kim', title: 'SEO Specialist', photo: null }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 3,
+      title: 'Startup Pitch Night',
+      description: 'Watch innovative startups pitch their ideas to investors and vote for your favorite.',
+      date: '2025-05-10',
+      venue: 'The Hive Singapore',
+      ownerId: 1,
+      organisers: [
+        { name: 'Startup Hub', detail: 'Entrepreneurship community' }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 4,
+      title: 'Web Development Workshop',
+      description: 'Hands-on workshop covering React, Node.js, and modern web development practices.',
+      date: '2025-06-05',
+      venue: 'NUS School of Computing',
+      ownerId: 1,
+      organisers: [
+        { name: 'CodeCraft Academy', detail: 'Programming education center' }
+      ],
+      speakers: [
+        { name: 'Alex Tan', title: 'Full Stack Developer', photo: null }
+      ],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 5,
+      title: 'Cybersecurity Awareness Seminar',
+      description: 'Essential cybersecurity knowledge for businesses and individuals in the digital age.',
+      date: '2025-07-12',
+      venue: 'Raffles City Convention Centre',
+      ownerId: 1,
+      organisers: [
+        { name: 'SecureNet Solutions', detail: 'Cybersecurity consultancy' }
+      ],
+      speakers: [
+        { name: 'Jennifer Lee', title: 'Security Analyst', photo: null },
+        { name: 'Robert Zhang', title: 'Ethical Hacker', photo: null }
+      ],
+      sponsors: [
+        { name: 'CyberGuard', logo: null }
+      ],
+      createdAt: new Date().toISOString()
+    }
+  ];
+
+  for (const event of sampleEvents) {
+    await db.events.put(event);
+  }
+
+  console.log('Sample events seeded successfully');
+};
 
 // Helper functions
 export const saveEvent = async (eventData) => {

@@ -48,8 +48,8 @@ export const AuthProvider = ({ children }) => {
 
   const canEditEvent = (eventOwnerId) => {
     if (!user) return false;
+    // Only super admin can edit events
     if (user.role === 'superadmin') return true;
-    if (user.role === 'owner' && user.id === eventOwnerId) return true;
     return false;
   };
 
@@ -63,6 +63,15 @@ export const AuthProvider = ({ children }) => {
     canEditEvent,
     isAuthenticated: !!user
   };
+
+  // Don't render children until auth state is loaded
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
+  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -59,7 +59,7 @@ const Register = () => {
       };
       
       login(user);
-      navigate('/dashboard');
+      navigate('/events');
     } catch (error) {
       setError(error.message || 'Registration failed. Please try again.');
     } finally {

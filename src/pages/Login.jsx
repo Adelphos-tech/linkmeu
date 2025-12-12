@@ -34,12 +34,8 @@ const Login = () => {
       const user = await loginUser(formData.email, formData.password);
       login(user);
       
-      // Redirect based on role
-      if (user.role === 'superadmin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      // Redirect to events page
+      navigate('/events');
     } catch (error) {
       setError(error.message || 'Login failed. Please check your credentials.');
     } finally {
@@ -103,17 +99,8 @@ const Login = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-400">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-primary hover:text-primary-dark">
-                Register here
-              </Link>
-            </p>
-          </div>
-
-          <div className="mt-4 text-center">
             <Link to="/events" className="text-sm text-gray-500 hover:text-gray-400">
-              View public events →
+              ← Back to events
             </Link>
           </div>
         </div>
