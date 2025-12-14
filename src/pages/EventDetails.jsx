@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import TabNavigation from '../components/TabNavigation';
 import { exportToCSV, prepareAttendeeData } from '../utils/csv';
 import { generateQRCode, generateRegistrationURL } from '../utils/qrcode';
+import { isToday, parseISO } from 'date-fns';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -19,6 +20,18 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [qrCodeDataURL, setQrCodeDataURL] = useState(null);
+
+  // Check if check-in is allowed (only on event day) - Customer feedback
+  const isCheckInAllowed = () => {
+    if (!event?.date) return false;
+    try {
+      const eventDate = parseISO(event.date);
+      return isToday(eventDate);
+    } catch (error) {
+      console.error('Error parsing event date:', error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     loadData();
@@ -120,12 +133,12 @@ const EventDetails = () => {
     );
   }
 
-  // Only show Check-in tab for super admin - Customer feedback: admin only access
+  // Only show Check-in tab for super admin AND on event day - Customer feedback
   const tabs = [
     { id: 'event', label: 'Event' },
     { id: 'details', label: 'Details' },
     { id: 'flyer', label: 'Flyer' },
-    ...(isSuperAdmin() ? [{ id: 'checkin', label: 'Check-in (Admin Only)' }] : []),
+    ...(isSuperAdmin() && isCheckInAllowed() ? [{ id: 'checkin', label: 'Check-in (Today Only)' }] : []),
   ];
 
   return (
@@ -465,11 +478,16 @@ const EventDetails = () => {
                 <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
                   <span className="text-black text-xs font-bold">!</span>
                 </div>
-                <h3 className="font-semibold text-yellow-400">Admin Only Access</h3>
+                <h3 className="font-semibold text-yellow-400">Admin Only - Event Day Only</h3>
               </div>
               <p className="text-sm text-gray-300">
-                Check-in and export functions are restricted to Super Admin users only.
-                Regular users cannot access these features.
+                Check-in and export functions are restricted to Super Admin users and only available on the event day.
+                {event.date && (
+                  <span className="block mt-1">
+                    Event Date: {format(parseISO(event.date), 'PPP')}
+                    {isCheckInAllowed() ? ' (Today - Check-in Available)' : ' (Check-in Not Available Today)'}
+                  </span>
+                )}
               </p>
             </div>
 

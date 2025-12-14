@@ -4,6 +4,7 @@ import { Search, QrCode, X, Shield } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees } from '../db/database';
 import { useAuth } from '../context/AuthContext';
+import { format, isToday, parseISO } from 'date-fns';
 import Header from '../components/Header';
 
 const CheckIn = () => {
@@ -17,6 +18,18 @@ const CheckIn = () => {
   const [scanning, setScanning] = useState(false);
   const [scanner, setScanner] = useState(null);
   const scannerRef = useRef(null);
+
+  // Check if check-in is allowed (only on event day)
+  const isCheckInAllowed = () => {
+    if (!event?.date) return false;
+    try {
+      const eventDate = parseISO(event.date);
+      return isToday(eventDate);
+    } catch (error) {
+      console.error('Error parsing event date:', error);
+      return false;
+    }
+  };
 
   // Admin-only access control - Customer feedback implementation
   if (!isSuperAdmin()) {
@@ -45,6 +58,45 @@ const CheckIn = () => {
           </div>
           <div className="text-xs text-gray-500 mt-4">
             Contact: Robocorpsg@gmail.com for admin access
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Event day restriction - Customer feedback implementation
+  if (event && !isCheckInAllowed()) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="text-6xl mb-4">📅</div>
+          <h1 className="text-2xl font-bold mb-4 text-yellow-400">Check-in Not Available</h1>
+          <p className="text-gray-400 mb-4">
+            Check-in is only available on the event day.
+          </p>
+          <div className="bg-dark-lighter rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-300">
+              <span className="text-primary font-semibold">Event Date:</span><br />
+              {format(parseISO(event.date), 'PPPP')}
+            </p>
+            <p className="text-sm text-gray-300 mt-2">
+              <span className="text-primary font-semibold">Today:</span><br />
+              {format(new Date(), 'PPPP')}
+            </p>
+          </div>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate(`/${id}`)}
+              className="btn-primary w-full"
+            >
+              Back to Event
+            </button>
+            <button
+              onClick={() => navigate('/events')}
+              className="btn-secondary w-full"
+            >
+              View All Events
+            </button>
           </div>
         </div>
       </div>
@@ -175,11 +227,14 @@ const CheckIn = () => {
         <div className="bg-green-900/20 border border-green-500 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-2 mb-2">
             <Shield size={20} className="text-green-400" />
-            <h3 className="font-semibold text-green-400">Super Admin Access Confirmed</h3>
+            <h3 className="font-semibold text-green-400">Super Admin Access Confirmed - Event Day</h3>
           </div>
           <p className="text-sm text-gray-300">
             You have admin privileges to check-in attendees and export data.
-            This functionality is restricted to Super Admin users only.
+            Check-in is available today because it's the event day.
+          </p>
+          <p className="text-xs text-gray-400 mt-2">
+            Event Date: {format(parseISO(event.date), 'PPP')} | Today: {format(new Date(), 'PPP')}
           </p>
         </div>
         {/* Stats */}
