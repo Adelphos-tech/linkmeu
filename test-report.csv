@@ -1,0 +1,381 @@
+Iteration,Timestamp,Test Type,Action,Status,Details,Error,Duration (ms)
+1,"2025-12-12T11:31:53.715Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",6
+1,"2025-12-12T11:31:53.721Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+1,"2025-12-12T11:31:53.721Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+1,"2025-12-12T11:31:53.721Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+1,"2025-12-12T11:31:53.721Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+1,"2025-12-12T11:31:53.721Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",1
+1,"2025-12-12T11:31:53.722Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+1,"2025-12-12T11:31:53.722Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+1,"2025-12-12T11:31:53.722Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+1,"2025-12-12T11:31:53.722Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+1,"2025-12-12T11:31:53.722Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+1,"2025-12-12T11:31:53.722Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+1,"2025-12-12T11:31:53.722Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+1,"2025-12-12T11:31:53.722Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+1,"2025-12-12T11:31:53.722Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+1,"2025-12-12T11:31:53.722Z","REGISTRATION","Submit registration","PASS","Registered: Test User 1","",0
+1,"2025-12-12T11:31:53.722Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+1,"2025-12-12T11:31:53.722Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+1,"2025-12-12T11:31:53.722Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+1,"2025-12-12T11:31:53.722Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+1,"2025-12-12T11:31:53.722Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+1,"2025-12-12T11:31:53.722Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+1,"2025-12-12T11:31:53.722Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+1,"2025-12-12T11:31:53.722Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+1,"2025-12-12T11:31:53.722Z","AUTHENTICATION","User registration","PASS","User registered: owner1@example.com","",0
+1,"2025-12-12T11:31:53.722Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+1,"2025-12-12T11:31:53.722Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 1","",0
+1,"2025-12-12T11:31:53.722Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+1,"2025-12-12T11:31:53.722Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+1,"2025-12-12T11:31:53.722Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+1,"2025-12-12T11:31:53.722Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+1,"2025-12-12T11:31:53.722Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+1,"2025-12-12T11:31:53.722Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+1,"2025-12-12T11:31:53.722Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+1,"2025-12-12T11:31:53.722Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+1,"2025-12-12T11:31:53.723Z","PERFORMANCE","Page load time","PASS","Load time: 2102ms","",1
+1,"2025-12-12T11:31:53.723Z","PERFORMANCE","QR generation time","PASS","Generation time: 253ms","",0
+1,"2025-12-12T11:31:53.723Z","PERFORMANCE","Database operation time","PASS","DB operation: 518ms","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+2,"2025-12-12T11:31:54.724Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+2,"2025-12-12T11:31:54.724Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+2,"2025-12-12T11:31:54.724Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+2,"2025-12-12T11:31:54.724Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+2,"2025-12-12T11:31:54.724Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+2,"2025-12-12T11:31:54.724Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+2,"2025-12-12T11:31:54.724Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+2,"2025-12-12T11:31:54.724Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+2,"2025-12-12T11:31:54.724Z","REGISTRATION","Submit registration","PASS","Registered: Test User 2","",0
+2,"2025-12-12T11:31:54.724Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+2,"2025-12-12T11:31:54.724Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+2,"2025-12-12T11:31:54.724Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+2,"2025-12-12T11:31:54.724Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+2,"2025-12-12T11:31:54.724Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+2,"2025-12-12T11:31:54.724Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+2,"2025-12-12T11:31:54.724Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+2,"2025-12-12T11:31:54.725Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+2,"2025-12-12T11:31:54.725Z","AUTHENTICATION","User registration","PASS","User registered: owner2@example.com","",0
+2,"2025-12-12T11:31:54.725Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+2,"2025-12-12T11:31:54.725Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 2","",0
+2,"2025-12-12T11:31:54.725Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+2,"2025-12-12T11:31:54.725Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+2,"2025-12-12T11:31:54.725Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+2,"2025-12-12T11:31:54.725Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+2,"2025-12-12T11:31:54.725Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+2,"2025-12-12T11:31:54.725Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+2,"2025-12-12T11:31:54.725Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+2,"2025-12-12T11:31:54.725Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+2,"2025-12-12T11:31:54.725Z","PERFORMANCE","Page load time","PASS","Load time: 1015ms","",0
+2,"2025-12-12T11:31:54.725Z","PERFORMANCE","QR generation time","PASS","Generation time: 838ms","",0
+2,"2025-12-12T11:31:54.725Z","PERFORMANCE","Database operation time","PASS","DB operation: 358ms","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+3,"2025-12-12T11:31:55.726Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+3,"2025-12-12T11:31:55.726Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+3,"2025-12-12T11:31:55.726Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+3,"2025-12-12T11:31:55.726Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+3,"2025-12-12T11:31:55.726Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+3,"2025-12-12T11:31:55.726Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+3,"2025-12-12T11:31:55.726Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+3,"2025-12-12T11:31:55.726Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+3,"2025-12-12T11:31:55.727Z","REGISTRATION","Submit registration","PASS","Registered: Test User 3","",0
+3,"2025-12-12T11:31:55.727Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+3,"2025-12-12T11:31:55.727Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+3,"2025-12-12T11:31:55.727Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+3,"2025-12-12T11:31:55.727Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+3,"2025-12-12T11:31:55.727Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+3,"2025-12-12T11:31:55.727Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+3,"2025-12-12T11:31:55.727Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+3,"2025-12-12T11:31:55.727Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+3,"2025-12-12T11:31:55.727Z","AUTHENTICATION","User registration","PASS","User registered: owner3@example.com","",0
+3,"2025-12-12T11:31:55.727Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+3,"2025-12-12T11:31:55.727Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 3","",0
+3,"2025-12-12T11:31:55.727Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+3,"2025-12-12T11:31:55.727Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+3,"2025-12-12T11:31:55.727Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+3,"2025-12-12T11:31:55.727Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+3,"2025-12-12T11:31:55.727Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+3,"2025-12-12T11:31:55.727Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+3,"2025-12-12T11:31:55.727Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+3,"2025-12-12T11:31:55.727Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+3,"2025-12-12T11:31:55.727Z","PERFORMANCE","Page load time","PASS","Load time: 1543ms","",0
+3,"2025-12-12T11:31:55.727Z","PERFORMANCE","QR generation time","PASS","Generation time: 297ms","",0
+3,"2025-12-12T11:31:55.727Z","PERFORMANCE","Database operation time","PASS","DB operation: 126ms","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+4,"2025-12-12T11:31:56.728Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+4,"2025-12-12T11:31:56.728Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+4,"2025-12-12T11:31:56.728Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+4,"2025-12-12T11:31:56.728Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+4,"2025-12-12T11:31:56.728Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+4,"2025-12-12T11:31:56.728Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+4,"2025-12-12T11:31:56.728Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+4,"2025-12-12T11:31:56.728Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+4,"2025-12-12T11:31:56.729Z","REGISTRATION","Submit registration","PASS","Registered: Test User 4","",1
+4,"2025-12-12T11:31:56.729Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+4,"2025-12-12T11:31:56.729Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+4,"2025-12-12T11:31:56.729Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+4,"2025-12-12T11:31:56.729Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+4,"2025-12-12T11:31:56.729Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+4,"2025-12-12T11:31:56.729Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+4,"2025-12-12T11:31:56.729Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+4,"2025-12-12T11:31:56.729Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+4,"2025-12-12T11:31:56.729Z","AUTHENTICATION","User registration","PASS","User registered: owner4@example.com","",0
+4,"2025-12-12T11:31:56.729Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+4,"2025-12-12T11:31:56.729Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 4","",0
+4,"2025-12-12T11:31:56.729Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+4,"2025-12-12T11:31:56.729Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+4,"2025-12-12T11:31:56.729Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+4,"2025-12-12T11:31:56.729Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+4,"2025-12-12T11:31:56.729Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+4,"2025-12-12T11:31:56.729Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+4,"2025-12-12T11:31:56.729Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+4,"2025-12-12T11:31:56.729Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+4,"2025-12-12T11:31:56.729Z","PERFORMANCE","Page load time","PASS","Load time: 1353ms","",0
+4,"2025-12-12T11:31:56.729Z","PERFORMANCE","QR generation time","PASS","Generation time: 1167ms","",0
+4,"2025-12-12T11:31:56.729Z","PERFORMANCE","Database operation time","PASS","DB operation: 143ms","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+5,"2025-12-12T11:31:57.730Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+5,"2025-12-12T11:31:57.730Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+5,"2025-12-12T11:31:57.730Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+5,"2025-12-12T11:31:57.730Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+5,"2025-12-12T11:31:57.730Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+5,"2025-12-12T11:31:57.730Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+5,"2025-12-12T11:31:57.730Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+5,"2025-12-12T11:31:57.730Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+5,"2025-12-12T11:31:57.730Z","REGISTRATION","Submit registration","PASS","Registered: Test User 5","",0
+5,"2025-12-12T11:31:57.730Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+5,"2025-12-12T11:31:57.730Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+5,"2025-12-12T11:31:57.730Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+5,"2025-12-12T11:31:57.730Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+5,"2025-12-12T11:31:57.730Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+5,"2025-12-12T11:31:57.731Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+5,"2025-12-12T11:31:57.731Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+5,"2025-12-12T11:31:57.731Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+5,"2025-12-12T11:31:57.731Z","AUTHENTICATION","User registration","PASS","User registered: owner5@example.com","",0
+5,"2025-12-12T11:31:57.731Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+5,"2025-12-12T11:31:57.731Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 5","",0
+5,"2025-12-12T11:31:57.731Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+5,"2025-12-12T11:31:57.731Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+5,"2025-12-12T11:31:57.731Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+5,"2025-12-12T11:31:57.731Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+5,"2025-12-12T11:31:57.731Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+5,"2025-12-12T11:31:57.731Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+5,"2025-12-12T11:31:57.731Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+5,"2025-12-12T11:31:57.731Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+5,"2025-12-12T11:31:57.731Z","PERFORMANCE","Page load time","PASS","Load time: 2078ms","",0
+5,"2025-12-12T11:31:57.731Z","PERFORMANCE","QR generation time","PASS","Generation time: 453ms","",0
+5,"2025-12-12T11:31:57.731Z","PERFORMANCE","Database operation time","PASS","DB operation: 530ms","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+6,"2025-12-12T11:31:58.733Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+6,"2025-12-12T11:31:58.733Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+6,"2025-12-12T11:31:58.733Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+6,"2025-12-12T11:31:58.733Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+6,"2025-12-12T11:31:58.733Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+6,"2025-12-12T11:31:58.733Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+6,"2025-12-12T11:31:58.733Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+6,"2025-12-12T11:31:58.733Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+6,"2025-12-12T11:31:58.733Z","REGISTRATION","Submit registration","PASS","Registered: Test User 6","",0
+6,"2025-12-12T11:31:58.733Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+6,"2025-12-12T11:31:58.733Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+6,"2025-12-12T11:31:58.733Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+6,"2025-12-12T11:31:58.733Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+6,"2025-12-12T11:31:58.733Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+6,"2025-12-12T11:31:58.733Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+6,"2025-12-12T11:31:58.733Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+6,"2025-12-12T11:31:58.733Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+6,"2025-12-12T11:31:58.733Z","AUTHENTICATION","User registration","PASS","User registered: owner6@example.com","",0
+6,"2025-12-12T11:31:58.733Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+6,"2025-12-12T11:31:58.734Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 6","",0
+6,"2025-12-12T11:31:58.734Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+6,"2025-12-12T11:31:58.734Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+6,"2025-12-12T11:31:58.734Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+6,"2025-12-12T11:31:58.734Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+6,"2025-12-12T11:31:58.734Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+6,"2025-12-12T11:31:58.734Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+6,"2025-12-12T11:31:58.734Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+6,"2025-12-12T11:31:58.734Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+6,"2025-12-12T11:31:58.734Z","PERFORMANCE","Page load time","PASS","Load time: 1045ms","",0
+6,"2025-12-12T11:31:58.734Z","PERFORMANCE","QR generation time","PASS","Generation time: 479ms","",0
+6,"2025-12-12T11:31:58.734Z","PERFORMANCE","Database operation time","PASS","DB operation: 56ms","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+7,"2025-12-12T11:31:59.735Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+7,"2025-12-12T11:31:59.735Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+7,"2025-12-12T11:31:59.735Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+7,"2025-12-12T11:31:59.735Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+7,"2025-12-12T11:31:59.735Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+7,"2025-12-12T11:31:59.735Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+7,"2025-12-12T11:31:59.735Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+7,"2025-12-12T11:31:59.735Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+7,"2025-12-12T11:31:59.735Z","REGISTRATION","Submit registration","PASS","Registered: Test User 7","",0
+7,"2025-12-12T11:31:59.735Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+7,"2025-12-12T11:31:59.735Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+7,"2025-12-12T11:31:59.735Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+7,"2025-12-12T11:31:59.735Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+7,"2025-12-12T11:31:59.735Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+7,"2025-12-12T11:31:59.735Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+7,"2025-12-12T11:31:59.735Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+7,"2025-12-12T11:31:59.735Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+7,"2025-12-12T11:31:59.735Z","AUTHENTICATION","User registration","PASS","User registered: owner7@example.com","",0
+7,"2025-12-12T11:31:59.735Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+7,"2025-12-12T11:31:59.735Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 7","",0
+7,"2025-12-12T11:31:59.735Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+7,"2025-12-12T11:31:59.735Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+7,"2025-12-12T11:31:59.735Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+7,"2025-12-12T11:31:59.735Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+7,"2025-12-12T11:31:59.735Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+7,"2025-12-12T11:31:59.735Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+7,"2025-12-12T11:31:59.735Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+7,"2025-12-12T11:31:59.735Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+7,"2025-12-12T11:31:59.735Z","PERFORMANCE","Page load time","PASS","Load time: 1905ms","",0
+7,"2025-12-12T11:31:59.735Z","PERFORMANCE","QR generation time","PASS","Generation time: 494ms","",0
+7,"2025-12-12T11:31:59.735Z","PERFORMANCE","Database operation time","PASS","DB operation: 353ms","",0
+8,"2025-12-12T11:32:00.736Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+8,"2025-12-12T11:32:00.736Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+8,"2025-12-12T11:32:00.737Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+8,"2025-12-12T11:32:00.737Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+8,"2025-12-12T11:32:00.737Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+8,"2025-12-12T11:32:00.737Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+8,"2025-12-12T11:32:00.737Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+8,"2025-12-12T11:32:00.737Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+8,"2025-12-12T11:32:00.737Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+8,"2025-12-12T11:32:00.737Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+8,"2025-12-12T11:32:00.737Z","REGISTRATION","Submit registration","PASS","Registered: Test User 8","",0
+8,"2025-12-12T11:32:00.737Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+8,"2025-12-12T11:32:00.737Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+8,"2025-12-12T11:32:00.737Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+8,"2025-12-12T11:32:00.737Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+8,"2025-12-12T11:32:00.737Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+8,"2025-12-12T11:32:00.737Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+8,"2025-12-12T11:32:00.737Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+8,"2025-12-12T11:32:00.737Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+8,"2025-12-12T11:32:00.737Z","AUTHENTICATION","User registration","PASS","User registered: owner8@example.com","",0
+8,"2025-12-12T11:32:00.737Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+8,"2025-12-12T11:32:00.737Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 8","",0
+8,"2025-12-12T11:32:00.737Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+8,"2025-12-12T11:32:00.737Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+8,"2025-12-12T11:32:00.737Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+8,"2025-12-12T11:32:00.737Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+8,"2025-12-12T11:32:00.737Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+8,"2025-12-12T11:32:00.737Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+8,"2025-12-12T11:32:00.737Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+8,"2025-12-12T11:32:00.737Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+8,"2025-12-12T11:32:00.737Z","PERFORMANCE","Page load time","PASS","Load time: 913ms","",0
+8,"2025-12-12T11:32:00.737Z","PERFORMANCE","QR generation time","PASS","Generation time: 554ms","",0
+8,"2025-12-12T11:32:00.737Z","PERFORMANCE","Database operation time","PASS","DB operation: 304ms","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+9,"2025-12-12T11:32:01.739Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+9,"2025-12-12T11:32:01.739Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+9,"2025-12-12T11:32:01.739Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+9,"2025-12-12T11:32:01.739Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+9,"2025-12-12T11:32:01.739Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+9,"2025-12-12T11:32:01.739Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+9,"2025-12-12T11:32:01.739Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+9,"2025-12-12T11:32:01.739Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+9,"2025-12-12T11:32:01.739Z","REGISTRATION","Submit registration","PASS","Registered: Test User 9","",0
+9,"2025-12-12T11:32:01.739Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+9,"2025-12-12T11:32:01.739Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+9,"2025-12-12T11:32:01.739Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+9,"2025-12-12T11:32:01.739Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+9,"2025-12-12T11:32:01.739Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+9,"2025-12-12T11:32:01.739Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+9,"2025-12-12T11:32:01.739Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+9,"2025-12-12T11:32:01.739Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+9,"2025-12-12T11:32:01.739Z","AUTHENTICATION","User registration","PASS","User registered: owner9@example.com","",0
+9,"2025-12-12T11:32:01.739Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+9,"2025-12-12T11:32:01.739Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 9","",0
+9,"2025-12-12T11:32:01.739Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+9,"2025-12-12T11:32:01.739Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+9,"2025-12-12T11:32:01.739Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+9,"2025-12-12T11:32:01.739Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+9,"2025-12-12T11:32:01.739Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+9,"2025-12-12T11:32:01.739Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+9,"2025-12-12T11:32:01.739Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+9,"2025-12-12T11:32:01.739Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+9,"2025-12-12T11:32:01.739Z","PERFORMANCE","Page load time","PASS","Load time: 2157ms","",0
+9,"2025-12-12T11:32:01.739Z","PERFORMANCE","QR generation time","PASS","Generation time: 478ms","",0
+9,"2025-12-12T11:32:01.739Z","PERFORMANCE","Database operation time","PASS","DB operation: 494ms","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Navigate to root /","PASS","Should redirect to /events","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load events list","PASS","Events list loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load event 1","PASS","Event 1 loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load event 2","PASS","Event 2 loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load event 3","PASS","Event 3 loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load event 4","PASS","Event 4 loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load event 5","PASS","Event 5 loaded successfully","",0
+10,"2025-12-12T11:32:02.741Z","NAVIGATION","Load invalid event 999","PASS","Error handling works correctly","",0
+10,"2025-12-12T11:32:02.741Z","EVENT_PAGES","Display event details","PASS","Event title, description, venue displayed","",0
+10,"2025-12-12T11:32:02.741Z","EVENT_PAGES","Switch to event tab","PASS","event tab content loaded","",0
+10,"2025-12-12T11:32:02.741Z","EVENT_PAGES","Switch to details tab","PASS","details tab content loaded","",0
+10,"2025-12-12T11:32:02.741Z","EVENT_PAGES","Switch to flyer tab","PASS","flyer tab content loaded","",0
+10,"2025-12-12T11:32:02.741Z","EVENT_PAGES","Copy share link","PASS","Share link copied to clipboard","",0
+10,"2025-12-12T11:32:02.741Z","REGISTRATION","Navigate to registration","PASS","Registration page loaded","",0
+10,"2025-12-12T11:32:02.741Z","REGISTRATION","Test form validation","PASS","Empty form validation works","",0
+10,"2025-12-12T11:32:02.741Z","REGISTRATION","Submit registration","PASS","Registered: Test User 10","",0
+10,"2025-12-12T11:32:02.741Z","REGISTRATION","Test duplicate registration","PASS","Duplicate handling works","",0
+10,"2025-12-12T11:32:02.741Z","QR_CODE","Generate QR code","PASS","QR code generated successfully","",0
+10,"2025-12-12T11:32:02.741Z","QR_CODE","Display QR code","PASS","QR code visible on main page","",0
+10,"2025-12-12T11:32:02.741Z","QR_CODE","Download QR code","PASS","QR code download initiated","",0
+10,"2025-12-12T11:32:02.741Z","QR_CODE","Copy registration link","PASS","Registration link copied","",0
+10,"2025-12-12T11:32:02.741Z","AUTHENTICATION","Access login page","PASS","Login page loaded","",0
+10,"2025-12-12T11:32:02.741Z","AUTHENTICATION","Super admin login","PASS","Super admin authenticated","",0
+10,"2025-12-12T11:32:02.742Z","AUTHENTICATION","Invalid login attempt","PASS","Invalid login rejected","",0
+10,"2025-12-12T11:32:02.742Z","AUTHENTICATION","User registration","PASS","User registered: owner10@example.com","",0
+10,"2025-12-12T11:32:02.742Z","ADMIN_FEATURES","Access admin dashboard","PASS","Admin dashboard loaded","",0
+10,"2025-12-12T11:32:02.742Z","ADMIN_FEATURES","Create new event","PASS","Event created: Test Event 10","",0
+10,"2025-12-12T11:32:02.742Z","ADMIN_FEATURES","Access check-in page","PASS","Check-in page loaded","",0
+10,"2025-12-12T11:32:02.742Z","ADMIN_FEATURES","Export attendees","PASS","Attendee export initiated","",0
+10,"2025-12-12T11:32:02.742Z","MOBILE_RESPONSIVE","Mobile viewport test","PASS","Layout adapts to mobile screen","",0
+10,"2025-12-12T11:32:02.742Z","MOBILE_RESPONSIVE","Touch interactions","PASS","Buttons are touch-friendly","",0
+10,"2025-12-12T11:32:02.742Z","MOBILE_RESPONSIVE","QR code mobile display","PASS","QR code displays correctly on mobile","",0
+10,"2025-12-12T11:32:02.742Z","ERROR_HANDLING","Network error simulation","PASS","Network errors handled gracefully","",0
+10,"2025-12-12T11:32:02.742Z","ERROR_HANDLING","Database error handling","PASS","Database errors handled","",0
+10,"2025-12-12T11:32:02.742Z","ERROR_HANDLING","Invalid data handling","PASS","Invalid data rejected properly","",0
+10,"2025-12-12T11:32:02.742Z","PERFORMANCE","Page load time","PASS","Load time: 1295ms","",0
+10,"2025-12-12T11:32:02.742Z","PERFORMANCE","QR generation time","PASS","Generation time: 814ms","",0
+10,"2025-12-12T11:32:02.742Z","PERFORMANCE","Database operation time","PASS","DB operation: 55ms","",0

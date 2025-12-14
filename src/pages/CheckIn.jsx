@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { Search, QrCode, X } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Search, QrCode, X, Shield } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees } from '../db/database';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 
 const CheckIn = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isSuperAdmin } = useAuth();
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [filteredAttendees, setFilteredAttendees] = useState([]);
@@ -14,6 +17,39 @@ const CheckIn = () => {
   const [scanning, setScanning] = useState(false);
   const [scanner, setScanner] = useState(null);
   const scannerRef = useRef(null);
+
+  // Admin-only access control - Customer feedback implementation
+  if (!isSuperAdmin()) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <Shield size={64} className="mx-auto text-red-500 mb-4" />
+          <h1 className="text-2xl font-bold mb-4 text-red-400">Access Denied</h1>
+          <p className="text-gray-400 mb-6">
+            Check-in functionality is restricted to Super Admin users only.
+            Regular users cannot access this feature.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate(`/${id}`)}
+              className="btn-primary w-full"
+            >
+              Back to Event
+            </button>
+            <button
+              onClick={() => navigate('/events')}
+              className="btn-secondary w-full"
+            >
+              View All Events
+            </button>
+          </div>
+          <div className="text-xs text-gray-500 mt-4">
+            Contact: Robocorpsg@gmail.com for admin access
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     loadData();
@@ -132,9 +168,20 @@ const CheckIn = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header title="Check-in" showBack />
+      <Header title="Check-in (Admin Only)" showBack />
 
       <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Admin Access Confirmation */}
+        <div className="bg-green-900/20 border border-green-500 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Shield size={20} className="text-green-400" />
+            <h3 className="font-semibold text-green-400">Super Admin Access Confirmed</h3>
+          </div>
+          <p className="text-sm text-gray-300">
+            You have admin privileges to check-in attendees and export data.
+            This functionality is restricted to Super Admin users only.
+          </p>
+        </div>
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-dark-lighter p-4 rounded text-center">

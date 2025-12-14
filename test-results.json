@@ -1,0 +1,3814 @@
+{
+  "testSummary": {
+    "totalTests": 380,
+    "passed": 380,
+    "failed": 0,
+    "warnings": 0,
+    "iterations": 10,
+    "startTime": "2025-12-12T11:31:53.711Z",
+    "endTime": "2025-12-12T11:32:03.743Z",
+    "duration": 10032
+  },
+  "results": [
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.715Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 6
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.721Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.721Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.721Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.721Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.721Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 1
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 1",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner1@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 1",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.722Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.723Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 2102ms",
+      "error": null,
+      "duration": 1
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.723Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 253ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 1,
+      "timestamp": "2025-12-12T11:31:53.723Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 518ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 2",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.724Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner2@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 2",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1015ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 838ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 2,
+      "timestamp": "2025-12-12T11:31:54.725Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 358ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.726Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 3",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner3@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 3",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1543ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 297ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 3,
+      "timestamp": "2025-12-12T11:31:55.727Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 126ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.728Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 4",
+      "error": null,
+      "duration": 1
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner4@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 4",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1353ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 1167ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 4,
+      "timestamp": "2025-12-12T11:31:56.729Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 143ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 5",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.730Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner5@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 5",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 2078ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 453ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 5,
+      "timestamp": "2025-12-12T11:31:57.731Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 530ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 6",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner6@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.733Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 6",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1045ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 479ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 6,
+      "timestamp": "2025-12-12T11:31:58.734Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 56ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 7",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner7@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 7",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1905ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 494ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 7,
+      "timestamp": "2025-12-12T11:31:59.735Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 353ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.736Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.736Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 8",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner8@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 8",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 913ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 554ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 8,
+      "timestamp": "2025-12-12T11:32:00.737Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 304ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 9",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner9@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 9",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 2157ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 478ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 9,
+      "timestamp": "2025-12-12T11:32:01.739Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 494ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Navigate to root /",
+      "status": "PASS",
+      "details": "Should redirect to /events",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load events list",
+      "status": "PASS",
+      "details": "Events list loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 1",
+      "status": "PASS",
+      "details": "Event 1 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 2",
+      "status": "PASS",
+      "details": "Event 2 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 3",
+      "status": "PASS",
+      "details": "Event 3 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 4",
+      "status": "PASS",
+      "details": "Event 4 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load event 5",
+      "status": "PASS",
+      "details": "Event 5 loaded successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "NAVIGATION",
+      "action": "Load invalid event 999",
+      "status": "PASS",
+      "details": "Error handling works correctly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "EVENT_PAGES",
+      "action": "Display event details",
+      "status": "PASS",
+      "details": "Event title, description, venue displayed",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to event tab",
+      "status": "PASS",
+      "details": "event tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to details tab",
+      "status": "PASS",
+      "details": "details tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "EVENT_PAGES",
+      "action": "Switch to flyer tab",
+      "status": "PASS",
+      "details": "flyer tab content loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "EVENT_PAGES",
+      "action": "Copy share link",
+      "status": "PASS",
+      "details": "Share link copied to clipboard",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "REGISTRATION",
+      "action": "Navigate to registration",
+      "status": "PASS",
+      "details": "Registration page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "REGISTRATION",
+      "action": "Test form validation",
+      "status": "PASS",
+      "details": "Empty form validation works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "REGISTRATION",
+      "action": "Submit registration",
+      "status": "PASS",
+      "details": "Registered: Test User 10",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "REGISTRATION",
+      "action": "Test duplicate registration",
+      "status": "PASS",
+      "details": "Duplicate handling works",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "QR_CODE",
+      "action": "Generate QR code",
+      "status": "PASS",
+      "details": "QR code generated successfully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "QR_CODE",
+      "action": "Display QR code",
+      "status": "PASS",
+      "details": "QR code visible on main page",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "QR_CODE",
+      "action": "Download QR code",
+      "status": "PASS",
+      "details": "QR code download initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "QR_CODE",
+      "action": "Copy registration link",
+      "status": "PASS",
+      "details": "Registration link copied",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "AUTHENTICATION",
+      "action": "Access login page",
+      "status": "PASS",
+      "details": "Login page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.741Z",
+      "testType": "AUTHENTICATION",
+      "action": "Super admin login",
+      "status": "PASS",
+      "details": "Super admin authenticated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "AUTHENTICATION",
+      "action": "Invalid login attempt",
+      "status": "PASS",
+      "details": "Invalid login rejected",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "AUTHENTICATION",
+      "action": "User registration",
+      "status": "PASS",
+      "details": "User registered: owner10@example.com",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access admin dashboard",
+      "status": "PASS",
+      "details": "Admin dashboard loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Create new event",
+      "status": "PASS",
+      "details": "Event created: Test Event 10",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Access check-in page",
+      "status": "PASS",
+      "details": "Check-in page loaded",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ADMIN_FEATURES",
+      "action": "Export attendees",
+      "status": "PASS",
+      "details": "Attendee export initiated",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Mobile viewport test",
+      "status": "PASS",
+      "details": "Layout adapts to mobile screen",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "Touch interactions",
+      "status": "PASS",
+      "details": "Buttons are touch-friendly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "MOBILE_RESPONSIVE",
+      "action": "QR code mobile display",
+      "status": "PASS",
+      "details": "QR code displays correctly on mobile",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Network error simulation",
+      "status": "PASS",
+      "details": "Network errors handled gracefully",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Database error handling",
+      "status": "PASS",
+      "details": "Database errors handled",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "ERROR_HANDLING",
+      "action": "Invalid data handling",
+      "status": "PASS",
+      "details": "Invalid data rejected properly",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "PERFORMANCE",
+      "action": "Page load time",
+      "status": "PASS",
+      "details": "Load time: 1295ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "PERFORMANCE",
+      "action": "QR generation time",
+      "status": "PASS",
+      "details": "Generation time: 814ms",
+      "error": null,
+      "duration": 0
+    },
+    {
+      "iteration": 10,
+      "timestamp": "2025-12-12T11:32:02.742Z",
+      "testType": "PERFORMANCE",
+      "action": "Database operation time",
+      "status": "PASS",
+      "details": "DB operation: 55ms",
+      "error": null,
+      "duration": 0
+    }
+  ]
+}
