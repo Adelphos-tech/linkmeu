@@ -8,9 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist",
-    "db:setup": "node -e \"import('./src/utils/databaseSetup.js').then(m => m.quickSetup())\"",
-    "db:migrate": "node -e \"import('./src/db/index.js').then(m => m.migrateFromIndexedDBToNeon())\"",
-    "db:status": "node -e \"import('./src/db/index.js').then(m => m.getDatabaseStatus().then(console.log))\""
+    "db:setup": "node scripts/db-setup.js",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:status": "node scripts/db-status.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -31,6 +31,7 @@
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
+    "dotenv-cli": "^11.0.0",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6",

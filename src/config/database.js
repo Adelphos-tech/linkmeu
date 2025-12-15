@@ -47,7 +47,17 @@ export const executeQuery = async (query, params = []) => {
   while (retries < config.maxRetries) {
     try {
       console.log('🔍 Executing query:', query.substring(0, 100) + '...');
-      const result = await db(query, params);
+      
+      // Use proper Neon syntax based on query type
+      let result;
+      if (params && params.length > 0) {
+        // For parameterized queries, use template literals with proper escaping
+        result = await db.unsafe(query, params);
+      } else {
+        // For simple queries, use unsafe for raw SQL
+        result = await db.unsafe(query);
+      }
+      
       console.log('✅ Query executed successfully');
       return result;
     } catch (error) {
@@ -67,7 +77,16 @@ export const executeQuery = async (query, params = []) => {
 // Health check function
 export const checkDatabaseHealth = async () => {
   try {
-    const result = await executeQuery('SELECT 1 as health_check');
+    const db = getDatabase();
+    if (!db) {
+      return { 
+        healthy: false, 
+        error: 'Database not configured', 
+        timestamp: new Date().toISOString() 
+      };
+    }
+    
+    const result = await db`SELECT 1 as health_check`;
     return { healthy: true, timestamp: new Date().toISOString() };
   } catch (error) {
     return { 
