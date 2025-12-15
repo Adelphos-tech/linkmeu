@@ -1,6 +1,8 @@
 import Dexie from 'dexie';
+import * as DatabaseAdapter from './databaseAdapter.js';
 
-export const db = new Dexie('EventsXDB');
+// Define the IndexedDB database (kept as fallback)
+export const db = new Dexie('EventsXDatabase');
 
 db.version(1).stores({
   users: '++id, email, role',
@@ -262,3 +264,18 @@ export const getEventsByOwner = async (ownerId) => {
     throw error;
   }
 };
+
+// ==================== PRODUCTION DATABASE ADAPTER ====================
+// Export adapter functions that automatically switch between Neon and IndexedDB
+
+// Export production database functions
+export const {
+  getEventAnalytics,
+  getDashboardStats,
+  getDatabaseMode,
+  getDatabaseStatus,
+  migrateFromIndexedDBToNeon
+} = DatabaseAdapter;
+
+// Note: Main functions are automatically overridden by the adapter
+// The adapter will use Neon when available, IndexedDB as fallback

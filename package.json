@@ -7,12 +7,17 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist",
+    "db:setup": "node -e \"import('./src/utils/databaseSetup.js').then(m => m.quickSetup())\"",
+    "db:migrate": "node -e \"import('./src/db/index.js').then(m => m.migrateFromIndexedDBToNeon())\"",
+    "db:status": "node -e \"import('./src/db/index.js').then(m => m.getDatabaseStatus().then(console.log))\""
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "date-fns": "^2.30.0",
     "dexie": "^3.2.4",
     "dexie-react-hooks": "^1.1.7",
+    "dotenv": "^17.2.3",
     "html5-qrcode": "^2.3.8",
     "jspdf": "^2.5.1",
     "lucide-react": "^0.294.0",
