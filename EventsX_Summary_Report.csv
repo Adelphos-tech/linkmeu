@@ -1,0 +1,13 @@
+Metric,Value,Status,Benchmark,Performance,Recommendations
+"Total Tests Executed","193","INFO","100+","Good","Comprehensive test coverage achieved"
+"Tests Passed","70","PASS","80%+","Needs Improvement","Focus on failing test categories"
+"Success Rate","36.3%","FAIL","90%+","Poor","Address console errors and mobile issues"
+"Average Response Time","10069ms","WARN","<2000ms","Poor","Optimize slow-loading components"
+"Test Duration","1991s","INFO","<30min","Acceptable","Consider parallel test execution"
+"Navigation Tests","20/20","PASS","100%","Excellent","All navigation tests passing"
+"Database Tests","10/10","PASS","100%","Excellent","Neon database integration working"
+"Authentication Tests","10/10","PASS","100%","Excellent","Admin login functionality working"
+"QR Code Tests","10/10","PASS","100%","Excellent","QR code generation working"
+"Mobile Tests","0/10","FAIL","100%","Needs Fix","Mobile touch events timing out - investigate"
+"Registration Tests","0/10","FAIL","100%","Needs Fix","Registration form selectors need updating"
+"Console Errors","93","WARN","0","Needs Attention","Fix 404 errors for missing resources"

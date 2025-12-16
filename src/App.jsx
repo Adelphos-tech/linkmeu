@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
@@ -17,7 +18,7 @@ function App() {
       <Router basename="/event">
         <div className="min-h-screen bg-black text-white">
           <Routes>
-            <Route path="/" element={<Navigate to="/events" replace />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<AdminDashboard />} />
@@ -28,7 +29,7 @@ function App() {
             <Route path="/:id/flyer" element={<FlyerView />} />
             <Route path="/:id/register" element={<RegistrationForm />} />
             <Route path="/:id/checkin" element={<CheckIn />} />
-            <Route path="*" element={<Navigate to="/events" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </Router>

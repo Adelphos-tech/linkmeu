@@ -10,7 +10,10 @@
     "deploy": "npm run build && gh-pages -d dist",
     "db:setup": "node scripts/db-setup.js",
     "db:migrate": "node scripts/db-migrate.js",
-    "db:status": "node scripts/db-status.js"
+    "db:status": "node scripts/db-status.js",
+    "test:production": "node test-production.js",
+    "test:full": "node test-production.js",
+    "test:reports": "node create-excel-report.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -34,6 +37,7 @@
     "dotenv-cli": "^11.0.0",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.32",
+    "puppeteer": "^24.33.0",
     "tailwindcss": "^3.3.6",
     "vite": "^5.0.8",
     "vite-plugin-pwa": "^0.17.4"

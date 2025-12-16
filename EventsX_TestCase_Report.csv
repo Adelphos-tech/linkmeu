@@ -1,0 +1,12 @@
+Test Case ID,Category,Test Description,Expected Result,Actual Result,Status,Iterations Passed,Iterations Failed,Success Rate %,Average Duration (ms),Issues Found,Priority,Recommendations
+TC_001,CONSOLE_ERROR,"Console Error","Test completes successfully","All iterations failed",FAIL,0,93,0.0,0,"Test failures detected",LOW,"Fix missing resource files causing 404 errors"
+TC_002,NAVIGATION,"Homepage Load & Redirect","Page loads and redirects to events list","All iterations passed successfully",PASS,10,0,100.0,1141,"None",NONE,"No action required - all tests passing"
+TC_003,NAVIGATION,"Events List Display","Events are displayed with proper formatting","All iterations passed successfully",PASS,10,0,100.0,1087,"None",NONE,"No action required - all tests passing"
+TC_004,EVENT_DETAILS,"Event Details Page","Event details load with title and content","All iterations passed successfully",PASS,10,0,100.0,1071,"None",NONE,"No action required - all tests passing"
+TC_005,REGISTRATION,"Event Registration Form","Registration form accepts input and submits","All iterations failed",FAIL,0,10,0.0,980,"No element found for selector: input[name=name], input[placeholder*=name]",HIGH,"Update CSS selectors for registration form fields"
+TC_006,QR_CODE,"QR Code Generation & Display","QR code is generated and displayed","All iterations passed successfully",PASS,10,0,100.0,962,"None",NONE,"No action required - all tests passing"
+TC_007,AUTHENTICATION,"Admin Login Process","Admin can login with valid credentials","All iterations passed successfully",PASS,10,0,100.0,3949,"None",NONE,"No action required - all tests passing"
+TC_008,MOBILE,"Mobile Responsiveness","Layout adapts to mobile viewport","All iterations failed",FAIL,0,10,0.0,181187,"Input.dispatchTouchEvent timed out. Increase the 'protocolTimeout' setting in launch/connect calls f",HIGH,"Increase timeout for mobile touch events or investigate touch handling"
+TC_009,DATABASE,"Database Connectivity","Database operations complete without errors","All iterations passed successfully",PASS,10,0,100.0,3016,"None",NONE,"No action required - all tests passing"
+TC_010,PERFORMANCE,"Page Load Metrics","Test completes successfully","All iterations failed",FAIL,0,10,0.0,0,"Test failures detected",HIGH,"Debug and fix test failures"
+TC_011,PERFORMANCE,"Performance Metrics","Page loads within acceptable time limits","All iterations passed successfully",PASS,10,0,100.0,947,"None",NONE,"No action required - all tests passing"
