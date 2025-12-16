@@ -96,7 +96,17 @@ const LandingPage = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/events')}>
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-pink-500 rounded-xl flex items-center justify-center transform rotate-12">
+              <img 
+                src="/logo-icon.png" 
+                alt="LinkMeU Logo" 
+                className="w-12 h-12 object-contain"
+                onError={(e) => {
+                  // Fallback to icon if image not found
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-pink-500 rounded-xl items-center justify-center transform rotate-12 hidden">
                 <Calendar className="w-7 h-7 text-white -rotate-12" />
               </div>
               <div>
@@ -324,7 +334,16 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-pink-500 rounded-lg flex items-center justify-center transform rotate-12">
+              <img 
+                src="/logo-icon.png" 
+                alt="LinkMeU Logo" 
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-pink-500 rounded-lg items-center justify-center transform rotate-12 hidden">
                 <Calendar className="w-6 h-6 text-white -rotate-12" />
               </div>
               <div>
