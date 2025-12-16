@@ -101,10 +101,10 @@ const LandingPage = () => {
               </div>
               <div>
                 <div className="text-2xl font-bold">
-                  <span className="text-white">Events</span>
-                  <span className="text-primary">X</span>
+                  <span className="text-white">Link</span>
+                  <span className="text-primary">MeU</span>
                 </div>
-                <div className="text-xs text-gray-400 -mt-1">Elevate Every Moment</div>
+                <div className="text-xs text-gray-400 -mt-1">Connect. Create. Celebrate.</div>
               </div>
             </div>
 
@@ -329,13 +329,13 @@ const LandingPage = () => {
               </div>
               <div>
                 <div className="text-xl font-bold text-white">
-                  Events<span className="text-primary">X</span>
+                  Link<span className="text-primary">MeU</span>
                 </div>
-                <div className="text-xs text-gray-400">Elevate Every Moment</div>
+                <div className="text-xs text-gray-400">Connect. Create. Celebrate.</div>
               </div>
             </div>
             <div className="text-gray-400 text-sm">
-              © 2025 EventsX. Production-ready event management platform.
+              © 2025 LinkMeU. Professional event management platform.
             </div>
           </div>
         </div>

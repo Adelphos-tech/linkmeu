@@ -15,7 +15,7 @@ import CheckIn from './pages/CheckIn';
 function App() {
   return (
     <AuthProvider>
-      <Router basename="/event">
+      <Router basename="/">
         <div className="min-h-screen bg-black text-white">
           <Routes>
             <Route path="/" element={<LandingPage />} />

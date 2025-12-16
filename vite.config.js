@@ -3,16 +3,16 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: '/event/',
+  base: '/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'EventsX',
-        short_name: 'EventsX',
-        description: 'Event Management & Registration System',
+        name: 'LinkMeU',
+        short_name: 'LinkMeU',
+        description: 'Professional Event Management & Registration Platform',
         theme_color: '#DC2626',
         background_color: '#000000',
         display: 'standalone',
