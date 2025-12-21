@@ -77,7 +77,7 @@ const LandingPage = () => {
               <img 
                 src="/event/linkmeu-logo.png" 
                 alt="LinkMeU Logo" 
-                className="h-10 w-auto"
+                className="h-14 w-auto"
               />
               <div>
                 <div className="text-2xl font-bold leading-tight">
@@ -195,7 +195,7 @@ const LandingPage = () => {
               <img 
                 src="/event/linkmeu-logo.png" 
                 alt="LinkMeU Logo" 
-                className="h-8 w-auto"
+                className="h-10 w-auto"
               />
               <div>
                 <div className="text-xl font-bold leading-tight">
