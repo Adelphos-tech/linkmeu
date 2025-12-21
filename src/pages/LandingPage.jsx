@@ -75,7 +75,7 @@ const LandingPage = () => {
             {/* Logo */}
             <div className="flex items-center space-x-3">
               <img 
-                src="/linkmeu-logo.png" 
+                src="/event/linkmeu-logo.png" 
                 alt="LinkMeU Logo" 
                 className="h-10 w-auto"
               />
@@ -193,7 +193,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <img 
-                src="/linkmeu-logo.png" 
+                src="/event/linkmeu-logo.png" 
                 alt="LinkMeU Logo" 
                 className="h-8 w-auto"
               />
