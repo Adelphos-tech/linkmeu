@@ -15,41 +15,24 @@ const LandingPage = () => {
 
   const categories = [
     {
-      title: 'Personal & Community',
-      description: 'People, relationships, belonging',
-      icon: Heart,
-      color: 'text-gray-900',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200'
-    },
-    {
-      title: 'Sports & wellness',
-      description: 'Fitness, teams, and performance',
-      icon: Dumbbell,
-      color: 'text-red-600',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200',
-      highlight: true
-    },
-    {
-      title: 'Education & Skills',
-      description: 'Learning and capability building',
-      icon: GraduationCap,
-      color: 'text-gray-900',
-      bgColor: 'bg-white',
-      borderColor: 'border-gray-200'
-    },
-    {
-      title: 'Work & Business',
-      description: 'Professional growth and networking',
+      title: 'Jobs',
+      description: 'Career opportunities and employment',
       icon: Briefcase,
       color: 'text-gray-900',
       bgColor: 'bg-white',
       borderColor: 'border-gray-200'
     },
     {
-      title: 'Investment',
-      description: 'Financial opportunities and wealth',
+      title: 'Physical Community',
+      description: 'Local connections and belonging',
+      icon: Users,
+      color: 'text-gray-900',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200'
+    },
+    {
+      title: 'Business Investors',
+      description: 'Investment and funding opportunities',
       icon: TrendingUp,
       color: 'text-red-600',
       bgColor: 'bg-white',
@@ -57,7 +40,24 @@ const LandingPage = () => {
       highlight: true
     },
     {
-      title: 'Events & Entertainment',
+      title: 'Sports & Wellness',
+      description: 'Fitness, teams, and healthy living',
+      icon: Dumbbell,
+      color: 'text-red-600',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200',
+      highlight: true
+    },
+    {
+      title: 'Education',
+      description: 'Learning and skill development',
+      icon: GraduationCap,
+      color: 'text-gray-900',
+      bgColor: 'bg-white',
+      borderColor: 'border-gray-200'
+    },
+    {
+      title: 'Events',
       description: 'Experiences and celebrations',
       icon: Calendar,
       color: 'text-gray-900',
