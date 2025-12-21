@@ -16,22 +16,20 @@ function App() {
   return (
     <AuthProvider>
       <Router basename="/">
-        <div className="min-h-screen bg-black text-white">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/events" element={<EventList />} />
-            <Route path="/new" element={<EventForm />} />
-            <Route path="/:id/edit" element={<EventForm />} />
-            <Route path="/:id" element={<EventDetails />} />
-            <Route path="/:id/flyer" element={<FlyerView />} />
-            <Route path="/:id/register" element={<RegistrationForm />} />
-            <Route path="/:id/checkin" element={<CheckIn />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<div className="min-h-screen bg-black text-white"><Login /></div>} />
+          <Route path="/register" element={<div className="min-h-screen bg-black text-white"><Register /></div>} />
+          <Route path="/admin" element={<div className="min-h-screen bg-black text-white"><AdminDashboard /></div>} />
+          <Route path="/events" element={<div className="min-h-screen bg-black text-white"><EventList /></div>} />
+          <Route path="/new" element={<div className="min-h-screen bg-black text-white"><EventForm /></div>} />
+          <Route path="/:id/edit" element={<div className="min-h-screen bg-black text-white"><EventForm /></div>} />
+          <Route path="/:id" element={<div className="min-h-screen bg-black text-white"><EventDetails /></div>} />
+          <Route path="/:id/flyer" element={<div className="min-h-screen bg-black text-white"><FlyerView /></div>} />
+          <Route path="/:id/register" element={<div className="min-h-screen bg-black text-white"><RegistrationForm /></div>} />
+          <Route path="/:id/checkin" element={<div className="min-h-screen bg-black text-white"><CheckIn /></div>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );
