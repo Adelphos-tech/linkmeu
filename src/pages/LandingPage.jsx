@@ -73,11 +73,19 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-white rounded" />
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/linkmeu-logo.png" 
+                alt="LinkMeU Logo" 
+                className="h-10 w-auto"
+              />
+              <div>
+                <div className="text-2xl font-bold leading-tight">
+                  <span className="text-gray-900">LINK</span>
+                  <span className="text-red-600">MEU</span>
+                </div>
+                <div className="text-xs text-gray-600 -mt-1">Connecting Me to You</div>
               </div>
-              <span className="text-2xl font-bold text-gray-900">LinkMeU</span>
             </div>
 
             {/* Nav Links */}
@@ -184,10 +192,17 @@ const LandingPage = () => {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-white rounded" />
+              <img 
+                src="/linkmeu-logo.png" 
+                alt="LinkMeU Logo" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <div className="text-xl font-bold leading-tight">
+                  <span className="text-gray-900">LINK</span>
+                  <span className="text-red-600">MEU</span>
+                </div>
               </div>
-              <span className="text-xl font-bold text-gray-900">LinkMeU</span>
             </div>
             <div className="text-gray-600 text-sm">
               © 2025 LinkMeU. Link Me. You Matter Most.
