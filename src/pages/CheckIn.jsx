@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Search, QrCode, X, Shield } from 'lucide-react';
+import { Search, QrCode, X, Shield, Plus } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees } from '../db/database';
+import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees, saveEvent } from '../db/database';
 import { useAuth } from '../context/AuthContext';
 import { format, isToday, parseISO } from 'date-fns';
 import Header from '../components/Header';
@@ -17,13 +17,15 @@ const CheckIn = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [scanning, setScanning] = useState(false);
   const [scanner, setScanner] = useState(null);
+  const [showCapacityModal, setShowCapacityModal] = useState(false);
+  const [newCapacity, setNewCapacity] = useState('');
   const scannerRef = useRef(null);
 
   // Check if check-in is allowed (only on event day)
   const isCheckInAllowed = () => {
-    if (!event?.date) return false;
+    if (!event?.startDate) return false;
     try {
-      const eventDate = parseISO(event.date);
+      const eventDate = parseISO(event.startDate);
       return isToday(eventDate);
     } catch (error) {
       console.error('Error parsing event date:', error);
@@ -77,7 +79,10 @@ const CheckIn = () => {
           <div className="bg-dark-lighter rounded-lg p-4 mb-6">
             <p className="text-sm text-gray-300">
               <span className="text-primary font-semibold">Event Date:</span><br />
-              {format(parseISO(event.date), 'PPPP')}
+              {event.startDate === event.endDate ? 
+                format(parseISO(event.startDate), 'PPPP') :
+                `${format(parseISO(event.startDate), 'PPP')} - ${format(parseISO(event.endDate), 'PPP')}`
+              }
             </p>
             <p className="text-sm text-gray-300 mt-2">
               <span className="text-primary font-semibold">Today:</span><br />
@@ -147,6 +152,16 @@ const CheckIn = () => {
 
   const handleMarkAttend = async (attendeeId, currentStatus) => {
     try {
+      // If marking as attended (not unchecking)
+      if (!currentStatus) {
+        // Check if capacity limit is reached
+        const attendedCount = attendees.filter(a => a.attended).length;
+        if (event.capacity && attendedCount >= parseInt(event.capacity)) {
+          alert(`Cannot check-in: Event capacity (${event.capacity}) has been reached. Admin can increase capacity if needed.`);
+          return;
+        }
+      }
+      
       await updateAttendeeStatus(attendeeId, !currentStatus);
       await loadData();
     } catch (error) {
@@ -210,6 +225,30 @@ const CheckIn = () => {
     // Silent fail - QR scanning errors are common
   };
 
+  const handleIncreaseCapacity = async () => {
+    try {
+      const currentCapacity = event.capacity ? parseInt(event.capacity) : 0;
+      const newCap = parseInt(newCapacity);
+      
+      if (!newCap || newCap <= currentCapacity) {
+        alert(`New capacity must be greater than current capacity (${currentCapacity})`);
+        return;
+      }
+      
+      // Update event capacity
+      const updatedEvent = { ...event, capacity: newCap };
+      await saveEvent(updatedEvent);
+      
+      alert(`✓ Capacity increased from ${currentCapacity} to ${newCap}`);
+      setShowCapacityModal(false);
+      setNewCapacity('');
+      await loadData();
+    } catch (error) {
+      console.error('Error updating capacity:', error);
+      alert('Failed to update capacity');
+    }
+  };
+
   if (!event) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -234,11 +273,14 @@ const CheckIn = () => {
             Check-in is available today because it's the event day.
           </p>
           <p className="text-xs text-gray-400 mt-2">
-            Event Date: {format(parseISO(event.date), 'PPP')} | Today: {format(new Date(), 'PPP')}
+            Event Date: {event.startDate === event.endDate ? 
+              format(parseISO(event.startDate), 'PPP') :
+              `${format(parseISO(event.startDate), 'PPP')} - ${format(parseISO(event.endDate), 'PPP')}`
+            } | Today: {format(new Date(), 'PPP')}
           </p>
         </div>
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-dark-lighter p-4 rounded text-center">
             <p className="text-3xl font-bold text-primary">{attendees.length}</p>
             <p className="text-sm text-gray-400">Registered</p>
@@ -249,7 +291,41 @@ const CheckIn = () => {
             </p>
             <p className="text-sm text-gray-400">Attended</p>
           </div>
+          <div className="bg-dark-lighter p-4 rounded text-center">
+            <p className="text-3xl font-bold text-blue-500">
+              {event.capacity || '∞'}
+            </p>
+            <p className="text-sm text-gray-400">Capacity</p>
+          </div>
         </div>
+
+        {/* Capacity Warning */}
+        {event.capacity && attendees.filter(a => a.attended).length >= parseInt(event.capacity) && (
+          <div className="bg-red-900/20 border border-red-500 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">!</span>
+                </div>
+                <h3 className="font-semibold text-red-400">Attendance Capacity Reached</h3>
+              </div>
+              <button
+                onClick={() => {
+                  setNewCapacity(event.capacity ? (parseInt(event.capacity) + 50).toString() : '100');
+                  setShowCapacityModal(true);
+                }}
+                className="btn-primary flex items-center gap-2 px-4 py-2 text-sm"
+              >
+                <Plus size={16} />
+                Increase Capacity
+              </button>
+            </div>
+            <p className="text-sm text-gray-300">
+              The attendance capacity of {event.capacity} has been reached. 
+              Click "Increase Capacity" to allow more attendees to check in.
+            </p>
+          </div>
+        )}
 
         {/* Search and Scan */}
         <div className="mb-6 space-y-3">
@@ -331,9 +407,10 @@ const CheckIn = () => {
                           </div>
                           <button
                             onClick={() => handleMarkAttend(attendee.id, attendee.attended)}
-                            className="px-6 py-2 rounded font-medium bg-primary hover:bg-primary-dark text-white"
+                            className="px-6 py-2 rounded font-medium bg-primary hover:bg-primary-dark text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={event.capacity && attendees.filter(a => a.attended).length >= parseInt(event.capacity)}
                           >
-                            Check-in
+                            {event.capacity && attendees.filter(a => a.attended).length >= parseInt(event.capacity) ? 'Capacity Full' : 'Check-in'}
                           </button>
                         </div>
                       </div>
@@ -384,6 +461,47 @@ const CheckIn = () => {
                       </div>
                     ))
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Capacity Increase Modal */}
+        {showCapacityModal && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-dark-lighter border border-gray-700 rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-xl font-semibold mb-4">Increase Event Capacity</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                Current capacity: {event.capacity || 'Unlimited'}<br />
+                Current attendance: {attendees.filter(a => a.attended).length}
+              </p>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">New Capacity</label>
+                <input
+                  type="number"
+                  value={newCapacity}
+                  onChange={(e) => setNewCapacity(e.target.value)}
+                  placeholder="Enter new capacity"
+                  min={event.capacity ? parseInt(event.capacity) + 1 : 1}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleIncreaseCapacity}
+                  className="btn-primary flex-1"
+                >
+                  Update Capacity
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCapacityModal(false);
+                    setNewCapacity('');
+                  }}
+                  className="btn-secondary flex-1"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>

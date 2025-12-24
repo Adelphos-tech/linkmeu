@@ -6,7 +6,7 @@ export const db = new Dexie('EventsXDatabase');
 
 db.version(1).stores({
   users: '++id, email, role',
-  events: '++id, title, date, ownerId',
+  events: '++id, title, startDate, endDate, ownerId',
   attendees: '++id, eventId, name, email, contact, attended',
 });
 
@@ -37,8 +37,10 @@ const seedSampleEvents = async () => {
       id: 1,
       title: 'Tech Conference 2025',
       description: 'Annual technology conference featuring the latest innovations in AI, blockchain, and web development.',
-      date: '2025-03-15',
+      startDate: '2025-03-15',
+      endDate: '2025-03-17',
       venue: 'Singapore Convention Centre',
+      capacity: 500,
       ownerId: 1,
       organisers: [
         { name: 'TechCorp Singapore', detail: 'Leading technology company' }
@@ -57,8 +59,10 @@ const seedSampleEvents = async () => {
       id: 2,
       title: 'Digital Marketing Summit',
       description: 'Learn the latest digital marketing strategies and network with industry professionals.',
-      date: '2025-04-20',
+      startDate: '2025-04-20',
+      endDate: '2025-04-20',
       venue: 'Marina Bay Sands',
+      capacity: 300,
       ownerId: 1,
       organisers: [
         { name: 'Marketing Pro', detail: 'Digital marketing agency' }
@@ -73,8 +77,10 @@ const seedSampleEvents = async () => {
       id: 3,
       title: 'Startup Pitch Night',
       description: 'Watch innovative startups pitch their ideas to investors and vote for your favorite.',
-      date: '2025-05-10',
+      startDate: '2025-05-10',
+      endDate: '2025-05-10',
       venue: 'The Hive Singapore',
+      capacity: 150,
       ownerId: 1,
       organisers: [
         { name: 'Startup Hub', detail: 'Entrepreneurship community' }
@@ -85,8 +91,10 @@ const seedSampleEvents = async () => {
       id: 4,
       title: 'Web Development Workshop',
       description: 'Hands-on workshop covering React, Node.js, and modern web development practices.',
-      date: '2025-06-05',
+      startDate: '2025-06-05',
+      endDate: '2025-06-07',
       venue: 'NUS School of Computing',
+      capacity: 100,
       ownerId: 1,
       organisers: [
         { name: 'CodeCraft Academy', detail: 'Programming education center' }
@@ -100,8 +108,10 @@ const seedSampleEvents = async () => {
       id: 5,
       title: 'Cybersecurity Awareness Seminar',
       description: 'Essential cybersecurity knowledge for businesses and individuals in the digital age.',
-      date: '2025-07-12',
+      startDate: '2025-07-12',
+      endDate: '2025-07-12',
       venue: 'Raffles City Convention Centre',
+      capacity: 250,
       ownerId: 1,
       organisers: [
         { name: 'SecureNet Solutions', detail: 'Cybersecurity consultancy' }

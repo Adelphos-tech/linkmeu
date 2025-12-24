@@ -23,9 +23,9 @@ const EventDetails = () => {
 
   // Check if check-in is allowed (only on event day) - Customer feedback
   const isCheckInAllowed = () => {
-    if (!event?.date) return false;
+    if (!event?.startDate) return false;
     try {
-      const eventDate = parseISO(event.date);
+      const eventDate = parseISO(event.startDate);
       return isToday(eventDate);
     } catch (error) {
       console.error('Error parsing event date:', error);
@@ -178,9 +178,12 @@ const EventDetails = () => {
               )}
               <div>
                 <h1 className="text-2xl font-bold">{event.title}</h1>
-                {event.date && (
+                {event.startDate && event.endDate && (
                   <p className="text-gray-400 mt-1">
-                    {format(new Date(event.date), 'PPP')}
+                    {event.startDate === event.endDate ? 
+                      format(new Date(event.startDate), 'PPP') :
+                      `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                    }
                   </p>
                 )}
               </div>
@@ -191,9 +194,12 @@ const EventDetails = () => {
         {!event.image && !event.logo && (
           <div className="mb-6">
             <h1 className="text-2xl font-bold">{event.title}</h1>
-            {event.date && (
+            {event.startDate && event.endDate && (
               <p className="text-gray-400 mt-1">
-                {format(new Date(event.date), 'PPP')}
+                {event.startDate === event.endDate ? 
+                  format(new Date(event.startDate), 'PPP') :
+                  `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                }
               </p>
             )}
           </div>
@@ -229,10 +235,20 @@ const EventDetails = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold mb-2">Join This Event</h3>
-              <p className="text-gray-400 flex items-center gap-2">
-                <UserCheck size={18} />
-                {attendees.length} people registered
-              </p>
+              <div className="space-y-1">
+                <p className="text-gray-400 flex items-center gap-2">
+                  <UserCheck size={18} />
+                  {attendees.length} people registered
+                </p>
+                {event.capacity && (
+                  <p className="text-sm text-gray-400">
+                    Capacity: {attendees.length} / {event.capacity}
+                    {attendees.length >= parseInt(event.capacity) && 
+                      <span className="text-yellow-400"> (Full - Registration still allowed)</span>
+                    }
+                  </p>
+                )}
+              </div>
             </div>
             <button
               onClick={() => navigate(`/${id}/register`)}
@@ -317,9 +333,22 @@ const EventDetails = () => {
         {activeTab === 'event' && (
           <div className="space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Event date</label>
-              <p className="text-white">{event.date ? format(new Date(event.date), 'yyyy-MM-dd') : '-'}</p>
+              <label className="block text-sm text-gray-400 mb-1">Event date range</label>
+              <p className="text-white">
+                {event.startDate && event.endDate ? (
+                  event.startDate === event.endDate ? 
+                    format(new Date(event.startDate), 'PPP') :
+                    `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                ) : '-'}
+              </p>
             </div>
+
+            {event.capacity && (
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Capacity</label>
+                <p className="text-white">{event.capacity} attendees</p>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm text-gray-400 mb-1">Title</label>
@@ -482,9 +511,12 @@ const EventDetails = () => {
               </div>
               <p className="text-sm text-gray-300">
                 Check-in and export functions are restricted to Super Admin users and only available on the event day.
-                {event.date && (
+                {event.startDate && (
                   <span className="block mt-1">
-                    Event Date: {format(parseISO(event.date), 'PPP')}
+                    Event Date: {event.startDate === event.endDate ? 
+                      format(parseISO(event.startDate), 'PPP') :
+                      `${format(parseISO(event.startDate), 'PPP')} - ${format(parseISO(event.endDate), 'PPP')}`
+                    }
                     {isCheckInAllowed() ? ' (Today - Check-in Available)' : ' (Check-in Not Available Today)'}
                   </span>
                 )}

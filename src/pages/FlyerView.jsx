@@ -86,7 +86,11 @@ const FlyerView = () => {
           <div className="mb-6">
             <span className="text-primary">📅 Date & Time</span>
             <p className="text-white ml-6">
-              {event.date ? format(new Date(event.date), 'PPP') : 'Date'}
+              {event.startDate && event.endDate ? (
+                event.startDate === event.endDate ? 
+                  format(new Date(event.startDate), 'PPP') :
+                  `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+              ) : 'Date'}
             </p>
           </div>
 

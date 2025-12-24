@@ -16,12 +16,12 @@ const EventList = () => {
   // Sort events: Today's first, then upcoming, then past
   const events = allEvents ? [...allEvents].sort((a, b) => {
     // Handle missing dates
-    if (!a.date && !b.date) return 0;
-    if (!a.date) return 1;
-    if (!b.date) return -1;
+    if (!a.startDate && !b.startDate) return 0;
+    if (!a.startDate) return 1;
+    if (!b.startDate) return -1;
     
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
+    const dateA = new Date(a.startDate);
+    const dateB = new Date(b.startDate);
     
     // Check for invalid dates
     if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
@@ -200,17 +200,19 @@ const EventList = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-lg font-semibold truncate">{event.title}</h3>
-                      {event.date && getEventDateLabel(event.date)}
+                      {event.startDate && getEventDateLabel(event.startDate)}
                     </div>
                     <div className="space-y-1 text-sm text-gray-400">
-                      {event.date && (
+                      {event.startDate && event.endDate && (
                         <div className="flex items-center gap-2">
                           <Calendar size={16} />
                           {(() => {
                             try {
-                              return format(new Date(event.date), 'PPP');
+                              return event.startDate === event.endDate ? 
+                                format(new Date(event.startDate), 'PPP') :
+                                `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`;
                             } catch (error) {
-                              return event.date;
+                              return `${event.startDate} - ${event.endDate}`;
                             }
                           })()}
                         </div>

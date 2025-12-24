@@ -35,8 +35,10 @@ const EventForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    date: '',
+    startDate: '',
+    endDate: '',
     venue: '',
+    capacity: '',
     organisers: [],
     logo: null,
     image: null,
@@ -92,8 +94,18 @@ const EventForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.date) {
-      alert('Please fill in title and date');
+    if (!formData.title || !formData.startDate || !formData.endDate) {
+      alert('Please fill in title, start date, and end date');
+      return;
+    }
+
+    if (new Date(formData.endDate) < new Date(formData.startDate)) {
+      alert('End date must be after or equal to start date');
+      return;
+    }
+
+    if (formData.capacity && parseInt(formData.capacity) <= 0) {
+      alert('Capacity must be a positive number');
       return;
     }
 
@@ -242,15 +254,26 @@ const EventForm = () => {
             <h2 className="text-xl font-semibold">Event Details</h2>
             
             {/* Basic Info */}
-            <div>
-              <label className="block text-sm font-medium mb-2">Event Date</label>
-            <input
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleChange('date', e.target.value)}
-              required
-            />
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Start Date *</label>
+                <input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleChange('startDate', e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">End Date *</label>
+                <input
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) => handleChange('endDate', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
           <div>
             <label className="block text-sm font-medium mb-2">Title</label>
@@ -281,6 +304,20 @@ const EventForm = () => {
               onChange={(e) => handleChange('venue', e.target.value)}
               placeholder="Venue"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Event Capacity</label>
+            <input
+              type="number"
+              value={formData.capacity}
+              onChange={(e) => handleChange('capacity', e.target.value)}
+              placeholder="Maximum number of attendees (leave empty for unlimited)"
+              min="1"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Registration will be allowed beyond capacity with a warning, but attendance can only be marked up to capacity.
+            </p>
           </div>
 
           {/* Organisers */}

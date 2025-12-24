@@ -13,7 +13,10 @@
     "db:status": "node scripts/db-status.js",
     "test:production": "node test-production.js",
     "test:full": "node test-production.js",
-    "test:reports": "node create-excel-report.js"
+    "test:reports": "node create-excel-report.js",
+    "test:capacity": "node capacity-test-suite.js",
+    "test:excel": "node generate-excel-report.js",
+    "test:capacity:full": "npm run test:capacity && npm run test:excel"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -35,6 +38,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "dotenv-cli": "^11.0.0",
+    "exceljs": "^4.4.0",
     "gh-pages": "^6.3.0",
     "postcss": "^8.4.32",
     "puppeteer": "^24.33.0",

@@ -66,10 +66,13 @@ const PublicEvents = () => {
                       </p>
                     )}
                     <div className="space-y-1 text-sm text-gray-400">
-                      {event.date && (
+                      {event.startDate && event.endDate && (
                         <div className="flex items-center gap-2">
                           <Calendar size={16} />
-                          {format(new Date(event.date), 'PPP')}
+                          {event.startDate === event.endDate ? 
+                            format(new Date(event.startDate), 'PPP') :
+                            `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                          }
                         </div>
                       )}
                       {event.venue && (

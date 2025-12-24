@@ -9,6 +9,7 @@ const RegistrationForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
+  const [attendees, setAttendees] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     contact: '',
@@ -17,6 +18,7 @@ const RegistrationForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [capacityWarning, setCapacityWarning] = useState(false);
 
   useEffect(() => {
     loadEvent();
@@ -26,6 +28,16 @@ const RegistrationForm = () => {
     try {
       const eventData = await getEvent(parseInt(id));
       setEvent(eventData);
+      
+      // Get current attendees to check capacity
+      const { getAttendeesByEvent } = await import('../db/database');
+      const attendeeData = await getAttendeesByEvent(parseInt(id));
+      setAttendees(attendeeData);
+      
+      // Check if capacity is exceeded
+      if (eventData.capacity && attendeeData.length >= parseInt(eventData.capacity)) {
+        setCapacityWarning(true);
+      }
     } catch (error) {
       console.error('Error loading event:', error);
     }
@@ -90,6 +102,23 @@ const RegistrationForm = () => {
       <Header title="Registration" showBack />
 
       <div className="max-w-md mx-auto px-4 py-6">
+        {/* Capacity Warning */}
+        {capacityWarning && (
+          <div className="bg-yellow-900/20 border border-yellow-500 rounded-lg p-4 mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center">
+                <span className="text-black text-xs font-bold">!</span>
+              </div>
+              <h3 className="font-semibold text-yellow-400">Capacity Exceeded</h3>
+            </div>
+            <p className="text-sm text-gray-300">
+              This event has reached its capacity of {event.capacity} attendees. 
+              Registration is still allowed, but we will try to fit you in. 
+              Priority will be given to early registrants.
+            </p>
+          </div>
+        )}
+
         {/* Event Info */}
         <div className="bg-dark-lighter rounded-lg p-6 mb-6 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -111,9 +140,22 @@ const RegistrationForm = () => {
             <div>
               <span className="text-primary">📅 Date & Time</span>
               <p className="text-white">
-                {event.date ? format(new Date(event.date), 'PPP') : 'Date'}
+                {event.startDate && event.endDate ? (
+                  event.startDate === event.endDate ? 
+                    format(new Date(event.startDate), 'PPP') :
+                    `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                ) : 'Date'}
               </p>
             </div>
+            {event.capacity && (
+              <div>
+                <span className="text-primary">👥 Capacity</span>
+                <p className="text-white">
+                  {attendees.length} / {event.capacity} registered
+                  {capacityWarning && <span className="text-yellow-400"> (Capacity Exceeded)</span>}
+                </p>
+              </div>
+            )}
           </div>
 
           {event.organisers && event.organisers.length > 0 && (

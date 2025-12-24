@@ -94,17 +94,29 @@ const PublicEventView = () => {
             )}
             <div className="flex-1">
               <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
-              <div className="flex items-center gap-4 text-gray-400">
-                {event.date && (
+              <div className="flex flex-col gap-2 text-gray-400">
+                {event.startDate && event.endDate && (
                   <div className="flex items-center gap-2">
                     <Calendar size={18} />
-                    {format(new Date(event.date), 'PPP')}
+                    {event.startDate === event.endDate ? 
+                      format(new Date(event.startDate), 'PPP') :
+                      `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`
+                    }
                   </div>
                 )}
                 {event.venue && (
                   <div className="flex items-center gap-2">
                     <MapPin size={18} />
                     {event.venue}
+                  </div>
+                )}
+                {event.capacity && (
+                  <div className="flex items-center gap-2">
+                    <Users size={18} />
+                    Capacity: {attendees.length} / {event.capacity}
+                    {attendees.length >= parseInt(event.capacity) && 
+                      <span className="text-yellow-400 ml-2">(Full)</span>
+                    }
                   </div>
                 )}
               </div>
@@ -125,10 +137,20 @@ const PublicEventView = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-semibold mb-2">Register for this event</h3>
-              <p className="text-gray-400 flex items-center gap-2">
-                <Users size={18} />
-                {attendees.length} people registered
-              </p>
+              <div className="space-y-1">
+                <p className="text-gray-400 flex items-center gap-2">
+                  <Users size={18} />
+                  {attendees.length} people registered
+                </p>
+                {event.capacity && (
+                  <p className="text-sm text-gray-400">
+                    Capacity: {attendees.length} / {event.capacity}
+                    {attendees.length >= parseInt(event.capacity) && 
+                      <span className="text-yellow-400"> (Full - Registration still allowed)</span>
+                    }
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex gap-3">
               <button
