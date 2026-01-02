@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Calendar, MapPin, LogOut, Users } from 'lucide-react';
+import { Plus, Calendar, MapPin, LogOut, Users, Download, FileText } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/database';
+import { db, getAttendeesByEvent } from '../db/database';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
+import { exportToCSV, prepareAttendeeData } from '../utils/csv';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -22,6 +23,37 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleExportRegistered = async (event) => {
+    try {
+      const attendees = await getAttendeesByEvent(event.id);
+      if (attendees.length === 0) {
+        alert('No registrations found for this event');
+        return;
+      }
+      const data = prepareAttendeeData(attendees);
+      exportToCSV(data, `${event.title}-registered-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    } catch (error) {
+      console.error('Error exporting:', error);
+      alert('Failed to export registration list');
+    }
+  };
+
+  const handleExportAttended = async (event) => {
+    try {
+      const attendees = await getAttendeesByEvent(event.id);
+      const attended = attendees.filter(a => a.attended);
+      if (attended.length === 0) {
+        alert('No attendance records found for this event');
+        return;
+      }
+      const data = prepareAttendeeData(attended, true);
+      exportToCSV(data, `${event.title}-attended-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    } catch (error) {
+      console.error('Error exporting:', error);
+      alert('Failed to export attendance list');
+    }
   };
 
   // Show loading state
@@ -95,6 +127,105 @@ const AdminDashboard = () => {
               <Users size={40} className="text-gray-600" />
             </div>
           </div>
+        </div>
+
+        {/* Registration & Attendance Reports */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <FileText size={24} className="text-primary" />
+                Registration & Attendance Reports
+              </h2>
+              <p className="text-sm text-gray-400 mt-1">Export registration and attendance lists for all events</p>
+            </div>
+          </div>
+
+          {!events || events.length === 0 ? (
+            <div className="text-center py-12 bg-dark-lighter rounded-lg border border-gray-800">
+              <FileText size={48} className="mx-auto text-gray-600 mb-3" />
+              <p className="text-gray-400">No events available for reports</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {events.map((event) => {
+                const EventReportRow = ({ event }) => {
+                  const [attendees, setAttendees] = useState([]);
+                  const [loading, setLoading] = useState(true);
+
+                  useEffect(() => {
+                    const loadAttendees = async () => {
+                      try {
+                        const data = await getAttendeesByEvent(event.id);
+                        setAttendees(data);
+                      } catch (error) {
+                        console.error('Error loading attendees:', error);
+                      } finally {
+                        setLoading(false);
+                      }
+                    };
+                    loadAttendees();
+                  }, [event.id]);
+
+                  const registeredCount = attendees.length;
+                  const attendedCount = attendees.filter(a => a.attended).length;
+
+                  return (
+                    <div className="bg-dark-lighter border border-gray-800 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-white mb-1">{event.title}</h3>
+                          <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="flex items-center gap-1">
+                              <Calendar size={14} />
+                              {event.startDate && format(new Date(event.startDate), 'PPP')}
+                            </div>
+                            {loading ? (
+                              <span>Loading...</span>
+                            ) : (
+                              <>
+                                <span className="text-primary font-medium">{registeredCount} Registered</span>
+                                <span className="text-green-500 font-medium">{attendedCount} Attended</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleExportRegistered(event)}
+                            disabled={loading || registeredCount === 0}
+                            className="btn-secondary flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Export Registration List"
+                          >
+                            <Download size={16} />
+                            Registration
+                          </button>
+                          <button
+                            onClick={() => handleExportAttended(event)}
+                            disabled={loading || attendedCount === 0}
+                            className="btn-secondary flex items-center gap-2 px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Export Attendance List"
+                          >
+                            <Download size={16} />
+                            Attendance
+                          </button>
+                          <button
+                            onClick={() => navigate(`/${event.id}`)}
+                            className="btn-primary px-4 py-2 text-sm"
+                            title="View Event Details"
+                          >
+                            View
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                };
+
+                return <EventReportRow key={event.id} event={event} />;
+              })}
+            </div>
+          )}
         </div>
 
         {/* All Events */}
