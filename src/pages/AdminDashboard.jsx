@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Calendar, MapPin, LogOut, Users, Download, FileText } from 'lucide-react';
+import { Plus, Calendar, MapPin, LogOut, Users, Download, FileText, Trash2 } from 'lucide-react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, getAttendeesByEvent } from '../db/database';
+import { db, getAttendeesByEvent, deleteEvent } from '../db/database';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -53,6 +53,30 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error exporting:', error);
       alert('Failed to export attendance list');
+    }
+  };
+
+  const handleDeleteEvent = async (event) => {
+    // Double confirmation for safety
+    const confirmed = window.confirm(
+      `⚠️ DELETE EVENT?\n\nEvent: ${event.title}\n\nThis will permanently delete:\n- The event\n- All registrations (${event.attendeeCount || 0} people)\n- All attendance records\n\nThis action CANNOT be undone!\n\nAre you sure?`
+    );
+    
+    if (!confirmed) return;
+
+    // Second confirmation
+    const doubleConfirm = window.confirm(
+      `🚨 FINAL CONFIRMATION\n\nYou are about to delete "${event.title}"\n\nClick OK to permanently delete this event.`
+    );
+
+    if (!doubleConfirm) return;
+
+    try {
+      await deleteEvent(event.id);
+      alert(`✓ Event "${event.title}" has been deleted successfully.`);
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert(`Failed to delete event: ${error.message}`);
     }
   };
 
@@ -216,6 +240,17 @@ const AdminDashboard = () => {
                           >
                             View
                           </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteEvent({ ...event, attendeeCount: registeredCount });
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm rounded flex items-center gap-2"
+                            title="Delete Event"
+                          >
+                            <Trash2 size={16} />
+                            Delete
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -262,7 +297,7 @@ const AdminDashboard = () => {
                     )}
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
                           <div className="space-y-1 text-sm text-gray-400">
                             {event.date && (
@@ -279,9 +314,22 @@ const AdminDashboard = () => {
                             )}
                           </div>
                         </div>
-                        <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-                          Owner ID: {event.ownerId}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                            Owner ID: {event.ownerId}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteEvent(event);
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-xs rounded flex items-center gap-1"
+                            title="Delete Event"
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
