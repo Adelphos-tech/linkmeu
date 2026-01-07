@@ -11,7 +11,8 @@ import { exportToCSV, prepareAttendeeData } from '../utils/csv';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, logout, isSuperAdmin } = useAuth();
-  const events = useLiveQuery(() => db.events.toArray(), []);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const events = useLiveQuery(() => db.events.toArray(), [refreshKey]);
   const users = useLiveQuery(() => db.users.toArray(), []);
 
   useEffect(() => {
@@ -73,7 +74,14 @@ const AdminDashboard = () => {
 
     try {
       await deleteEvent(event.id);
-      alert(`✓ Event "${event.title}" has been deleted successfully.`);
+      
+      // Force refresh the events list
+      setRefreshKey(prev => prev + 1);
+      
+      // Small delay to ensure DB operation completes
+      setTimeout(() => {
+        alert(`✓ Event "${event.title}" has been deleted successfully.`);
+      }, 100);
     } catch (error) {
       console.error('Error deleting event:', error);
       alert(`Failed to delete event: ${error.message}`);
