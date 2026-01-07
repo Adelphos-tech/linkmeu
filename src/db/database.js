@@ -23,11 +23,12 @@ db.on('ready', async () => {
     });
   }
 
-  // Add sample events if database is empty
-  const eventCount = await db.events.count();
-  if (eventCount === 0) {
-    await seedSampleEvents();
-  }
+  // Sample events disabled for production
+  // Uncomment below to enable demo/seed data for testing:
+  // const eventCount = await db.events.count();
+  // if (eventCount === 0) {
+  //   await seedSampleEvents();
+  // }
 });
 
 // Seed sample events for demonstration
