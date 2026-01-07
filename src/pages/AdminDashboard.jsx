@@ -11,15 +11,21 @@ import { exportToCSV, prepareAttendeeData } from '../utils/csv';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, logout, isSuperAdmin } = useAuth();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const events = useLiveQuery(() => db.events.toArray(), [refreshKey]);
-  const users = useLiveQuery(() => db.users.toArray(), []);
+  const events = useLiveQuery(() => db.events.toArray());
+  const users = useLiveQuery(() => db.users.toArray());
 
   useEffect(() => {
     if (!user || !isSuperAdmin()) {
       navigate('/login');
     }
   }, [user]);
+
+  // Debug: Log when events array changes
+  useEffect(() => {
+    if (events) {
+      console.log(`[EVENTS] Events list updated. Count: ${events.length}`, events.map(e => ({ id: e.id, title: e.title })));
+    }
+  }, [events]);
 
   const handleLogout = () => {
     logout();
@@ -72,19 +78,31 @@ const AdminDashboard = () => {
 
     if (!doubleConfirm) return;
 
+    const eventTitle = event.title;
+    const eventId = event.id;
+    
     try {
-      await deleteEvent(event.id);
+      console.log(`[DELETE] Starting deletion of event ${eventId}: ${eventTitle}`);
       
-      // Force refresh the events list
-      setRefreshKey(prev => prev + 1);
+      // Delete the event - Dexie's useLiveQuery will automatically update
+      await deleteEvent(eventId);
       
-      // Small delay to ensure DB operation completes
-      setTimeout(() => {
-        alert(`✓ Event "${event.title}" has been deleted successfully.`);
-      }, 100);
+      console.log(`[DELETE] Successfully deleted event ${eventId}`);
+      
+      // Verify deletion
+      const checkEvent = await db.events.get(eventId);
+      if (checkEvent) {
+        console.error(`[DELETE] ERROR: Event ${eventId} still exists after deletion!`);
+        throw new Error('Event was not properly deleted from database');
+      }
+      
+      console.log(`[DELETE] Verified: Event ${eventId} no longer exists in database`);
+      
+      // Success notification
+      alert(`✓ Event "${eventTitle}" has been deleted successfully.\n\nThe list will update automatically.`);
     } catch (error) {
-      console.error('Error deleting event:', error);
-      alert(`Failed to delete event: ${error.message}`);
+      console.error('[DELETE] Error deleting event:', error);
+      alert(`❌ Failed to delete event: ${error.message}`);
     }
   };
 
