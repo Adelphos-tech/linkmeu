@@ -20,7 +20,7 @@ const detectDatabaseMode = async () => {
   try {
     // Check if Neon database is configured and available
     const health = await checkDatabaseHealth();
-    
+
     if (health.healthy) {
       console.log('✅ Neon database available - using production mode');
       databaseMode = 'neon';
@@ -43,7 +43,7 @@ const detectDatabaseMode = async () => {
 const createAdapter = (neonFunction, indexedFunction) => {
   return async (...args) => {
     const mode = await detectDatabaseMode();
-    
+
     try {
       if (mode === 'neon' && neonAvailable) {
         return await neonFunction(...args);
@@ -52,7 +52,7 @@ const createAdapter = (neonFunction, indexedFunction) => {
       }
     } catch (error) {
       console.error(`Database operation failed in ${mode} mode:`, error);
-      
+
       // If Neon fails, try IndexedDB as fallback
       if (mode === 'neon') {
         console.log('🔄 Neon operation failed, trying IndexedDB fallback...');
@@ -159,21 +159,21 @@ export const getDashboardStats = createAdapter(
     // Fallback dashboard stats for IndexedDB
     const events = await IndexedDB.getAllEvents();
     const filteredEvents = userId ? events.filter(e => e.ownerId === userId) : events;
-    
+
     let totalAttendees = 0;
     let totalAttended = 0;
-    
+
     for (const event of filteredEvents) {
       const attendees = await IndexedDB.getAttendeesByEvent(event.id);
       totalAttendees += attendees.length;
       totalAttended += attendees.filter(a => a.attended).length;
     }
-    
+
     const upcomingEvents = filteredEvents.filter(e => {
       const eventDate = new Date(e.date);
       return eventDate >= new Date();
     }).length;
-    
+
     return {
       total_events: filteredEvents.length,
       total_attendees: totalAttendees,
@@ -191,7 +191,7 @@ export const getDatabaseMode = async () => {
 
 export const getDatabaseStatus = async () => {
   const mode = await detectDatabaseMode();
-  
+
   if (mode === 'neon') {
     const health = await checkDatabaseHealth();
     return {
@@ -239,25 +239,25 @@ export const switchToIndexedDB = () => {
 export const migrateFromIndexedDBToNeon = async () => {
   try {
     console.log('🔄 Starting migration from IndexedDB to Neon...');
-    
+
     // Ensure Neon is available
     const neonStatus = await switchToNeon();
     if (!neonStatus.success) {
       throw new Error('Neon database not available for migration');
     }
-    
+
     // Get all data from IndexedDB
     const indexedEvents = await IndexedDB.getAllEvents();
     const indexedUsers = await IndexedDB.db.users.toArray();
-    
+
     console.log(`📊 Found ${indexedEvents.length} events and ${indexedUsers.length} users to migrate`);
-    
+
     const migrationResults = {
       users: { success: 0, failed: 0 },
       events: { success: 0, failed: 0 },
       attendees: { success: 0, failed: 0 }
     };
-    
+
     // Migrate users
     for (const user of indexedUsers) {
       try {
@@ -275,14 +275,14 @@ export const migrateFromIndexedDBToNeon = async () => {
         migrationResults.users.failed++;
       }
     }
-    
+
     // Migrate events and attendees
     for (const event of indexedEvents) {
       try {
         // Find owner in Neon database
         const owner = await NeonDB.getUserByEmail(event.ownerEmail || 'Robocorpsg@gmail.com');
         if (!owner) continue;
-        
+
         const newEvent = await NeonDB.createEvent({
           title: event.title,
           description: event.description,
@@ -290,9 +290,9 @@ export const migrateFromIndexedDBToNeon = async () => {
           venue: event.venue,
           ownerId: owner.id
         });
-        
+
         migrationResults.events.success++;
-        
+
         // Migrate attendees for this event
         const attendees = await IndexedDB.getAttendeesByEvent(event.id);
         for (const attendee of attendees) {
@@ -305,7 +305,7 @@ export const migrateFromIndexedDBToNeon = async () => {
               company: attendee.company || '',
               jobTitle: attendee.jobTitle || ''
             });
-            
+
             if (attendee.attended) {
               // Update attendance status
               const newAttendees = await NeonDB.getAttendeesByEvent(newEvent.id);
@@ -314,31 +314,31 @@ export const migrateFromIndexedDBToNeon = async () => {
                 await NeonDB.updateAttendeeStatus(newAttendee.id, 'attended');
               }
             }
-            
+
             migrationResults.attendees.success++;
           } catch (error) {
             console.warn(`Failed to migrate attendee ${attendee.email}:`, error.message);
             migrationResults.attendees.failed++;
           }
         }
-        
+
       } catch (error) {
         console.warn(`Failed to migrate event ${event.title}:`, error.message);
         migrationResults.events.failed++;
       }
     }
-    
+
     console.log('✅ Migration completed:', migrationResults);
     return { success: true, results: migrationResults };
-    
+
   } catch (error) {
     console.error('❌ Migration failed:', error);
     return { success: false, error: error.message };
   }
 };
 
-// Initialize database mode detection
-detectDatabaseMode();
+// Initialize database mode detection (lazy - called on first database operation)
+// detectDatabaseMode(); // Removed auto-init to prevent blocking React render
 
 // Export compatibility functions for existing code
 export {
