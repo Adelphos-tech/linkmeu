@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Red person (left) -->
+  <circle cx="190" cy="120" r="35" fill="#E53935"/>
+  <path d="M 150 180 Q 150 200 170 250 L 170 350 Q 170 370 190 370 Q 210 370 210 350 L 210 250 Q 230 200 230 180 Q 230 160 190 160 Q 150 160 150 180 Z" fill="#E53935"/>
+  
+  <!-- Black person (right) -->
+  <circle cx="322" cy="120" r="35" fill="#1E293B"/>
+  <path d="M 282 180 Q 282 200 302 250 L 302 350 Q 302 370 322 370 Q 342 370 342 350 L 342 250 Q 362 200 362 180 Q 362 160 322 160 Q 282 160 282 180 Z" fill="#1E293B"/>
+  
+  <!-- Connecting link - Red part -->
+  <path d="M 210 300 Q 210 350 230 370 L 270 370 Q 256 350 256 300 L 256 260 L 210 260 Z" fill="#E53935"/>
+  
+  <!-- Connecting link - Black part -->
+  <path d="M 302 300 Q 302 350 282 370 L 242 370 Q 256 350 256 300 L 256 260 L 302 260 Z" fill="#1E293B"/>
+  
+  <!-- Connection point -->
+  <rect x="240" y="260" width="32" height="40" rx="8" fill="#E53935"/>
+</svg>
