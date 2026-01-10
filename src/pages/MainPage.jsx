@@ -1,524 +1,344 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import {
-    Briefcase,
-    Building2,
-    Film,
-    ShoppingBag,
-    Users,
-    Calendar,
-    ArrowRight,
-    Plus,
-    Search,
-    MapPin,
-    Phone
-} from 'lucide-react';
-
-// API Base URL
-const API_BASE_URL = 'http://localhost:3001/api';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, DollarSign, User, Mail, CheckCircle } from 'lucide-react';
 
 const MainPage = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('home');
-    const [listings, setListings] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [showForm, setShowForm] = useState(false);
+    const [activeCategory, setActiveCategory] = useState('parttime');
     const [formData, setFormData] = useState({
-        category: 'business',
-        purpose: 'sale',
-        fromDate: new Date().toISOString().split('T')[0],
-        toDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        fromDate: '',
+        toDate: '',
         title: '',
-        description: '',
-        currency: 'SGD',
-        budget: '',
+        budgetMin: '',
+        budgetMax: '',
         revenue: '',
-        location: '',
-        country: 'Singapore',
         contact: '',
-        email: '',
-        sellerName: '',
-        sellerType: 'owner'
+        email: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const categories = [
-        {
-            id: 'business',
-            title: 'Business',
-            subtitle: 'Buy • Sell • Invest',
-            icon: Briefcase,
-            color: 'from-amber-500 to-orange-600',
-            bgColor: 'bg-amber-50'
-        },
-        {
-            id: 'property',
-            title: 'Properties',
-            subtitle: 'Buy • Sell • Rent',
-            icon: Building2,
-            color: 'from-blue-500 to-indigo-600',
-            bgColor: 'bg-blue-50'
-        },
-        {
-            id: 'movies',
-            title: 'Movies',
-            subtitle: 'Buy • Sell • Distribute',
-            icon: Film,
-            color: 'from-purple-500 to-pink-600',
-            bgColor: 'bg-purple-50'
-        },
-        {
-            id: 'products',
-            title: 'Products',
-            subtitle: 'Buy • Sell • Distribute',
-            icon: ShoppingBag,
-            color: 'from-green-500 to-emerald-600',
-            bgColor: 'bg-green-50'
-        },
-        {
-            id: 'jobs',
-            title: 'Jobs',
-            subtitle: 'Join Opportunities',
-            icon: Users,
-            color: 'from-slate-600 to-gray-800',
-            bgColor: 'bg-gray-50',
-            isLink: true,
-            href: '/events'
-        },
-        {
-            id: 'events',
-            title: 'Events',
-            subtitle: 'Join Experiences',
-            icon: Calendar,
-            color: 'from-red-500 to-rose-600',
-            bgColor: 'bg-red-50',
-            isLink: true,
-            href: '/events'
-        }
+        { id: 'parttime', label: 'Part-time Job' },
+        { id: 'business', label: 'Business for Sale' },
+        { id: 'property', label: 'Property for Rent' },
+        { id: 'wedding', label: 'Wedding Hall Booking' }
     ];
-
-    useEffect(() => {
-        if (activeTab !== 'home' && !categories.find(c => c.id === activeTab)?.isLink) {
-            fetchListings(activeTab);
-        }
-    }, [activeTab]);
-
-    const fetchListings = async (category) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/listings?category=${category}`);
-            const data = await response.json();
-            if (data.success) {
-                setListings(data.listings);
-            }
-        } catch (error) {
-            console.log('API not available');
-            setListings([]);
-        }
-        setLoading(false);
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
+
         try {
-            const response = await fetch(`${API_BASE_URL}/listings`, {
+            const response = await fetch('http://localhost:3001/api/listings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    category: activeCategory,
+                    purpose: 'sale',
+                    ...formData,
+                    budget: `${formData.budgetMin} - ${formData.budgetMax}`,
+                    sellerName: formData.contact,
+                    location: 'Singapore',
+                    country: 'Singapore',
+                    description: formData.title
+                })
             });
+
             const result = await response.json();
             if (result.success) {
-                alert('Listing submitted successfully!');
-                setShowForm(false);
-                if (activeTab !== 'home') fetchListings(activeTab);
+                alert('Listing submitted successfully! Admin will review shortly.');
                 window.open(result.whatsappLink, '_blank');
             }
-        } catch {
-            alert('Submitted! Contact us on WhatsApp: +65 90191311');
-            setShowForm(false);
+        } catch (error) {
+            alert('Listing submitted! We will contact you shortly.');
         }
-    };
 
-    const handleCategoryClick = (category) => {
-        if (category.isLink) {
-            navigate(category.href);
-        } else {
-            setActiveTab(category.id);
-            setFormData(prev => ({ ...prev, category: category.id }));
-        }
-    };
-
-    const purposeLabels = {
-        sale: 'For Sale',
-        buy: 'Want to Buy',
-        rent: 'For Rent',
-        invest: 'Investment'
+        setIsSubmitting(false);
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #f5f0eb 0%, #e8e0d8 50%, #f0ebe6 100%)' }}>
+            {/* Background decorative elements */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-green-100/30 to-transparent pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 w-1/3 h-48 opacity-20" style={{ background: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Cpath d=\'M20,80 Q30,60 40,80 T60,80 T80,80\' fill=\'%2390be6d\' /%3E%3C/svg%3E")' }}></div>
+
             {/* Header */}
-            <header className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div
-                            className="flex items-center cursor-pointer"
-                            onClick={() => setActiveTab('home')}
-                        >
-                            <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">L</span>
-                            </div>
-                            <div className="ml-2">
-                                <span className="text-xl font-bold text-gray-900">Link</span>
-                                <span className="text-xl font-bold text-red-600">MeU</span>
-                            </div>
-                        </div>
-
-                        <nav className="hidden md:flex items-center space-x-1">
-                            <button
-                                onClick={() => setActiveTab('home')}
-                                className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === 'home' ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-100'
-                                    }`}
-                            >
-                                Home
-                            </button>
-                            {categories.filter(c => !c.isLink).map((cat) => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => handleCategoryClick(cat)}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${activeTab === cat.id ? 'bg-red-100 text-red-700' : 'text-gray-600 hover:bg-gray-100'
-                                        }`}
-                                >
-                                    {cat.title}
-                                </button>
-                            ))}
-                            <Link
-                                to="/events"
-                                className="px-4 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-100"
-                            >
-                                Events
-                            </Link>
-                        </nav>
-
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
-                        >
-                            <Plus className="w-5 h-5" />
-                            <span className="hidden sm:inline">Post Listing</span>
-                        </button>
-                    </div>
+            <header className="px-6 lg:px-12 py-4 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                    <img
+                        src="/linkmeu-logo.png"
+                        alt="LinkMeU"
+                        className="h-12 w-auto"
+                    />
+                </div>
+                <div className="text-right text-sm text-gray-600">
+                    <p>1 listing per account, editable after login.</p>
+                    <p className="flex items-center justify-end gap-2">
+                        Submission fee: <span className="font-semibold text-gray-800">US$1</span>
+                        <span className="text-gray-400">•</span>
+                        Admin approval required
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                    </p>
                 </div>
             </header>
 
-            {/* Mobile Tabs */}
-            <div className="md:hidden bg-white border-b overflow-x-auto">
-                <div className="flex px-4 py-2 space-x-2">
-                    <button
-                        onClick={() => setActiveTab('home')}
-                        className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap ${activeTab === 'home' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
-                            }`}
-                    >
-                        Home
-                    </button>
-                    {categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategoryClick(cat)}
-                            className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap ${activeTab === cat.id ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
-                                }`}
-                        >
-                            {cat.title}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {activeTab === 'home' ? (
-                    <>
-                        {/* Hero Section */}
-                        <section className="text-center py-16">
-                            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                                <span className="text-gray-900">Link Me. </span>
-                                <span className="text-red-600">You Matter Most.</span>
-                            </h1>
-                            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10">
-                                One platform to buy, sell, invest, rent, and connect — for business, property, movies, products, jobs, and events.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <button
-                                    onClick={() => setShowForm(true)}
-                                    className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold text-lg hover:shadow-xl transition-all"
-                                >
-                                    Post a Listing
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('business')}
-                                    className="px-8 py-4 bg-white border-2 border-gray-900 text-gray-900 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all"
-                                >
-                                    Explore Categories
-                                </button>
-                            </div>
-                        </section>
+            <main className="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col lg:flex-row gap-12">
+                {/* Left Side - Form */}
+                <div className="flex-1 max-w-2xl">
+                    <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                        Create Your Listing
+                    </h1>
+                    <p className="text-gray-600 mb-2 text-lg">
+                        Post a listing for part-time jobs, business buy/sell,<br />
+                        property rent, or wedding hall booking.
+                    </p>
+                    <p className="text-gray-500 mb-8 text-sm">
+                        Pay US$1 to submit and get admin approval required.
+                    </p>
 
-                        {/* Categories Grid */}
-                        <section className="py-12">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-                                Explore Categories
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {categories.map((category) => (
-                                    <div
-                                        key={category.id}
-                                        onClick={() => handleCategoryClick(category)}
-                                        className={`${category.bgColor} rounded-2xl p-8 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 border border-gray-200`}
-                                    >
-                                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-6`}>
-                                            <category.icon className="w-7 h-7 text-white" />
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{category.title}</h3>
-                                        <p className="text-gray-600 mb-4">{category.subtitle}</p>
-                                        <div className="flex items-center text-gray-900 font-medium">
-                                            <span>Explore</span>
-                                            <ArrowRight className="w-5 h-5 ml-2" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    </>
-                ) : (
-                    <>
-                        {/* Category Listings Page */}
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">
-                                    {categories.find(c => c.id === activeTab)?.title} Listings
-                                </h1>
-                                <p className="text-gray-600 mt-1">
-                                    {categories.find(c => c.id === activeTab)?.subtitle}
-                                </p>
-                            </div>
+                    {/* Category Tabs */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {categories.map((cat) => (
                             <button
-                                onClick={() => {
-                                    setFormData(prev => ({ ...prev, category: activeTab }));
-                                    setShowForm(true);
-                                }}
-                                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center space-x-2"
+                                key={cat.id}
+                                onClick={() => setActiveCategory(cat.id)}
+                                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${activeCategory === cat.id
+                                        ? 'bg-gray-800 text-white shadow-lg'
+                                        : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                    }`}
                             >
-                                <Plus className="w-5 h-5" />
-                                <span>Add Listing</span>
+                                {cat.label}
                             </button>
+                        ))}
+                    </div>
+
+                    {/* Form */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* From Date / To Date */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+                                <div className="relative">
+                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="date"
+                                        value={formData.fromDate}
+                                        onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-600"
+                                        placeholder="Select start date"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+                                <div className="relative">
+                                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="date"
+                                        value={formData.toDate}
+                                        onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-gray-600"
+                                        placeholder="Select 1 date"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Listings */}
-                        {loading ? (
-                            <div className="text-center py-20">
-                                <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                                <p className="text-gray-600 mt-4">Loading listings...</p>
-                            </div>
-                        ) : listings.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {listings.map((listing) => (
-                                    <div key={listing.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100">
-                                        <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                                            <Briefcase className="w-16 h-16 text-gray-400" />
-                                        </div>
-                                        <div className="p-5">
-                                            <span className="inline-block bg-gray-100 px-3 py-1 rounded-full text-sm font-medium text-gray-700 mb-2">
-                                                {purposeLabels[listing.purpose] || listing.purpose}
-                                            </span>
-                                            <h3 className="text-lg font-bold text-gray-900 mb-2">{listing.title}</h3>
-                                            <p className="text-2xl font-bold text-red-600 mb-3">{listing.currency} {listing.budget}</p>
-                                            <div className="flex items-center text-gray-500 text-sm mb-2">
-                                                <MapPin className="w-4 h-4 mr-1" />
-                                                {listing.location}, {listing.country}
-                                            </div>
-                                            <div className="flex items-center justify-between pt-3 border-t">
-                                                <span className="text-sm text-gray-500">
-                                                    {new Date(listing.created_at).toLocaleDateString()}
-                                                </span>
-                                                <a
-                                                    href={`https://wa.me/65${listing.contact}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center space-x-1 text-green-600 font-medium hover:text-green-700"
-                                                >
-                                                    <Phone className="w-4 h-4" />
-                                                    <span>Contact</span>
-                                                </a>
-                                            </div>
-                                        </div>
+                        {/* Title */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                placeholder="Enter destription..."
+                                required
+                            />
+                        </div>
+
+                        {/* Budget / Revenue */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Budget</label>
+                                <div className="flex gap-2">
+                                    <div className="relative flex-1">
+                                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            value={formData.budgetMin}
+                                            onChange={(e) => setFormData({ ...formData, budgetMin: e.target.value })}
+                                            className="w-full pl-8 pr-3 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                            placeholder="Min"
+                                        />
                                     </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20 bg-white rounded-2xl">
-                                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Search className="w-10 h-10 text-gray-400" />
+                                    <div className="relative flex-1">
+                                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            value={formData.budgetMax}
+                                            onChange={(e) => setFormData({ ...formData, budgetMax: e.target.value })}
+                                            className="w-full pl-8 pr-3 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                            placeholder="Max"
+                                        />
+                                    </div>
+                                    <select className="px-3 py-3 bg-white border border-gray-200 rounded-lg text-gray-600">
+                                        <option>$</option>
+                                        <option>S$</option>
+                                        <option>RM</option>
+                                    </select>
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">No listings yet</h3>
-                                <p className="text-gray-600 mb-6">Be the first to post a listing!</p>
-                                <button
-                                    onClick={() => setShowForm(true)}
-                                    className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold"
-                                >
-                                    Post First Listing
-                                </button>
                             </div>
-                        )}
-                    </>
-                )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Expected Revenue / Profit</label>
+                                <input
+                                    type="text"
+                                    value={formData.revenue}
+                                    onChange={(e) => setFormData({ ...formData, revenue: e.target.value })}
+                                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                    placeholder="Enter budget, amount..."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Contact / Email */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Contact</label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        value={formData.contact}
+                                        onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        placeholder="Contact"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="email"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        placeholder="Email your r-email..."
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer text */}
+                        <p className="text-gray-500 text-sm">
+                            1 listing per account. Login required. Pay US$1 to submit. Admin approval required.
+                        </p>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-red-700 to-red-800 text-white rounded-lg font-semibold text-lg hover:from-red-800 hover:to-red-900 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                        >
+                            <span className="text-xl">🇺🇸</span>
+                            {isSubmitting ? 'Submitting...' : 'Pay & Submit Listing $1'}
+                        </button>
+                    </form>
+                </div>
+
+                {/* Right Side - Illustration */}
+                <div className="hidden lg:flex flex-1 items-center justify-center">
+                    <div className="relative">
+                        {/* Clipboard illustration */}
+                        <svg width="400" height="450" viewBox="0 0 400 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            {/* Clipboard base */}
+                            <rect x="80" y="40" width="240" height="320" rx="16" fill="#D4A574" />
+                            <rect x="95" y="55" width="210" height="290" rx="12" fill="#FFF8F0" />
+
+                            {/* Clipboard clip */}
+                            <rect x="140" y="25" width="120" height="40" rx="6" fill="#8B7355" />
+                            <rect x="155" y="35" width="90" height="20" rx="4" fill="#C4A77D" />
+
+                            {/* Checklist items */}
+                            <rect x="115" y="80" width="20" height="20" rx="4" stroke="#8B7355" strokeWidth="2" fill="white" />
+                            <path d="M120 90 L125 95 L135 82" stroke="#4CAF50" strokeWidth="3" fill="none" />
+                            <rect x="145" y="82" width="140" height="12" rx="2" fill="#E8E0D8" />
+
+                            <rect x="115" y="115" width="20" height="20" rx="4" stroke="#8B7355" strokeWidth="2" fill="white" />
+                            <path d="M120 125 L125 130 L135 117" stroke="#4CAF50" strokeWidth="3" fill="none" />
+                            <rect x="145" y="117" width="120" height="12" rx="2" fill="#E8E0D8" />
+
+                            <rect x="115" y="150" width="20" height="20" rx="4" stroke="#8B7355" strokeWidth="2" fill="white" />
+                            <path d="M120 160 L125 165 L135 152" stroke="#4CAF50" strokeWidth="3" fill="none" />
+                            <rect x="145" y="152" width="130" height="12" rx="2" fill="#E8E0D8" />
+
+                            <rect x="115" y="185" width="20" height="20" rx="4" stroke="#8B7355" strokeWidth="2" fill="white" />
+                            <rect x="145" y="187" width="100" height="12" rx="2" fill="#E8E0D8" />
+
+                            <rect x="115" y="220" width="20" height="20" rx="4" stroke="#8B7355" strokeWidth="2" fill="white" />
+                            <rect x="145" y="222" width="80" height="12" rx="2" fill="#E8E0D8" />
+
+                            {/* Pencil */}
+                            <g transform="translate(260, 180) rotate(45)">
+                                <rect x="0" y="0" width="100" height="14" rx="2" fill="#FFD700" />
+                                <rect x="100" y="0" width="20" height="14" fill="#F5D0A9" />
+                                <polygon points="120,0 135,7 120,14" fill="#3D3D3D" />
+                                <rect x="0" y="0" width="15" height="14" rx="2" fill="#FF69B4" />
+                            </g>
+
+                            {/* Floating cards */}
+                            <g transform="translate(300, 60)">
+                                <rect x="0" y="0" width="70" height="50" rx="8" fill="white" filter="url(#shadow)" />
+                                <rect x="10" y="10" width="50" height="6" rx="2" fill="#E8E0D8" />
+                                <rect x="10" y="20" width="35" height="6" rx="2" fill="#E8E0D8" />
+                                <rect x="50" y="30" width="12" height="12" rx="2" fill="#4CAF50" />
+                                <path d="M53 36 L56 39 L61 33" stroke="white" strokeWidth="2" fill="none" />
+                            </g>
+
+                            <g transform="translate(320, 130)">
+                                <rect x="0" y="0" width="70" height="50" rx="8" fill="white" filter="url(#shadow)" />
+                                <circle cx="20" cy="18" r="12" fill="#FF6B6B" />
+                                <rect x="15" y="32" width="20" height="10" fill="#FF6B6B" />
+                                <rect x="35" y="10" width="30" height="6" rx="2" fill="#E8E0D8" />
+                                <rect x="35" y="20" width="20" height="6" rx="2" fill="#E8E0D8" />
+                                <rect x="50" y="32" width="12" height="12" rx="2" fill="#4CAF50" />
+                            </g>
+
+                            <g transform="translate(340, 210)">
+                                <rect x="0" y="0" width="60" height="45" rx="8" fill="white" filter="url(#shadow)" />
+                                <rect x="5" y="5" width="50" height="20" rx="4" fill="#E0E0E0" />
+                                <rect x="5" y="28" width="30" height="5" rx="2" fill="#E8E0D8" />
+                                <rect x="40" y="28" width="12" height="12" rx="2" fill="#4CAF50" />
+                            </g>
+
+                            {/* Green checkmark circle */}
+                            <circle cx="320" cy="330" r="35" fill="#4CAF50" />
+                            <path d="M300 330 L313 343 L340 315" stroke="white" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+
+                            <defs>
+                                <filter id="shadow" x="-4" y="-4" width="calc(100% + 8px)" height="calc(100% + 8px)">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="4" floodOpacity="0.1" />
+                                </filter>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
             </main>
 
-            {/* Listing Form Modal */}
-            {showForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-gray-900">Create Listing</h2>
-                            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                                <select
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500"
-                                >
-                                    {categories.filter(c => !c.isLink).map(cat => (
-                                        <option key={cat.id} value={cat.id}>{cat.title}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Purpose</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                    {['sale', 'buy', 'rent', 'invest'].map(purpose => (
-                                        <label
-                                            key={purpose}
-                                            className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${formData.purpose === purpose ? 'border-red-600 bg-red-50 text-red-700' : 'border-gray-200 hover:border-gray-300'
-                                                }`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="purpose"
-                                                value={purpose}
-                                                checked={formData.purpose === purpose}
-                                                onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
-                                                className="sr-only"
-                                            />
-                                            {purposeLabels[purpose]}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
-                                    <input type="date" value={formData.fromDate} onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
-                                    <input type="date" value={formData.toDate} onChange={(e) => setFormData({ ...formData, toDate: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
-                                <input type="text" required value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="e.g., Cafe Business for Sale" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
-                                <textarea required value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4} placeholder="Describe what you're offering..." className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Budget/Price *</label>
-                                    <div className="flex">
-                                        <select value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })} className="px-3 py-3 border border-r-0 border-gray-300 rounded-l-xl bg-gray-50">
-                                            <option value="SGD">S$</option>
-                                            <option value="USD">$</option>
-                                            <option value="MYR">RM</option>
-                                        </select>
-                                        <input type="text" required value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} placeholder="Amount" className="flex-1 px-4 py-3 border border-gray-300 rounded-r-xl" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Revenue</label>
-                                    <input type="text" value={formData.revenue} onChange={(e) => setFormData({ ...formData, revenue: e.target.value })} placeholder="e.g., $5,000/month" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Location *</label>
-                                    <input type="text" required value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="City / Area" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                                    <select value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                                        <option value="Singapore">Singapore</option>
-                                        <option value="Malaysia">Malaysia</option>
-                                        <option value="Indonesia">Indonesia</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact *</label>
-                                    <input type="tel" required value={formData.contact} onChange={(e) => setFormData({ ...formData, contact: e.target.value })} placeholder="+65 9XXX XXXX" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                    <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="your@email.com" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
-                                    <input type="text" required value={formData.sellerName} onChange={(e) => setFormData({ ...formData, sellerName: e.target.value })} placeholder="Full name" className="w-full px-4 py-3 border border-gray-300 rounded-xl" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Seller Type</label>
-                                    <select value={formData.sellerType} onChange={(e) => setFormData({ ...formData, sellerType: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl">
-                                        <option value="owner">Owner</option>
-                                        <option value="agent">Agent</option>
-                                        <option value="partner">Partner</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button type="submit" className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg">
-                                Submit Listing
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Footer */}
-            <footer className="bg-white border-t py-8 mt-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="flex items-center justify-center space-x-2 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-700 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold">L</span>
-                        </div>
-                        <span className="font-bold text-gray-900">Link</span>
-                        <span className="font-bold text-red-600">MeU</span>
-                    </div>
-                    <p className="text-gray-500 text-sm">© 2026 LinkMeU. Link Me. You Matter Most.</p>
-                </div>
-            </footer>
+            {/* Events Link */}
+            <div className="fixed bottom-4 right-4">
+                <button
+                    onClick={() => navigate('/events')}
+                    className="px-4 py-2 bg-gray-800 text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-all shadow-lg"
+                >
+                    View Events →
+                </button>
+            </div>
         </div>
     );
 };
