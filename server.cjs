@@ -574,6 +574,14 @@ if (fs.existsSync(STATIC_PATH)) {
     });
 }
 
+// ===== Payload Size Error Handler =====
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.too.large' || err.status === 413 || err.statusCode === 413 || err.message?.includes('too large')) {
+        return res.status(413).json({ success: false, message: 'Payload too large' });
+    }
+    next(err);
+});
+
 // ===== Global Error Handler =====
 app.use((err, req, res, next) => {
     if (err.message === 'Not allowed by CORS') {
