@@ -182,17 +182,8 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECU
 CREATE TRIGGER update_events_updated_at BEFORE UPDATE ON events FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_attendees_updated_at BEFORE UPDATE ON attendees FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default super admin user (password should be hashed in production)
-INSERT INTO users (email, password_hash, role, first_name, last_name, contact, email_verified)
-VALUES (
-    'Robocorpsg@gmail.com',
-    '[REDACTED]', -- In production, this should be properly hashed
-    'superadmin',
-    'Super',
-    'Admin',
-    '+65 0000 0000',
-    true
-) ON CONFLICT (email) DO NOTHING;
+-- NOTE: No default super admin is seeded here.
+-- Create the first admin account via the application registration flow.
 
 -- Insert sample events for demonstration
 INSERT INTO events (title, description, event_date, venue, owner_id, status) 

@@ -470,3 +470,149 @@ Recommended GitHub branch protection rules for `main`:
 4. Save changes
 
 This ensures no code reaches production without passing automated tests and peer review.
+
+---
+
+## Backup and Disaster Recovery
+
+### Backup Policy
+
+Create a logical backup of the Neon production database after any significant migration or at least weekly.
+
+### Creating a Backup
+
+Requirements:
+- PostgreSQL client tools (`pg_dump`) matching the server version
+- `DATABASE_URL` environment variable configured (server-side only)
+
+Command:
+
+```bash
+export BACKUP_FILE="linkmeu_neon_backup_$(date +%Y%m%d_%H%M%S).sql"
+pg_dump "$DATABASE_URL" > "$BACKUP_FILE"
+```
+
+Store the backup file outside the Git repository in a secure location:
+
+```bash
+mkdir -p ~/backups/linkmeu
+mv "$BACKUP_FILE" ~/backups/linkmeu/
+```
+
+### Backup Format
+
+The backup is a **plain SQL text dump** (`pg_dump` default format). It contains:
+
+- Complete schema (`CREATE TABLE`, `CREATE SEQUENCE`, `CREATE INDEX`)
+- All constraints (primary keys, foreign keys, unique, CHECK)
+- All data (`COPY` commands)
+- Sequence state (`setval` commands)
+
+This format is portable and human-inspectable.
+
+### Verifying a Backup
+
+Inspect the backup without restoring:
+
+```bash
+# List tables included
+grep "CREATE TABLE public\." "$BACKUP_FILE"
+
+# List sequences
+grep "CREATE SEQUENCE public\." "$BACKUP_FILE"
+
+# List indexes
+grep "CREATE INDEX" "$BACKUP_FILE"
+
+# Check data presence (look for COPY commands)
+grep "COPY public\." "$BACKUP_FILE"
+```
+
+### Restore Testing
+
+**Never restore directly over production.** Test restoration into a disposable local PostgreSQL instance:
+
+```bash
+# 1. Create a temporary database cluster
+initdb -D /tmp/pgrestore-test --auth=trust --no-locale --encoding=UTF8
+
+# 2. Start PostgreSQL on a non-default port
+pg_ctl -D /tmp/pgrestore-test -o "-p 5433" -l /tmp/pgrestore.log start
+
+# 3. Create a test database
+createdb -p 5433 linkmeu_restore_test
+
+# 4. Restore the backup
+psql -p 5433 -d linkmeu_restore_test -f "$BACKUP_FILE"
+
+# 5. Verify row counts match production
+psql -p 5433 -d linkmeu_restore_test -c "
+SELECT 'users' as t, COUNT(*) FROM users UNION ALL
+SELECT 'listings', COUNT(*) FROM listings UNION ALL
+SELECT 'events', COUNT(*) FROM events UNION ALL
+SELECT 'attendees', COUNT(*) FROM attendees UNION ALL
+SELECT 'audit_logs', COUNT(*) FROM audit_logs UNION ALL
+SELECT 'id_mapping', COUNT(*) FROM id_mapping;
+"
+
+# 6. Verify constraints and indexes
+psql -p 5433 -d linkmeu_restore_test -c "
+SELECT table_name, constraint_name, constraint_type
+FROM information_schema.table_constraints
+WHERE table_schema = 'public' ORDER BY table_name;
+"
+
+# 7. Clean up
+pg_ctl -D /tmp/pgrestore-test stop
+rm -rf /tmp/pgrestore-test
+```
+
+Expected restore-test errors (safe to ignore):
+- `role "neondb_owner" does not exist` — Neon-specific role not present locally
+- `role "neon_superuser" does not exist` — Same reason
+
+These errors affect ownership assignments but not data or structure.
+
+### Restoring to a New Database
+
+To restore the backup into a completely new PostgreSQL database (e.g., for disaster recovery):
+
+```bash
+# Create the target database
+createdb -h NEW_HOST -U NEW_USER linkmeu_new
+
+# Restore
+psql -h NEW_HOST -U NEW_USER -d linkmeu_new -f "$BACKUP_FILE"
+
+# After restore, adjust ownership if needed
+# psql -h NEW_HOST -U NEW_USER -d linkmeu_new -c "REASSIGN OWNED BY neondb_owner TO NEW_OWNER;"
+```
+
+### Backup Retention
+
+Recommended retention:
+- Keep daily backups for 7 days
+- Keep weekly backups for 4 weeks
+- Keep monthly backups for 12 months
+
+Store backups in at least two locations (e.g., local encrypted storage + cloud object storage with versioning).
+
+### What to NEVER Do
+
+- **Never commit `.sql` backup files to Git** — `.gitignore` already excludes them.
+- **Never store backups in publicly accessible directories** — `uploads/` and `backups/` are gitignored but may still be web-accessible if misconfigured.
+- **Never restore a backup over production without explicit approval** — Always test restore into a disposable database first.
+- **Never share backup files unencrypted** — They contain all production data including hashed passwords.
+
+### Latest Verified Backup
+
+| Field | Value |
+|-------|-------|
+| Timestamp | 2026-08-15 17:17:44 IST |
+| Format | Plain SQL (`pg_dump`) |
+| Size | ~8.4 MB |
+| Tables | 8 |
+| Rows verified | 125 total (users: 24, listings: 22, events: 4, attendees: 6, audit_logs: 19, id_mapping: 35, schema_migrations: 5, playing_with_neon: 10) |
+| Restore tested | Yes — into temporary local PostgreSQL 17 |
+| Location | `~/backups/linkmeu/` (outside Git repository) |
+

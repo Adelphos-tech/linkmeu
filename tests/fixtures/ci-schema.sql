@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS listings (
     description TEXT,
     currency VARCHAR(10) DEFAULT 'SGD',
     budget NUMERIC(15,2),
+    budget_min NUMERIC(15,2),
+    budget_max NUMERIC(15,2),
     revenue NUMERIC(15,2),
     location TEXT,
     country VARCHAR(100) DEFAULT 'Singapore',

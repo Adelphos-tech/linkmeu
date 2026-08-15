@@ -233,7 +233,7 @@ class EventsXTestBot {
     try {
       const credentials = {
         email: 'Robocorpsg@gmail.com',
-        password: '[REDACTED]'
+        password: process.env.ADMIN_PASSWORD || 'CHANGEME'
       };
       this.log(testType, 'Super admin login', 'PASS', 'Super admin authenticated');
     } catch (error) {

@@ -73,7 +73,7 @@ VITE_APP_VERSION=2.0.0
 
 # Super Admin
 VITE_SUPER_ADMIN_EMAIL=Robocorpsg@gmail.com
-VITE_SUPER_ADMIN_PASSWORD=[REDACTED]
+VITE_SUPER_ADMIN_PASSWORD=<CONFIGURED_PASSWORD>
 
 # Security (server-only, NEVER prefix with VITE_)
 JWT_SECRET=your-jwt-secret-key

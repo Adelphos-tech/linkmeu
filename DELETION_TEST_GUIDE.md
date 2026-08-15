@@ -14,7 +14,7 @@ The dev server is running at: **http://localhost:3000**
 
 #### **Step 2: Login as Admin**
 - Email: `Robocorpsg@gmail.com`
-- Password: `[REDACTED]`
+- Password: `[Use your configured admin password]`
 
 #### **Step 3: Delete an Event**
 1. Find any event in the list

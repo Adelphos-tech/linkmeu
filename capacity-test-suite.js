@@ -9,7 +9,7 @@ import { writeFileSync } from 'fs';
 
 const BASE_URL = 'http://localhost:5173';
 const ADMIN_EMAIL = 'Robocorpsg@gmail.com';
-const ADMIN_PASSWORD = '[REDACTED]';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'CHANGEME';
 
 // Test results storage
 const testResults = [];

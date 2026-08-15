@@ -46,10 +46,11 @@ if (NODE_ENV === 'production' && !JWT_SECRET) {
 }
 
 // ===== Database =====
-const pool = new Pool({
-    connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-});
+const poolConfig = { connectionString: DATABASE_URL };
+if (!DATABASE_URL.includes('localhost') && process.env.DISABLE_SSL !== 'true') {
+    poolConfig.ssl = { rejectUnauthorized: false };
+}
+const pool = new Pool(poolConfig);
 
 // ===== Rate Limiting =====
 const requestCounts = new Map();
@@ -407,8 +408,26 @@ app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), requireAuth, upload.arra
     try {
         const {
             category, purpose, fromDate, toDate, title, description,
-            currency, budget, revenue, location, country, contact, email, sellerName, sellerType
+            currency, budget, budgetMin, budgetMax, revenue, location, country, contact, email, sellerName, sellerType
         } = req.body;
+
+        // Prefer explicit budgetMin/budgetMax; fall back to legacy budget for compatibility
+        let budgetMinVal = budgetMin !== undefined ? budgetMin : null;
+        let budgetMaxVal = budgetMax !== undefined ? budgetMax : null;
+        let budgetVal = budget !== undefined ? budget : null;
+
+        // If legacy budget is provided but min/max are not, derive range from it
+        if (budgetVal !== null && budgetMinVal === null && budgetMaxVal === null) {
+            const parsed = parseFloat(budgetVal);
+            if (!isNaN(parsed)) {
+                budgetMinVal = parsed;
+                budgetMaxVal = parsed;
+            }
+        }
+        // If only min is provided, use it as the legacy budget
+        if (budgetVal === null && budgetMinVal !== null) {
+            budgetVal = budgetMinVal;
+        }
 
         if (!category || !purpose || !title || !contact || !email || !sellerName) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -451,13 +470,13 @@ app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), requireAuth, upload.arra
         const result = await pool.query(
             `INSERT INTO listings (
                 category, purpose, from_date, to_date, title, description,
-                currency, budget, revenue, location, country,
+                currency, budget, budget_min, budget_max, revenue, location, country,
                 contact, email, seller_name, seller_type, photos, owner_id
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
             RETURNING *`,
             [
                 category, purpose, fromDate || null, toDate || null, title, description,
-                currency || 'SGD', budget, revenue, location, country || 'Singapore',
+                currency || 'SGD', budgetVal, budgetMinVal, budgetMaxVal, revenue, location, country || 'Singapore',
                 contact, email, sellerName, sellerType || 'owner', photoUrls, req.user.id
             ]
         );
@@ -602,7 +621,7 @@ app.patch('/api/listings/:id', rateLimit(RATE_LIMIT_CREATE), requireAuth, async 
             return res.status(403).json({ success: false, message: 'Forbidden: you can only edit your own listings' });
         }
 
-        const allowedFields = ['title', 'description', 'currency', 'budget', 'revenue', 'location', 'country', 'contact', 'email', 'seller_name', 'seller_type'];
+        const allowedFields = ['title', 'description', 'currency', 'budget', 'budget_min', 'budget_max', 'revenue', 'location', 'country', 'contact', 'email', 'seller_name', 'seller_type'];
         const updates = [];
         const values = [];
         let paramIndex = 1;

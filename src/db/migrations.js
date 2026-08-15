@@ -88,16 +88,8 @@ export class DatabaseMigration {
         CREATE INDEX IF NOT EXISTS idx_attendees_event_id ON attendees(event_id);
         CREATE INDEX IF NOT EXISTS idx_attendees_email ON attendees(email);
         
-        INSERT INTO users (email, password_hash, role, first_name, last_name, contact, email_verified)
-        VALUES (
-          'Robocorpsg@gmail.com',
-          '[REDACTED]',
-          'superadmin',
-          'Super',
-          'Admin',
-          '+65 0000 0000',
-          true
-        ) ON CONFLICT (email) DO NOTHING;
+        -- NOTE: No default super admin is seeded here.
+        -- Create the first admin account via the application registration flow.
       `;
       
       // Split schema into individual statements

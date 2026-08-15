@@ -5,7 +5,7 @@ A modern Progressive Web App (PWA) for managing events, registrations, and atten
 ## Super Admin Credentials
 
 - **Email**: Robocorpsg@gmail.com
-- **Password**: [REDACTED]
+- **Password**: [Set during first registration or configure via environment variable]
 
 ## User Roles
 

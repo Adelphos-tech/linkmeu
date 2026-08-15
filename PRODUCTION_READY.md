@@ -141,7 +141,7 @@ Visit: https://adelphos-tech.github.io/event/
 - ✅ Browse events
 - ✅ Register for events  
 - ✅ Test QR code functionality
-- ✅ Login as super admin (Robocorpsg@gmail.com / [REDACTED])
+- ✅ Login as super admin (create account via registration or configure via admin panel)
 
 ### **2. Create Your Events**
 - Login as super admin

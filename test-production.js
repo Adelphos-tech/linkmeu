@@ -26,7 +26,7 @@ class EventsXProductionTester {
       mobileViewport: { width: 375, height: 667 },
       adminCredentials: {
         email: 'Robocorpsg@gmail.com',
-        password: '[REDACTED]'
+        password: process.env.ADMIN_PASSWORD || 'CHANGEME'
       }
     };
     

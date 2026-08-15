@@ -10,18 +10,10 @@ db.version(1).stores({
   attendees: '++id, eventId, name, email, contact, attended',
 });
 
-// Initialize super admin and sample events on first load
+// Initialize database on first load
+// NOTE: No default super admin is seeded. Create accounts via the registration UI.
 db.on('ready', async () => {
-  const superAdmin = await db.users.where('email').equals('Robocorpsg@gmail.com').first();
-  if (!superAdmin) {
-    await db.users.add({
-      email: 'Robocorpsg@gmail.com',
-      password: '[REDACTED]', // In production, this should be hashed
-      role: 'superadmin',
-      contact: '+65 0000 0000',
-      createdAt: new Date().toISOString()
-    });
-  }
+  // Database is ready for use
 
   // Sample events disabled for production
   // Uncomment below to enable demo/seed data for testing:
