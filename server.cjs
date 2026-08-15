@@ -7,6 +7,9 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -14,71 +17,63 @@ const PORT = process.env.PORT || 3001;
 // ===== Configuration =====
 const DATABASE_URL = process.env.DATABASE_URL || process.env.VITE_DATABASE_URL;
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
+const JWT_SECRET = process.env.JWT_SECRET;
 const NODE_ENV = process.env.NODE_ENV || 'development';
+const COOKIE_SECURE = NODE_ENV === 'production';
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173,https://linkmeu.com,https://www.linkmeu.com').split(',');
 
 if (!DATABASE_URL) {
     console.error('❌ DATABASE_URL is required');
     process.exit(1);
 }
-
-if (!ADMIN_API_KEY && NODE_ENV === 'production') {
-    console.warn('⚠️  ADMIN_API_KEY not set. Admin endpoints will be inaccessible.');
+if (!JWT_SECRET) {
+    console.warn('⚠️  JWT_SECRET not set. Using fallback — set a strong secret in production!');
 }
 
-// ===== Database Configuration =====
+const COOKIE_NAME = 'linkmeu_session';
+
+// ===== Database =====
 const pool = new Pool({
     connectionString: DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    ssl: { rejectUnauthorized: false }
 });
 
-// ===== Rate Limiting (in-memory) =====
+// ===== Rate Limiting =====
 const requestCounts = new Map();
-const RATE_WINDOW_MS = 60 * 1000; // 1 minute
-const RATE_LIMIT_PUBLIC = 100;    // requests per window for public endpoints
-const RATE_LIMIT_ADMIN = 30;      // requests per window for admin endpoints
-const RATE_LIMIT_CREATE = 10;     // requests per window for POST /api/listings
+const RATE_WINDOW_MS = 60 * 1000;
+const RATE_LIMIT_PUBLIC = 100;
+const RATE_LIMIT_AUTH = 10;
+const RATE_LIMIT_ADMIN = 30;
+const RATE_LIMIT_CREATE = 10;
 
 function rateLimit(limit) {
     return (req, res, next) => {
         const key = req.ip || req.connection.remoteAddress || 'unknown';
         const now = Date.now();
-
         if (!requestCounts.has(key)) {
             requestCounts.set(key, { count: 1, resetTime: now + RATE_WINDOW_MS });
             return next();
         }
-
         const record = requestCounts.get(key);
         if (now > record.resetTime) {
             record.count = 1;
             record.resetTime = now + RATE_WINDOW_MS;
             return next();
         }
-
         if (record.count >= limit) {
-            return res.status(429).json({
-                success: false,
-                message: 'Too many requests. Please try again later.'
-            });
+            return res.status(429).json({ success: false, message: 'Too many requests. Please try again later.' });
         }
-
         record.count++;
         next();
     };
 }
 
-// Clean up old entries periodically
 setInterval(() => {
     const now = Date.now();
     for (const [key, record] of requestCounts.entries()) {
-        if (now > record.resetTime + RATE_WINDOW_MS) {
-            requestCounts.delete(key);
-        }
+        if (now > record.resetTime + RATE_WINDOW_MS) requestCounts.delete(key);
     }
-}, 5 * 60 * 1000); // every 5 minutes
+}, 5 * 60 * 1000);
 
 // ===== Security Headers =====
 app.use((req, res, next) => {
@@ -96,7 +91,6 @@ app.use((req, res, next) => {
 // ===== CORS =====
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, etc.)
         if (!origin) return callback(null, true);
         if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
         if (NODE_ENV === 'development') return callback(null, true);
@@ -107,42 +101,79 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key']
 }));
 
-// ===== Body Parsing (reduced limits) =====
+// ===== Body Parsing =====
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(cookieParser());
 
-// Static files for uploads
+// Static files
 app.use('/uploads', express.static('uploads'));
 
-// ===== Authentication Middleware =====
-function requireAdminAuth(req, res, next) {
-    const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
-    const expectedKey = ADMIN_API_KEY;
+// ===== Auth Helpers =====
+function signToken(payload) {
+    return jwt.sign(payload, JWT_SECRET || 'fallback-secret-change-me', { expiresIn: '7d' });
+}
 
-    if (!expectedKey) {
-        return res.status(503).json({
-            success: false,
-            message: 'Admin access not configured'
-        });
+function verifyToken(token) {
+    try {
+        return jwt.verify(token, JWT_SECRET || 'fallback-secret-change-me');
+    } catch (e) {
+        return null;
     }
+}
 
-    if (!apiKey || apiKey.replace('Bearer ', '') !== expectedKey) {
-        return res.status(401).json({
-            success: false,
-            message: 'Unauthorized'
-        });
+// Extract user from cookie or Authorization header
+function extractUser(req) {
+    let token = req.cookies[COOKIE_NAME];
+    if (!token && req.headers.authorization) {
+        token = req.headers.authorization.replace('Bearer ', '');
     }
+    if (!token) return null;
+    return verifyToken(token);
+}
 
+// ===== Middleware =====
+function requireAuth(req, res, next) {
+    const user = extractUser(req);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized. Please log in.' });
+    }
+    req.user = user;
     next();
 }
 
-// ===== Configure multer for file uploads =====
+function requireRole(roles) {
+    const allowed = Array.isArray(roles) ? roles : [roles];
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+        if (!allowed.includes(req.user.role)) {
+            return res.status(403).json({ success: false, message: 'Forbidden: insufficient permissions' });
+        }
+        next();
+    };
+}
+
+function requireAdminAuth(req, res, next) {
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
+    if (ADMIN_API_KEY && apiKey && apiKey.replace('Bearer ', '') === ADMIN_API_KEY) {
+        req.isAdminKey = true;
+        return next();
+    }
+    const user = extractUser(req);
+    if (user && ['admin', 'super_admin'].includes(user.role)) {
+        req.user = user;
+        return next();
+    }
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+}
+
+// ===== Multer =====
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = './uploads';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
@@ -153,70 +184,167 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { fileSize: 10 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|gif|webp/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = allowedTypes.test(file.mimetype);
-        if (extname && mimetype) {
-            return cb(null, true);
-        }
+        if (extname && mimetype) return cb(null, true);
         cb(new Error('Only image files are allowed!'));
     }
 });
 
-// ===== Initialize Database Tables =====
+// ===== Audit Logger =====
+async function logAudit(actorId, action, entityType, entityId, metadata, req) {
+    try {
+        await pool.query(
+            `INSERT INTO audit_logs (actor_id, action, entity_type, entity_id, metadata, ip_address, user_agent)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            [actorId, action, entityType, entityId, metadata ? JSON.stringify(metadata) : null, req.ip, req.headers['user-agent']]
+        );
+    } catch (e) {
+        console.error('Audit log failed:', e.message);
+    }
+}
+
+// ===== Safe Error Response =====
+function safeErrorResponse(res, statusCode, message, internalError) {
+    if (NODE_ENV === 'development') console.error(internalError);
+    res.status(statusCode).json({ success: false, message });
+}
+
+// ===== Initialize Database (migrations) =====
 async function initializeDatabase() {
     try {
-        // Create listings table
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS listings (
-                id SERIAL PRIMARY KEY,
-                category VARCHAR(50) NOT NULL,
-                purpose VARCHAR(50) NOT NULL,
-                from_date DATE,
-                to_date DATE,
-                title VARCHAR(255) NOT NULL,
-                description TEXT,
-                currency VARCHAR(10) DEFAULT 'SGD',
-                budget VARCHAR(100),
-                revenue VARCHAR(200),
-                location VARCHAR(255),
-                country VARCHAR(100) DEFAULT 'Singapore',
-                contact VARCHAR(50) NOT NULL,
-                email VARCHAR(255) NOT NULL,
-                seller_name VARCHAR(255) NOT NULL,
-                seller_type VARCHAR(50) DEFAULT 'owner',
-                photos TEXT[], -- Array of photo URLs
-                status VARCHAR(20) DEFAULT 'pending', -- pending, approved, rejected
-                urgency VARCHAR(20) DEFAULT 'normal', -- normal, urgent, featured
-                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        // Create index for faster queries
-        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_category ON listings(category);`);
-        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);`);
-        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_created_at ON listings(created_at DESC);`);
-
-        console.log('✅ Database tables initialized successfully');
+        await pool.query(`SELECT 1`);
+        console.log('✅ Database connection verified');
     } catch (error) {
-        console.error('❌ Error initializing database:', error);
+        console.error('❌ Database connection failed:', error);
         throw error;
     }
 }
 
-// ===== Error Response Helper =====
-function safeErrorResponse(res, statusCode, message, internalError) {
-    if (NODE_ENV === 'development') {
-        console.error(internalError);
+// ===== Auth Routes =====
+
+// Register
+app.post('/api/auth/register', rateLimit(RATE_LIMIT_AUTH), async (req, res) => {
+    try {
+        const { email, password, name, phone } = req.body;
+        if (!email || !password || !name) {
+            return res.status(400).json({ success: false, message: 'Email, password, and name are required' });
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
+        }
+
+        const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (existing.rows.length > 0) {
+            return res.status(409).json({ success: false, message: 'Email already registered' });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 12);
+        const result = await pool.query(
+            `INSERT INTO users (email, password_hash, name, phone, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, email, name, role, created_at`,
+            [email, passwordHash, name, phone || null, 'user']
+        );
+
+        const user = result.rows[0];
+        const token = signToken({ id: user.id, email: user.email, role: user.role });
+
+        res.cookie(COOKIE_NAME, token, {
+            httpOnly: true,
+            secure: COOKIE_SECURE,
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Registration successful',
+            user: { id: user.id, email: user.email, name: user.name, role: user.role }
+        });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Registration failed', error);
     }
-    res.status(statusCode).json({
-        success: false,
-        message: message
-    });
-}
+});
+
+// Login
+app.post('/api/auth/login', rateLimit(RATE_LIMIT_AUTH), async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Email and password are required' });
+        }
+
+        const result = await pool.query('SELECT id, email, name, password_hash, role FROM users WHERE email = $1', [email]);
+        if (result.rows.length === 0) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        const user = result.rows[0];
+        let valid = await bcrypt.compare(password, user.password_hash);
+
+        // Handle legacy plaintext passwords (migration path)
+        if (!valid && !user.password_hash.startsWith('$2')) {
+            if (password === user.password_hash) {
+                valid = true;
+                // Re-hash with bcrypt for future logins
+                const newHash = await bcrypt.hash(password, 12);
+                await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, user.id]);
+                user.password_hash = newHash;
+            }
+        }
+
+        if (!valid) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+
+        const token = signToken({ id: user.id, email: user.email, role: user.role });
+
+        res.cookie(COOKIE_NAME, token, {
+            httpOnly: true,
+            secure: COOKIE_SECURE,
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: { id: user.id, email: user.email, name: user.name, role: user.role }
+        });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Login failed', error);
+    }
+});
+
+// Logout
+app.post('/api/auth/logout', (req, res) => {
+    res.clearCookie(COOKIE_NAME);
+    res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// Me
+app.get('/api/auth/me', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    const user = extractUser(req);
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+    try {
+        const result = await pool.query('SELECT id, email, name, phone, avatar_url, role, verified_at, created_at FROM users WHERE id = $1', [user.id]);
+        if (result.rows.length === 0) {
+            res.clearCookie(COOKIE_NAME);
+            return res.status(401).json({ success: false, message: 'User not found' });
+        }
+        res.json({ success: true, user: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch user', error);
+    }
+});
 
 // ===== API Routes =====
 
@@ -230,7 +358,7 @@ app.get('/api/health', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     }
 });
 
-// Version endpoint
+// Version
 app.get('/api/version', rateLimit(RATE_LIMIT_PUBLIC), (req, res) => {
     let commit = 'unknown';
     try {
@@ -239,60 +367,29 @@ app.get('/api/version', rateLimit(RATE_LIMIT_PUBLIC), (req, res) => {
     } catch (e) {
         commit = process.env.GIT_COMMIT || 'unknown';
     }
-    res.json({
-        service: 'linkmeu-api',
-        version: '1.1.0',
-        commit,
-        environment: NODE_ENV,
-        timestamp: new Date().toISOString()
-    });
+    res.json({ service: 'linkmeu-api', version: '1.2.0', commit, environment: NODE_ENV, timestamp: new Date().toISOString() });
 });
 
-// Create a new listing
-app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), upload.array('photos', 10), async (req, res) => {
+// Create listing (requires auth)
+app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), requireAuth, upload.array('photos', 10), async (req, res) => {
     try {
         const {
-            category,
-            purpose,
-            fromDate,
-            toDate,
-            title,
-            description,
-            currency,
-            budget,
-            revenue,
-            location,
-            country,
-            contact,
-            email,
-            sellerName,
-            sellerType
+            category, purpose, fromDate, toDate, title, description,
+            currency, budget, revenue, location, country, contact, email, sellerName, sellerType
         } = req.body;
 
-        // Basic validation
         if (!category || !purpose || !title || !contact || !email || !sellerName) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing required fields: category, purpose, title, contact, email, sellerName'
-            });
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
-
-        // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid email format'
-            });
+            return res.status(400).json({ success: false, message: 'Invalid email format' });
         }
 
-        // Handle uploaded photos
         let photoUrls = [];
         if (req.files && req.files.length > 0) {
             photoUrls = req.files.map(file => `/uploads/${file.filename}`);
         }
-
-        // Handle base64 photos sent from frontend (deprecated but still supported)
         if (req.body.photoData) {
             try {
                 const photoDataArray = JSON.parse(req.body.photoData);
@@ -300,24 +397,16 @@ app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), upload.array('photos', 1
                     const base64Data = photoDataArray[i].replace(/^data:image\/\w+;base64,/, '');
                     const buffer = Buffer.from(base64Data, 'base64');
                     if (buffer.length > 5 * 1024 * 1024) {
-                        return res.status(400).json({
-                            success: false,
-                            message: 'Individual photo exceeds 5MB limit'
-                        });
+                        return res.status(400).json({ success: false, message: 'Individual photo exceeds 5MB limit' });
                     }
                     const filename = `${Date.now()}-${i}.png`;
                     const filePath = `./uploads/${filename}`;
-                    if (!fs.existsSync('./uploads')) {
-                        fs.mkdirSync('./uploads', { recursive: true });
-                    }
+                    if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads', { recursive: true });
                     fs.writeFileSync(filePath, buffer);
                     photoUrls.push(`/uploads/${filename}`);
                 }
             } catch (parseError) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid photo data format'
-                });
+                return res.status(400).json({ success: false, message: 'Invalid photo data format' });
             }
         }
 
@@ -325,218 +414,218 @@ app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), upload.array('photos', 1
             `INSERT INTO listings (
                 category, purpose, from_date, to_date, title, description,
                 currency, budget, revenue, location, country,
-                contact, email, seller_name, seller_type, photos
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+                contact, email, seller_name, seller_type, photos, owner_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
             RETURNING *`,
             [
-                category,
-                purpose,
-                fromDate || null,
-                toDate || null,
-                title,
-                description,
-                currency || 'SGD',
-                budget,
-                revenue,
-                location,
-                country || 'Singapore',
-                contact,
-                email,
-                sellerName,
-                sellerType || 'owner',
-                photoUrls
+                category, purpose, fromDate || null, toDate || null, title, description,
+                currency || 'SGD', budget, revenue, location, country || 'Singapore',
+                contact, email, sellerName, sellerType || 'owner', photoUrls, req.user.id
             ]
         );
 
         const listing = result.rows[0];
+        await logAudit(req.user.id, 'LISTING_CREATED', 'listing', listing.id, { title }, req);
 
-        res.status(201).json({
-            success: true,
-            message: 'Listing created successfully',
-            listing
-        });
-
+        res.status(201).json({ success: true, message: 'Listing created successfully', listing });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to create listing', error);
     }
 });
 
-// Get all listings (with filters)
+// Get all listings
 app.get('/api/listings', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const { category, purpose, status, limit = 50, offset = 0 } = req.query;
+        const parsedLimit = Math.min(parseInt(limit) || 50, 100);
+        const parsedOffset = Math.max(parseInt(offset) || 0, 0);
 
-        // Validate limit
-        const parsedLimit = Math.min(parseInt(limit) || 50, 100); // max 100
-        const parsedOffset = Math.max(parseInt(offset) || 0, 0);  // min 0
-
-        let query = 'SELECT * FROM listings WHERE 1=1';
+        let query = 'SELECT l.*, u.name as owner_name, u.email as owner_email FROM listings l LEFT JOIN users u ON l.owner_id = u.id WHERE 1=1';
         const params = [];
         let paramIndex = 1;
 
-        if (category) {
-            query += ` AND category = $${paramIndex++}`;
-            params.push(category);
-        }
+        if (category) { query += ` AND l.category = $${paramIndex++}`; params.push(category); }
+        if (purpose) { query += ` AND l.purpose = $${paramIndex++}`; params.push(purpose); }
+        if (status) { query += ` AND l.status = $${paramIndex++}`; params.push(status); }
 
-        if (purpose) {
-            query += ` AND purpose = $${paramIndex++}`;
-            params.push(purpose);
-        }
-
-        if (status) {
-            query += ` AND status = $${paramIndex++}`;
-            params.push(status);
-        }
-
-        query += ` ORDER BY created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
+        query += ` ORDER BY l.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
         params.push(parsedLimit, parsedOffset);
 
         const result = await pool.query(query, params);
 
-        // Get total count
         let countQuery = 'SELECT COUNT(*) FROM listings WHERE 1=1';
         const countParams = [];
         let countParamIndex = 1;
-
-        if (category) {
-            countQuery += ` AND category = $${countParamIndex++}`;
-            countParams.push(category);
-        }
-        if (purpose) {
-            countQuery += ` AND purpose = $${countParamIndex++}`;
-            countParams.push(purpose);
-        }
-        if (status) {
-            countQuery += ` AND status = $${countParamIndex++}`;
-            countParams.push(status);
-        }
-
+        if (category) { countQuery += ` AND category = $${countParamIndex++}`; countParams.push(category); }
+        if (purpose) { countQuery += ` AND purpose = $${countParamIndex++}`; countParams.push(purpose); }
+        if (status) { countQuery += ` AND status = $${countParamIndex++}`; countParams.push(status); }
         const countResult = await pool.query(countQuery, countParams);
 
-        res.json({
-            success: true,
-            listings: result.rows,
-            total: parseInt(countResult.rows[0].count),
-            limit: parsedLimit,
-            offset: parsedOffset
-        });
-
+        res.json({ success: true, listings: result.rows, total: parseInt(countResult.rows[0].count), limit: parsedLimit, offset: parsedOffset });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to fetch listings', error);
     }
 });
 
-// Get single listing by ID
+// Get single listing
 app.get('/api/listings/:id', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const { id } = req.params;
-        // Validate id is a number
-        if (!/^\d+$/.test(id)) {
-            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
-        }
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid listing ID' });
 
-        const result = await pool.query('SELECT * FROM listings WHERE id = $1', [id]);
+        const result = await pool.query(
+            `SELECT l.*, u.name as owner_name, u.email as owner_email
+             FROM listings l LEFT JOIN users u ON l.owner_id = u.id WHERE l.id = $1`,
+            [id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Listing not found' });
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Listing not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            listing: result.rows[0]
-        });
-
+        res.json({ success: true, listing: result.rows[0] });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to fetch listing', error);
     }
 });
 
-// Update listing status (ADMIN ONLY - protected)
+// Update listing status (admin only)
 app.patch('/api/listings/:id/status', rateLimit(RATE_LIMIT_ADMIN), requireAdminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
 
-        if (!/^\d+$/.test(id)) {
-            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
-        }
-
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid listing ID' });
         if (!['pending', 'approved', 'rejected'].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid status. Must be: pending, approved, or rejected'
-            });
+            return res.status(400).json({ success: false, message: 'Invalid status' });
         }
 
         const result = await pool.query(
             'UPDATE listings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
             [status, id]
         );
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Listing not found' });
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Listing not found'
-            });
-        }
+        const actorId = req.user ? req.user.id : null;
+        await logAudit(actorId, `LISTING_${status.toUpperCase()}`, 'listing', parseInt(id), { status }, req);
 
-        res.json({
-            success: true,
-            message: `Listing ${status}`,
-            listing: result.rows[0]
-        });
-
+        res.json({ success: true, message: `Listing ${status}`, listing: result.rows[0] });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to update listing', error);
     }
 });
 
-// Delete listing (ADMIN ONLY - protected)
-app.delete('/api/listings/:id', rateLimit(RATE_LIMIT_ADMIN), requireAdminAuth, async (req, res) => {
+// Delete listing (owner or admin)
+app.delete('/api/listings/:id', rateLimit(RATE_LIMIT_ADMIN), requireAuth, async (req, res) => {
     try {
         const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid listing ID' });
 
-        if (!/^\d+$/.test(id)) {
-            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
+        const listingResult = await pool.query('SELECT owner_id FROM listings WHERE id = $1', [id]);
+        if (listingResult.rows.length === 0) return res.status(404).json({ success: false, message: 'Listing not found' });
+
+        const listing = listingResult.rows[0];
+        const isAdmin = ['admin', 'super_admin'].includes(req.user.role);
+        const isOwner = listing.owner_id === req.user.id;
+
+        if (!isAdmin && !isOwner) {
+            return res.status(403).json({ success: false, message: 'Forbidden: you can only delete your own listings' });
         }
 
-        // Get listing to delete photos
-        const listing = await pool.query('SELECT photos FROM listings WHERE id = $1', [id]);
-
-        if (listing.rows.length > 0 && listing.rows[0].photos) {
-            // Delete associated photos
-            for (const photo of listing.rows[0].photos) {
+        // Delete photos
+        const photoResult = await pool.query('SELECT photos FROM listings WHERE id = $1', [id]);
+        if (photoResult.rows.length > 0 && photoResult.rows[0].photos) {
+            for (const photo of photoResult.rows[0].photos) {
                 const filePath = `.${photo}`;
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
-                }
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             }
         }
 
-        const result = await pool.query('DELETE FROM listings WHERE id = $1 RETURNING id', [id]);
+        await pool.query('DELETE FROM listings WHERE id = $1', [id]);
+        await logAudit(req.user.id, 'LISTING_DELETED', 'listing', parseInt(id), null, req);
 
-        if (result.rows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Listing not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'Listing deleted successfully'
-        });
-
+        res.json({ success: true, message: 'Listing deleted successfully' });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to delete listing', error);
     }
 });
 
-// Get listings statistics
+// Update own listing
+app.patch('/api/listings/:id', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid listing ID' });
+
+        const listingResult = await pool.query('SELECT owner_id FROM listings WHERE id = $1', [id]);
+        if (listingResult.rows.length === 0) return res.status(404).json({ success: false, message: 'Listing not found' });
+
+        const listing = listingResult.rows[0];
+        const isAdmin = ['admin', 'super_admin'].includes(req.user.role);
+        const isOwner = listing.owner_id === req.user.id;
+
+        if (!isAdmin && !isOwner) {
+            return res.status(403).json({ success: false, message: 'Forbidden: you can only edit your own listings' });
+        }
+
+        const allowedFields = ['title', 'description', 'currency', 'budget', 'revenue', 'location', 'country', 'contact', 'email', 'seller_name', 'seller_type'];
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates.push(`${field} = $${paramIndex++}`);
+                values.push(req.body[field]);
+            }
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid fields to update' });
+        }
+
+        values.push(id);
+        const result = await pool.query(
+            `UPDATE listings SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex} RETURNING *`,
+            values
+        );
+
+        await logAudit(req.user.id, 'LISTING_UPDATED', 'listing', parseInt(id), { fields: updates.map(u => u.split(' ')[0]) }, req);
+        res.json({ success: true, message: 'Listing updated successfully', listing: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to update listing', error);
+    }
+});
+
+// Get user dashboard listings
+app.get('/api/me/listings', rateLimit(RATE_LIMIT_PUBLIC), requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM listings WHERE owner_id = $1 ORDER BY created_at DESC',
+            [req.user.id]
+        );
+        res.json({ success: true, listings: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch user listings', error);
+    }
+});
+
+// Get audit logs (admin only)
+app.get('/api/admin/audit-logs', rateLimit(RATE_LIMIT_ADMIN), requireAuth, requireRole(['admin', 'super_admin']), async (req, res) => {
+    try {
+        const { limit = 50, offset = 0 } = req.query;
+        const parsedLimit = Math.min(parseInt(limit) || 50, 100);
+        const parsedOffset = Math.max(parseInt(offset) || 0, 0);
+
+        const result = await pool.query(
+            `SELECT a.*, u.name as actor_name, u.email as actor_email
+             FROM audit_logs a LEFT JOIN users u ON a.actor_id = u.id
+             ORDER BY a.created_at DESC LIMIT $1 OFFSET $2`,
+            [parsedLimit, parsedOffset]
+        );
+        res.json({ success: true, logs: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch audit logs', error);
+    }
+});
+
+// Stats
 app.get('/api/stats', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const stats = await pool.query(`
@@ -551,30 +640,26 @@ app.get('/api/stats', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
                 COUNT(*) FILTER (WHERE category = 'products') as products
             FROM listings
         `);
-
-        res.json({
-            success: true,
-            stats: stats.rows[0]
-        });
-
+        res.json({ success: true, stats: stats.rows[0] });
     } catch (error) {
         safeErrorResponse(res, 500, 'Failed to fetch statistics', error);
     }
 });
 
-// ===== Serve Static Frontend =====
+// ===== Static Frontend =====
 const STATIC_PATH = process.env.STATIC_PATH || '/var/www/linkmeu';
 if (fs.existsSync(STATIC_PATH)) {
     app.use(express.static(STATIC_PATH));
-    // SPA fallback: serve index.html for non-API routes
-    app.get('*', (req, res) => {
+    app.get('*', (req, res, next) => {
         if (!req.path.startsWith('/api')) {
             res.sendFile(path.join(STATIC_PATH, 'index.html'));
+        } else {
+            next();
         }
     });
 }
 
-// ===== Payload Size Error Handler =====
+// ===== Error Handlers =====
 app.use((err, req, res, next) => {
     if (err.type === 'entity.too.large' || err.status === 413 || err.statusCode === 413 || err.message?.includes('too large')) {
         return res.status(413).json({ success: false, message: 'Payload too large' });
@@ -582,7 +667,6 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
-// ===== Global Error Handler =====
 app.use((err, req, res, next) => {
     if (err.message === 'Not allowed by CORS') {
         return res.status(403).json({ success: false, message: 'CORS error' });
@@ -594,27 +678,27 @@ app.use((err, req, res, next) => {
 // ===== Start Server =====
 async function startServer() {
     try {
-        // Test database connection
-        await pool.query('SELECT NOW()');
-        console.log('✅ Connected to Neon PostgreSQL database');
-
-        // Initialize tables
         await initializeDatabase();
-
-        // Start Express server
         app.listen(PORT, () => {
-            console.log(`\n🚀 LinkMeU Server running at http://localhost:${PORT}`);
+            console.log(`\n🚀 LinkMeU Server v1.2.0 running at http://localhost:${PORT}`);
+            console.log(`📋 Auth Endpoints:`);
+            console.log(`   POST   /api/auth/register     - Register new user`);
+            console.log(`   POST   /api/auth/login        - Login`);
+            console.log(`   POST   /api/auth/logout       - Logout`);
+            console.log(`   GET    /api/auth/me           - Get current user`);
             console.log(`📋 API Endpoints:`);
-            console.log(`   GET    /api/health          - Health check`);
-            console.log(`   GET    /api/listings        - Get all listings`);
-            console.log(`   GET    /api/listings/:id    - Get single listing`);
-            console.log(`   POST   /api/listings        - Create new listing`);
-            console.log(`   PATCH  /api/listings/:id/status - Update listing status (ADMIN)`);
-            console.log(`   DELETE /api/listings/:id    - Delete listing (ADMIN)`);
-            console.log(`   GET    /api/stats           - Get statistics\n`);
-            console.log(`🔒 Admin endpoints require x-api-key header\n`);
+            console.log(`   GET    /api/health            - Health check`);
+            console.log(`   GET    /api/version           - Version info`);
+            console.log(`   GET    /api/listings          - Get listings`);
+            console.log(`   POST   /api/listings          - Create listing (auth required)`);
+            console.log(`   GET    /api/listings/:id      - Get single listing`);
+            console.log(`   PATCH  /api/listings/:id      - Update own listing (auth)`);
+            console.log(`   PATCH  /api/listings/:id/status - Update status (admin)`);
+            console.log(`   DELETE /api/listings/:id      - Delete listing (owner/admin)`);
+            console.log(`   GET    /api/me/listings       - User dashboard listings`);
+            console.log(`   GET    /api/admin/audit-logs  - Admin audit logs`);
+            console.log(`   GET    /api/stats              - Statistics\n`);
         });
-
     } catch (error) {
         console.error('❌ Failed to start server:', error);
         process.exit(1);
