@@ -43,7 +43,7 @@ EventsX now supports **Neon PostgreSQL** as the production database, with automa
 ### 3. Configure Environment
 ```bash
 # Update .env file
-VITE_DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
 ```
 
 ### 4. Run Setup
@@ -62,7 +62,7 @@ npm run deploy
 ### Required
 ```env
 # Neon Database Connection
-VITE_DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
 ```
 
 ### Optional
@@ -75,9 +75,9 @@ VITE_APP_VERSION=2.0.0
 VITE_SUPER_ADMIN_EMAIL=Robocorpsg@gmail.com
 VITE_SUPER_ADMIN_PASSWORD=[REDACTED]
 
-# Security (Generate secure keys for production)
-VITE_JWT_SECRET=your-jwt-secret-key
-VITE_ENCRYPTION_KEY=your-encryption-key
+# Security (server-only, NEVER prefix with VITE_)
+JWT_SECRET=your-jwt-secret-key
+ENCRYPTION_KEY=your-encryption-key
 
 # Features
 VITE_ENABLE_ANALYTICS=true

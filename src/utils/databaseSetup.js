@@ -122,7 +122,7 @@ export class DatabaseSetup {
           step: 4,
           title: 'Update Environment',
           description: 'Add the connection string to your .env file',
-          code: 'VITE_DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require'
+          code: 'DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require'
         },
         {
           step: 5,
@@ -147,7 +147,7 @@ export class DatabaseSetup {
         {
           problem: 'Connection timeout',
           solution: 'Check if your Neon database is active and connection string is correct',
-          code: 'VITE_DATABASE_URL should include ?sslmode=require'
+          code: 'DATABASE_URL should include ?sslmode=require'
         },
         {
           problem: 'Migration fails',
@@ -199,11 +199,11 @@ export const quickSetup = async () => {
 
 // Environment validation
 export const validateEnvironment = () => {
-  const required = ['VITE_DATABASE_URL'];
+  // VITE_DATABASE_URL is intentionally omitted because server-only secrets
+  // must never use the VITE_ prefix. The frontend should use the backend API.
+  const required = [];
   const optional = [
     'VITE_SUPER_ADMIN_EMAIL',
-    'VITE_SUPER_ADMIN_PASSWORD',
-    'VITE_JWT_SECRET',
     'VITE_ENABLE_ANALYTICS'
   ];
 

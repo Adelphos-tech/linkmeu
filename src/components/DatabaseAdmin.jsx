@@ -266,7 +266,7 @@ const DatabaseAdmin = () => {
                   <p>1. Create a Neon account at https://console.neon.tech/</p>
                   <p>2. Create a new PostgreSQL database</p>
                   <p>3. Copy the connection string</p>
-                  <p>4. Update VITE_DATABASE_URL in your .env file</p>
+                  <p>4. Update DATABASE_URL in your .env file (server-side only)</p>
                   <p>5. Run the setup to migrate existing data</p>
                 </div>
               </div>

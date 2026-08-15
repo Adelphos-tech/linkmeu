@@ -426,7 +426,7 @@ The following values must never be committed to Git:
 
 **Important:** Variables prefixed with `VITE_` are embedded into the frontend bundle by Vite. **Never prefix server-only secrets with `VITE_`.**
 
-If your `.env` currently contains `VITE_DATABASE_URL`, `VITE_JWT_SECRET`, or similar, these values are at risk of being exposed to browsers. The server supports `DATABASE_URL` as the canonical server-only variable.
+Server-only secrets must never use the `VITE_` prefix. The application now uses `DATABASE_URL`, `JWT_SECRET`, `ENCRYPTION_KEY`, and `ADMIN_API_KEY` as the canonical server-only variable names.
 
 ### CI Safety
 

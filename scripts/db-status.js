@@ -7,7 +7,7 @@ dotenv.config();
 
 // Database configuration for Node.js
 const config = {
-  connectionString: process.env.VITE_DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
   timeout: parseInt(process.env.VITE_API_TIMEOUT) || 10000,
   maxRetries: 3,
   retryDelay: 1000
@@ -18,7 +18,7 @@ const checkDatabaseHealth = async () => {
   if (!config.connectionString || config.connectionString.includes('username:password')) {
     return { 
       healthy: false, 
-      error: 'Database not configured. Please set VITE_DATABASE_URL in .env file.',
+      error: 'Database not configured. Please set DATABASE_URL in .env file.',
       mode: 'indexeddb',
       timestamp: new Date().toISOString() 
     };

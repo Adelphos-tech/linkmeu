@@ -7,7 +7,7 @@ dotenv.config();
 
 // Database configuration for Node.js
 const config = {
-  connectionString: process.env.VITE_DATABASE_URL,
+  connectionString: process.env.DATABASE_URL,
   timeout: parseInt(process.env.VITE_API_TIMEOUT) || 10000,
   maxRetries: 3,
   retryDelay: 1000
@@ -16,7 +16,7 @@ const config = {
 // Execute query with retry logic
 const executeQuery = async (query) => {
   if (!config.connectionString || config.connectionString.includes('username:password')) {
-    throw new Error('Database not configured. Please set VITE_DATABASE_URL in .env file.');
+    throw new Error('Database not configured. Please set DATABASE_URL in .env file.');
   }
 
   const sql = neon(config.connectionString);
@@ -226,7 +226,7 @@ runSetup()
   .catch(error => {
     console.error('\n💡 Troubleshooting:');
     console.error('1. Check your Neon database is active');
-    console.error('2. Verify VITE_DATABASE_URL in .env file');
+    console.error('2. Verify DATABASE_URL in .env file');
     console.error('3. Ensure database has proper permissions');
     process.exit(1);
   });

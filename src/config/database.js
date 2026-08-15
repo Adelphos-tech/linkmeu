@@ -1,6 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 
-// Database configuration
+// ⚠️ DEPRECATED: Frontend direct database connections are not recommended.
+// The application should use the backend API (VITE_API_BASE_URL) for all database operations.
+// This code remains for backward compatibility but will not receive credentials
+// because server-only secrets must never use the VITE_ prefix.
 const config = {
   connectionString: import.meta.env.VITE_DATABASE_URL,
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 10000,
