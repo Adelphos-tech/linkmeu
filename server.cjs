@@ -265,6 +265,7 @@ app.post('/api/auth/register', rateLimit(RATE_LIMIT_AUTH), async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Registration successful',
+            token,
             user: { id: user.id, email: user.email, name: user.name, role: user.role }
         });
     } catch (error) {
@@ -315,6 +316,7 @@ app.post('/api/auth/login', rateLimit(RATE_LIMIT_AUTH), async (req, res) => {
         res.json({
             success: true,
             message: 'Login successful',
+            token,
             user: { id: user.id, email: user.email, name: user.name, role: user.role }
         });
     } catch (error) {
