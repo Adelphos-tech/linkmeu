@@ -32,6 +32,19 @@ if (!JWT_SECRET) {
 
 const COOKIE_NAME = 'linkmeu_session';
 
+// ===== Validation Constants =====
+const VALID_CATEGORIES = ['job', 'business', 'property', 'wedding', 'products', 'event', 'food', 'service'];
+const VALID_PURPOSES = ['sale', 'rent', 'buy', 'hire', 'partner', 'franchise', 'investment'];
+const VALID_STATUSES = ['pending', 'approved', 'rejected'];
+const VALID_URGENCIES = ['normal', 'urgent', 'featured'];
+const VALID_ROLES = ['user', 'moderator', 'admin', 'super_admin'];
+
+// ===== Validate critical secrets =====
+if (NODE_ENV === 'production' && !JWT_SECRET) {
+    console.error('❌ JWT_SECRET is required in production');
+    process.exit(1);
+}
+
 // ===== Database =====
 const pool = new Pool({
     connectionString: DATABASE_URL,
@@ -47,6 +60,9 @@ const RATE_LIMIT_ADMIN = 30;
 const RATE_LIMIT_CREATE = 10;
 
 function rateLimit(limit) {
+    if (process.env.DISABLE_RATE_LIMIT === 'true') {
+        return (req, res, next) => next();
+    }
     return (req, res, next) => {
         const key = req.ip || req.connection.remoteAddress || 'unknown';
         const now = Date.now();
@@ -159,14 +175,18 @@ function requireAdminAuth(req, res, next) {
     const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
     if (ADMIN_API_KEY && apiKey && apiKey.replace('Bearer ', '') === ADMIN_API_KEY) {
         req.isAdminKey = true;
+        req.user = { id: 0, email: 'api-key', role: 'super_admin' }; // synthetic user for audit logging
         return next();
     }
     const user = extractUser(req);
-    if (user && ['admin', 'super_admin'].includes(user.role)) {
-        req.user = user;
-        return next();
+    if (!user) {
+        return res.status(401).json({ success: false, message: 'Unauthorized' });
     }
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+    if (!['admin', 'super_admin'].includes(user.role)) {
+        return res.status(403).json({ success: false, message: 'Forbidden: admin access required' });
+    }
+    req.user = user;
+    next();
 }
 
 // ===== Multer =====
@@ -206,6 +226,16 @@ async function logAudit(actorId, action, entityType, entityId, metadata, req) {
         console.error('Audit log failed:', e.message);
     }
 }
+
+// ===== Request ID for tracing =====
+function generateRequestId() {
+    return `req_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 8)}`;
+}
+
+app.use((req, res, next) => {
+    req.requestId = generateRequestId();
+    next();
+});
 
 // ===== Safe Error Response =====
 function safeErrorResponse(res, statusCode, message, internalError) {
@@ -383,6 +413,12 @@ app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), requireAuth, upload.arra
         if (!category || !purpose || !title || !contact || !email || !sellerName) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
+        if (!VALID_CATEGORIES.includes(category)) {
+            return res.status(400).json({ success: false, message: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}` });
+        }
+        if (!VALID_PURPOSES.includes(purpose)) {
+            return res.status(400).json({ success: false, message: `Invalid purpose. Must be one of: ${VALID_PURPOSES.join(', ')}` });
+        }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({ success: false, message: 'Invalid email format' });
@@ -495,8 +531,8 @@ app.patch('/api/listings/:id/status', rateLimit(RATE_LIMIT_ADMIN), requireAdminA
         const { status } = req.body;
 
         if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid listing ID' });
-        if (!['pending', 'approved', 'rejected'].includes(status)) {
-            return res.status(400).json({ success: false, message: 'Invalid status' });
+        if (!VALID_STATUSES.includes(status)) {
+            return res.status(400).json({ success: false, message: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` });
         }
 
         const result = await pool.query(
@@ -663,16 +699,20 @@ if (fs.existsSync(STATIC_PATH)) {
 
 // ===== Error Handlers =====
 app.use((err, req, res, next) => {
+    // JSON parse errors from body-parser
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ success: false, message: 'Invalid JSON' });
+    }
     if (err.type === 'entity.too.large' || err.status === 413 || err.statusCode === 413 || err.message?.includes('too large')) {
         return res.status(413).json({ success: false, message: 'Payload too large' });
+    }
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({ success: false, message: 'CORS error' });
     }
     next(err);
 });
 
 app.use((err, req, res, next) => {
-    if (err.message === 'Not allowed by CORS') {
-        return res.status(403).json({ success: false, message: 'CORS error' });
-    }
     console.error('Unhandled error:', err);
     res.status(500).json({ success: false, message: 'Internal server error' });
 });
