@@ -1,4 +1,6 @@
 // ===== LinkMeU Backend Server =====
+require('dotenv').config();
+
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
@@ -9,21 +11,132 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// ===== Configuration =====
+const DATABASE_URL = process.env.DATABASE_URL || process.env.VITE_DATABASE_URL;
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173,https://linkmeu.com,https://www.linkmeu.com').split(',');
+
+if (!DATABASE_URL) {
+    console.error('❌ DATABASE_URL is required');
+    process.exit(1);
+}
+
+if (!ADMIN_API_KEY && NODE_ENV === 'production') {
+    console.warn('⚠️  ADMIN_API_KEY not set. Admin endpoints will be inaccessible.');
+}
+
 // ===== Database Configuration =====
 const pool = new Pool({
-    connectionString: 'postgresql://neondb_owner:npg_qAKgfIdhz83u@ep-patient-tree-a1b20lax-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require',
+    connectionString: DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 });
 
-// ===== Middleware =====
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static('.'));
+// ===== Rate Limiting (in-memory) =====
+const requestCounts = new Map();
+const RATE_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_PUBLIC = 100;    // requests per window for public endpoints
+const RATE_LIMIT_ADMIN = 30;      // requests per window for admin endpoints
+const RATE_LIMIT_CREATE = 10;     // requests per window for POST /api/listings
 
-// Configure multer for file uploads
+function rateLimit(limit) {
+    return (req, res, next) => {
+        const key = req.ip || req.connection.remoteAddress || 'unknown';
+        const now = Date.now();
+
+        if (!requestCounts.has(key)) {
+            requestCounts.set(key, { count: 1, resetTime: now + RATE_WINDOW_MS });
+            return next();
+        }
+
+        const record = requestCounts.get(key);
+        if (now > record.resetTime) {
+            record.count = 1;
+            record.resetTime = now + RATE_WINDOW_MS;
+            return next();
+        }
+
+        if (record.count >= limit) {
+            return res.status(429).json({
+                success: false,
+                message: 'Too many requests. Please try again later.'
+            });
+        }
+
+        record.count++;
+        next();
+    };
+}
+
+// Clean up old entries periodically
+setInterval(() => {
+    const now = Date.now();
+    for (const [key, record] of requestCounts.entries()) {
+        if (now > record.resetTime + RATE_WINDOW_MS) {
+            requestCounts.delete(key);
+        }
+    }
+}, 5 * 60 * 1000); // every 5 minutes
+
+// ===== Security Headers =====
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    if (NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+    }
+    next();
+});
+
+// ===== CORS =====
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, etc.)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        if (NODE_ENV === 'development') return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key']
+}));
+
+// ===== Body Parsing (reduced limits) =====
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+
+// Static files for uploads
+app.use('/uploads', express.static('uploads'));
+
+// ===== Authentication Middleware =====
+function requireAdminAuth(req, res, next) {
+    const apiKey = req.headers['x-api-key'] || req.headers['authorization'];
+    const expectedKey = ADMIN_API_KEY;
+
+    if (!expectedKey) {
+        return res.status(503).json({
+            success: false,
+            message: 'Admin access not configured'
+        });
+    }
+
+    if (!apiKey || apiKey.replace('Bearer ', '') !== expectedKey) {
+        return res.status(401).json({
+            success: false,
+            message: 'Unauthorized'
+        });
+    }
+
+    next();
+}
+
+// ===== Configure multer for file uploads =====
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = './uploads';
@@ -51,8 +164,6 @@ const upload = multer({
         cb(new Error('Only image files are allowed!'));
     }
 });
-
-app.use('/uploads', express.static('uploads'));
 
 // ===== Initialize Database Tables =====
 async function initializeDatabase() {
@@ -85,15 +196,9 @@ async function initializeDatabase() {
         `);
 
         // Create index for faster queries
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_listings_category ON listings(category);
-        `);
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);
-        `);
-        await pool.query(`
-            CREATE INDEX IF NOT EXISTS idx_listings_created_at ON listings(created_at DESC);
-        `);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_category ON listings(category);`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_status ON listings(status);`);
+        await pool.query(`CREATE INDEX IF NOT EXISTS idx_listings_created_at ON listings(created_at DESC);`);
 
         console.log('✅ Database tables initialized successfully');
     } catch (error) {
@@ -102,20 +207,49 @@ async function initializeDatabase() {
     }
 }
 
+// ===== Error Response Helper =====
+function safeErrorResponse(res, statusCode, message, internalError) {
+    if (NODE_ENV === 'development') {
+        console.error(internalError);
+    }
+    res.status(statusCode).json({
+        success: false,
+        message: message
+    });
+}
+
 // ===== API Routes =====
 
 // Health check
-app.get('/api/health', async (req, res) => {
+app.get('/api/health', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         await pool.query('SELECT 1');
         res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
     } catch (error) {
-        res.status(500).json({ status: 'error', database: 'disconnected', error: error.message });
+        safeErrorResponse(res, 500, 'Service unavailable', error);
     }
 });
 
+// Version endpoint
+app.get('/api/version', rateLimit(RATE_LIMIT_PUBLIC), (req, res) => {
+    let commit = 'unknown';
+    try {
+        const { execSync } = require('child_process');
+        commit = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
+    } catch (e) {
+        commit = process.env.GIT_COMMIT || 'unknown';
+    }
+    res.json({
+        service: 'linkmeu-api',
+        version: '1.1.0',
+        commit,
+        environment: NODE_ENV,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Create a new listing
-app.post('/api/listings', upload.array('photos', 10), async (req, res) => {
+app.post('/api/listings', rateLimit(RATE_LIMIT_CREATE), upload.array('photos', 10), async (req, res) => {
     try {
         const {
             category,
@@ -135,26 +269,55 @@ app.post('/api/listings', upload.array('photos', 10), async (req, res) => {
             sellerType
         } = req.body;
 
+        // Basic validation
+        if (!category || !purpose || !title || !contact || !email || !sellerName) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: category, purpose, title, contact, email, sellerName'
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email format'
+            });
+        }
+
         // Handle uploaded photos
         let photoUrls = [];
         if (req.files && req.files.length > 0) {
             photoUrls = req.files.map(file => `/uploads/${file.filename}`);
         }
 
-        // Handle base64 photos sent from frontend
+        // Handle base64 photos sent from frontend (deprecated but still supported)
         if (req.body.photoData) {
-            const photoDataArray = JSON.parse(req.body.photoData);
-            for (let i = 0; i < photoDataArray.length; i++) {
-                const base64Data = photoDataArray[i].replace(/^data:image\/\w+;base64,/, '');
-                const buffer = Buffer.from(base64Data, 'base64');
-                const filename = `${Date.now()}-${i}.png`;
-                const filePath = `./uploads/${filename}`;
-
-                if (!fs.existsSync('./uploads')) {
-                    fs.mkdirSync('./uploads', { recursive: true });
+            try {
+                const photoDataArray = JSON.parse(req.body.photoData);
+                for (let i = 0; i < photoDataArray.length; i++) {
+                    const base64Data = photoDataArray[i].replace(/^data:image\/\w+;base64,/, '');
+                    const buffer = Buffer.from(base64Data, 'base64');
+                    if (buffer.length > 5 * 1024 * 1024) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Individual photo exceeds 5MB limit'
+                        });
+                    }
+                    const filename = `${Date.now()}-${i}.png`;
+                    const filePath = `./uploads/${filename}`;
+                    if (!fs.existsSync('./uploads')) {
+                        fs.mkdirSync('./uploads', { recursive: true });
+                    }
+                    fs.writeFileSync(filePath, buffer);
+                    photoUrls.push(`/uploads/${filename}`);
                 }
-                fs.writeFileSync(filePath, buffer);
-                photoUrls.push(`/uploads/${filename}`);
+            } catch (parseError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid photo data format'
+                });
             }
         }
 
@@ -187,40 +350,25 @@ app.post('/api/listings', upload.array('photos', 10), async (req, res) => {
 
         const listing = result.rows[0];
 
-        // Generate WhatsApp message
-        const whatsappMessage = encodeURIComponent(
-            `🆕 New LinkMeU Listing!\n\n` +
-            `📋 Category: ${category}\n` +
-            `🎯 Purpose: ${purpose}\n` +
-            `📝 Title: ${title}\n` +
-            `💰 Budget: ${currency} ${budget}\n` +
-            `📍 Location: ${location}, ${country}\n` +
-            `📞 Contact: ${contact}\n` +
-            `📧 Email: ${email}\n\n` +
-            `View listing ID: #${listing.id}`
-        );
-
         res.status(201).json({
             success: true,
             message: 'Listing created successfully',
-            listing,
-            whatsappLink: `https://wa.me/6590191311?text=${whatsappMessage}`
+            listing
         });
 
     } catch (error) {
-        console.error('Error creating listing:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to create listing',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to create listing', error);
     }
 });
 
 // Get all listings (with filters)
-app.get('/api/listings', async (req, res) => {
+app.get('/api/listings', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const { category, purpose, status, limit = 50, offset = 0 } = req.query;
+
+        // Validate limit
+        const parsedLimit = Math.min(parseInt(limit) || 50, 100); // max 100
+        const parsedOffset = Math.max(parseInt(offset) || 0, 0);  // min 0
 
         let query = 'SELECT * FROM listings WHERE 1=1';
         const params = [];
@@ -242,7 +390,7 @@ app.get('/api/listings', async (req, res) => {
         }
 
         query += ` ORDER BY created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
-        params.push(parseInt(limit), parseInt(offset));
+        params.push(parsedLimit, parsedOffset);
 
         const result = await pool.query(query, params);
 
@@ -270,24 +418,24 @@ app.get('/api/listings', async (req, res) => {
             success: true,
             listings: result.rows,
             total: parseInt(countResult.rows[0].count),
-            limit: parseInt(limit),
-            offset: parseInt(offset)
+            limit: parsedLimit,
+            offset: parsedOffset
         });
 
     } catch (error) {
-        console.error('Error fetching listings:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch listings',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to fetch listings', error);
     }
 });
 
 // Get single listing by ID
-app.get('/api/listings/:id', async (req, res) => {
+app.get('/api/listings/:id', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const { id } = req.params;
+        // Validate id is a number
+        if (!/^\d+$/.test(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
+        }
+
         const result = await pool.query('SELECT * FROM listings WHERE id = $1', [id]);
 
         if (result.rows.length === 0) {
@@ -303,20 +451,19 @@ app.get('/api/listings/:id', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching listing:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch listing',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to fetch listing', error);
     }
 });
 
-// Update listing status (for admin)
-app.patch('/api/listings/:id/status', async (req, res) => {
+// Update listing status (ADMIN ONLY - protected)
+app.patch('/api/listings/:id/status', rateLimit(RATE_LIMIT_ADMIN), requireAdminAuth, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
+
+        if (!/^\d+$/.test(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
+        }
 
         if (!['pending', 'approved', 'rejected'].includes(status)) {
             return res.status(400).json({
@@ -344,19 +491,18 @@ app.patch('/api/listings/:id/status', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error updating listing:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update listing',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to update listing', error);
     }
 });
 
-// Delete listing
-app.delete('/api/listings/:id', async (req, res) => {
+// Delete listing (ADMIN ONLY - protected)
+app.delete('/api/listings/:id', rateLimit(RATE_LIMIT_ADMIN), requireAdminAuth, async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (!/^\d+$/.test(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid listing ID' });
+        }
 
         // Get listing to delete photos
         const listing = await pool.query('SELECT photos FROM listings WHERE id = $1', [id]);
@@ -386,20 +532,15 @@ app.delete('/api/listings/:id', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error deleting listing:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete listing',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to delete listing', error);
     }
 });
 
 // Get listings statistics
-app.get('/api/stats', async (req, res) => {
+app.get('/api/stats', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     try {
         const stats = await pool.query(`
-            SELECT 
+            SELECT
                 COUNT(*) as total,
                 COUNT(*) FILTER (WHERE status = 'pending') as pending,
                 COUNT(*) FILTER (WHERE status = 'approved') as approved,
@@ -417,13 +558,29 @@ app.get('/api/stats', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching stats:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch statistics',
-            error: error.message
-        });
+        safeErrorResponse(res, 500, 'Failed to fetch statistics', error);
     }
+});
+
+// ===== Serve Static Frontend =====
+const STATIC_PATH = process.env.STATIC_PATH || '/var/www/linkmeu';
+if (fs.existsSync(STATIC_PATH)) {
+    app.use(express.static(STATIC_PATH));
+    // SPA fallback: serve index.html for non-API routes
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(path.join(STATIC_PATH, 'index.html'));
+        }
+    });
+}
+
+// ===== Global Error Handler =====
+app.use((err, req, res, next) => {
+    if (err.message === 'Not allowed by CORS') {
+        return res.status(403).json({ success: false, message: 'CORS error' });
+    }
+    console.error('Unhandled error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
 });
 
 // ===== Start Server =====
@@ -444,9 +601,10 @@ async function startServer() {
             console.log(`   GET    /api/listings        - Get all listings`);
             console.log(`   GET    /api/listings/:id    - Get single listing`);
             console.log(`   POST   /api/listings        - Create new listing`);
-            console.log(`   PATCH  /api/listings/:id/status - Update listing status`);
-            console.log(`   DELETE /api/listings/:id    - Delete listing`);
+            console.log(`   PATCH  /api/listings/:id/status - Update listing status (ADMIN)`);
+            console.log(`   DELETE /api/listings/:id    - Delete listing (ADMIN)`);
             console.log(`   GET    /api/stats           - Get statistics\n`);
+            console.log(`🔒 Admin endpoints require x-api-key header\n`);
         });
 
     } catch (error) {
@@ -454,5 +612,18 @@ async function startServer() {
         process.exit(1);
     }
 }
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM received. Shutting down gracefully...');
+    await pool.end();
+    process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+    console.log('SIGINT received. Shutting down gracefully...');
+    await pool.end();
+    process.exit(0);
+});
 
 startServer();
