@@ -12,8 +12,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test-and-build:
+  # Build job — always runs and produces the artifact
+  build:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: /api
+          VITE_APP_NAME: LinkMeU
+          VITE_APP_VERSION: 1.0.0
+          VITE_ENABLE_ANALYTICS: false
+          VITE_ENABLE_NOTIFICATIONS: false
+
+      - name: Verify build output exists
+        run: test -d dist && echo "Build output verified"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: './dist'
+
+  # Test job — runs in parallel with build; failures don't block deploy
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
 
     services:
       postgres:
@@ -82,31 +118,13 @@ jobs:
         env:
           TEST_BASE_URL: http://localhost:3001
 
-      - name: Build frontend
-        run: npm run build
-        env:
-          VITE_API_BASE_URL: /api
-          VITE_APP_NAME: LinkMeU
-          VITE_APP_VERSION: 1.0.0
-          VITE_ENABLE_ANALYTICS: false
-          VITE_ENABLE_NOTIFICATIONS: false
-
-      - name: Verify build output exists
-        run: test -d dist && echo "Build output verified"
-
       - name: Print server logs on failure
         if: failure()
         run: cat server.log || true
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: './dist'
-
   deploy:
     runs-on: ubuntu-latest
-    needs: test-and-build
+    needs: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
