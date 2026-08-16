@@ -20,7 +20,11 @@ const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
 const JWT_SECRET = process.env.JWT_SECRET;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const COOKIE_SECURE = NODE_ENV === 'production';
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173,https://linkmeu.com,https://www.linkmeu.com').split(',');
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5173,https://linkmeu.com,https://www.linkmeu.com,http://45.113.226.115').split(',');
+// Always allow VPS IP regardless of environment variable
+if (!ALLOWED_ORIGINS.includes('http://45.113.226.115')) {
+    ALLOWED_ORIGINS.push('http://45.113.226.115');
+}
 
 if (!DATABASE_URL) {
     console.error('❌ DATABASE_URL is required');

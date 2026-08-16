@@ -83,7 +83,7 @@ const ListingsLogin = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                  placeholder="linkmeucom@gmail.com"
+                  placeholder="robocorpsg@gmail.com"
                   required
                 />
               </div>
@@ -133,8 +133,8 @@ const ListingsLogin = () => {
           {/* Admin Credentials Hint */}
           <div className="mt-6 p-4 bg-amber-50 border border-amber-200/50 rounded-xl">
             <p className="text-amber-700 text-xs font-semibold mb-2">Admin Credentials:</p>
-            <p className="text-gray-600 text-xs">Email: <span className="text-gray-900 font-medium">linkmeucom@gmail.com</span></p>
-            <p className="text-gray-600 text-xs">Password: <span className="text-gray-900 font-medium">LinkMeU@Admin2024</span></p>
+            <p className="text-gray-600 text-xs">Email: <span className="text-gray-900 font-medium">robocorpsg@gmail.com</span></p>
+            <p className="text-gray-600 text-xs">Password: <span className="text-gray-900 font-medium">Admin@7990</span></p>
           </div>
         </div>
 
