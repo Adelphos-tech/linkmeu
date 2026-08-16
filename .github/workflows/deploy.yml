@@ -146,24 +146,36 @@ jobs:
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
+          set -xe
+
+          # Ensure remote dist directory is clean before copy
+          ssh -i ~/.ssh/deploy_key \
+              -o IdentitiesOnly=yes \
+              -o BatchMode=yes \
+              -o StrictHostKeyChecking=no \
+              ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} \
+              "rm -rf /var/www/linkmeu-api/dist && mkdir -p /var/www/linkmeu-api/dist"
+
           # Copy built frontend to VPS
           scp -i ~/.ssh/deploy_key \
               -o IdentitiesOnly=yes \
               -o BatchMode=yes \
-              -r ./dist ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/linkmeu-api/dist
+              -o StrictHostKeyChecking=no \
+              -r ./dist/* ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}:/var/www/linkmeu-api/dist/
 
           # Deploy backend and restart
           ssh -i ~/.ssh/deploy_key \
               -o IdentitiesOnly=yes \
               -o BatchMode=yes \
+              -o StrictHostKeyChecking=no \
               ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} \
-              "set -e; \
+              "set -xe; \
                cd /var/www/linkmeu-api; \
                if [ ! -d .git ]; then git init && git remote add origin https://github.com/Adelphos-tech/linkmeu.git; fi; \
-               git fetch --depth=1 origin \$COMMIT_SHA; \
-               git checkout -f \$COMMIT_SHA; \
+               git fetch --depth=1 origin $COMMIT_SHA; \
+               git checkout -f $COMMIT_SHA; \
                npm ci --production; \
-               export GIT_COMMIT=\$COMMIT_SHA; \
+               export GIT_COMMIT=$COMMIT_SHA; \
                export STATIC_PATH=/var/www/linkmeu-api/dist; \
                export NODE_ENV=production; \
                pm2 reload linkmeu --update-env; \
