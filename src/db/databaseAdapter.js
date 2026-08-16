@@ -194,11 +194,30 @@ export const getAllClubMembers = async () => {
   return await ApiDB.getAllClubMembers();
 };
 
-// Stubs for mutations (not yet needed)
-export const createClub = async () => ({ id: 0 });
-export const updateClub = async () => ({});
-export const deleteClub = async () => ({});
-export const createClubMember = async () => ({ id: 0 });
-export const updateClubMember = async () => ({});
-export const deleteClubMember = async () => ({});
-export const bulkCreateClubMembers = async () => [];
+export const createClub = async (clubData) => {
+  return await ApiDB.createClub(clubData);
+};
+
+export const updateClub = async (clubId, clubData) => {
+  return await ApiDB.updateClub(clubId, clubData);
+};
+
+export const deleteClub = async (clubId) => {
+  return await ApiDB.deleteClub(clubId);
+};
+
+export const createClubMember = async (memberData) => {
+  return await ApiDB.createClubMember(memberData);
+};
+
+export const updateClubMember = async (memberId, memberData) => {
+  return await ApiDB.updateClubMember(memberId, memberData);
+};
+
+export const deleteClubMember = async (memberId) => {
+  return await ApiDB.deleteClubMember(memberId);
+};
+
+export const bulkCreateClubMembers = async (membersData) => {
+  return await ApiDB.bulkCreateClubMembers(membersData);
+};

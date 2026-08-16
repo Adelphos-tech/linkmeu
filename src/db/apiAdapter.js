@@ -100,7 +100,7 @@ function mapClub(club) {
     contactPerson: club.contact_person || '',
     postalCode: club.postal_code || '',
     openingHours: club.opening_hours || {},
-    annualFee: club.annual_fee || 0,
+    annualFee: parseFloat(club.annual_fee) || 0,
     createdAt: club.created_at,
     updatedAt: club.updated_at
   };
@@ -115,13 +115,52 @@ function mapClubMember(member) {
     registrationDate: member.registration_date,
     membershipType: member.membership_type,
     paymentStatus: member.payment_status,
-    amountPaid: member.amount_paid || 0,
-    prorataFee: member.prorata_fee || 0,
+    amountPaid: parseFloat(member.amount_paid) || 0,
+    prorataFee: parseFloat(member.prorata_fee) || 0,
     memberCategory: member.member_category || 'individual',
     rocNumber: member.roc_number || '',
     icPassport: member.ic_passport || '',
     createdAt: member.created_at,
     updatedAt: member.updated_at
+  };
+}
+
+// Map frontend club data to backend format
+function unmapClub(clubData) {
+  return {
+    name: clubData.name,
+    description: clubData.description,
+    logo: clubData.logo,
+    contact_person: clubData.contactPerson,
+    contact: clubData.contact,
+    email: clubData.email,
+    address: clubData.address,
+    postal_code: clubData.postalCode,
+    website: clubData.website,
+    opening_hours: clubData.openingHours,
+    annual_fee: clubData.annualFee
+  };
+}
+
+// Map frontend club member data to backend format
+function unmapClubMember(memberData) {
+  return {
+    club_id: memberData.clubId,
+    name: memberData.name,
+    photo: memberData.photo,
+    contact: memberData.contact,
+    email: memberData.email,
+    comments: memberData.comments,
+    registration_date: memberData.registrationDate,
+    membership_type: memberData.membershipType,
+    payment_status: memberData.paymentStatus,
+    amount_paid: memberData.amountPaid,
+    prorata_fee: memberData.prorataFee,
+    member_category: memberData.memberCategory,
+    ic_passport: memberData.icPassport,
+    nationality: memberData.nationality,
+    roc_number: memberData.rocNumber,
+    country: memberData.country
   };
 }
 
@@ -426,5 +465,78 @@ export const getAllClubMembers = async () => {
   const res = await fetch(`${API_BASE}/api/club-members`, { headers: buildHeaders(false) });
   const data = await res.json();
   if (!data.success) return [];
+  return (data.members || []).map(mapClubMember);
+};
+
+export const createClub = async (clubData) => {
+  const res = await fetch(`${API_BASE}/api/clubs`, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify(unmapClub(clubData))
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to create club');
+  return mapClub(data.club);
+};
+
+export const updateClub = async (clubId, clubData) => {
+  const res = await fetch(`${API_BASE}/api/clubs/${clubId}`, {
+    method: 'PATCH',
+    headers: buildHeaders(),
+    body: JSON.stringify(unmapClub(clubData))
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to update club');
+  return mapClub(data.club);
+};
+
+export const deleteClub = async (clubId) => {
+  const res = await fetch(`${API_BASE}/api/clubs/${clubId}`, {
+    method: 'DELETE',
+    headers: buildHeaders(false)
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to delete club');
+};
+
+export const createClubMember = async (memberData) => {
+  const res = await fetch(`${API_BASE}/api/club-members`, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify(unmapClubMember(memberData))
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to create member');
+  return mapClubMember(data.member);
+};
+
+export const updateClubMember = async (memberId, memberData) => {
+  const res = await fetch(`${API_BASE}/api/club-members/${memberId}`, {
+    method: 'PATCH',
+    headers: buildHeaders(),
+    body: JSON.stringify(unmapClubMember(memberData))
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to update member');
+  return mapClubMember(data.member);
+};
+
+export const deleteClubMember = async (memberId) => {
+  const res = await fetch(`${API_BASE}/api/club-members/${memberId}`, {
+    method: 'DELETE',
+    headers: buildHeaders(false)
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to delete member');
+};
+
+export const bulkCreateClubMembers = async (membersData) => {
+  const res = await fetch(`${API_BASE}/api/club-members/bulk`, {
+    method: 'POST',
+    headers: buildHeaders(),
+    body: JSON.stringify({ members: membersData.map(unmapClubMember) })
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || 'Failed to bulk create members');
   return (data.members || []).map(mapClubMember);
 };

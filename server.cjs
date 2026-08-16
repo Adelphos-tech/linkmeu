@@ -965,6 +965,173 @@ app.get('/api/club-members', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     }
 });
 
+// Create club
+app.post('/api/clubs', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { name, description, logo, contact_person, contact, email, address, postal_code, website, opening_hours, annual_fee } = req.body;
+        if (!name || !email) {
+            return res.status(400).json({ success: false, message: 'Name and email are required' });
+        }
+        const result = await pool.query(
+            `INSERT INTO clubs (name, description, logo, contact_person, contact, email, address, postal_code, website, opening_hours, annual_fee)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+            [name, description || '', logo || null, contact_person || '', contact || '', email, address || '', postal_code || '', website || '', opening_hours || {}, annual_fee || 120]
+        );
+        await logAudit(req.user.id, 'CLUB_CREATED', 'club', result.rows[0].id, { name }, req);
+        res.status(201).json({ success: true, club: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to create club', error);
+    }
+});
+
+// Update club
+app.patch('/api/clubs/:id', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const allowedFields = ['name', 'description', 'logo', 'contact_person', 'contact', 'email', 'address', 'postal_code', 'website', 'opening_hours', 'annual_fee'];
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates.push(`${field} = $${paramIndex++}`);
+                values.push(req.body[field]);
+            }
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid fields to update' });
+        }
+
+        values.push(id);
+        const result = await pool.query(
+            `UPDATE clubs SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex} RETURNING *`,
+            values
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Club not found' });
+        }
+
+        await logAudit(req.user.id, 'CLUB_UPDATED', 'club', id, { fields: allowedFields.filter(f => req.body[f] !== undefined) }, req);
+        res.json({ success: true, club: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to update club', error);
+    }
+});
+
+// Delete club
+app.delete('/api/clubs/:id', rateLimit(RATE_LIMIT_ADMIN), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('DELETE FROM clubs WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Club not found' });
+        }
+        await logAudit(req.user.id, 'CLUB_DELETED', 'club', id, { name: result.rows[0].name }, req);
+        res.json({ success: true, message: 'Club deleted successfully' });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to delete club', error);
+    }
+});
+
+// Create club member
+app.post('/api/club-members', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { club_id, name, photo, contact, email, comments, registration_date, membership_type, payment_status, amount_paid, prorata_fee, member_category, ic_passport, nationality, roc_number, country } = req.body;
+        if (!club_id || !name || !email || !registration_date) {
+            return res.status(400).json({ success: false, message: 'Club ID, name, email, and registration date are required' });
+        }
+        const result = await pool.query(
+            `INSERT INTO club_members (club_id, name, photo, contact, email, comments, registration_date, membership_type, payment_status, amount_paid, prorata_fee, member_category, ic_passport, nationality, roc_number, country)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`,
+            [club_id, name, photo || null, contact || '', email, comments || '', registration_date, membership_type || 'annual', payment_status || 'not_paid', amount_paid || 0, prorata_fee || 0, member_category || 'individual', ic_passport || '', nationality || '', roc_number || '', country || '']
+        );
+        await logAudit(req.user.id, 'MEMBER_CREATED', 'club_member', result.rows[0].id, { name, club_id }, req);
+        res.status(201).json({ success: true, member: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to create club member', error);
+    }
+});
+
+// Update club member
+app.patch('/api/club-members/:id', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const allowedFields = ['club_id', 'name', 'photo', 'contact', 'email', 'comments', 'registration_date', 'membership_type', 'payment_status', 'amount_paid', 'prorata_fee', 'member_category', 'ic_passport', 'nationality', 'roc_number', 'country'];
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates.push(`${field} = $${paramIndex++}`);
+                values.push(req.body[field]);
+            }
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid fields to update' });
+        }
+
+        values.push(id);
+        const result = await pool.query(
+            `UPDATE club_members SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex} RETURNING *`,
+            values
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Member not found' });
+        }
+
+        await logAudit(req.user.id, 'MEMBER_UPDATED', 'club_member', id, { fields: allowedFields.filter(f => req.body[f] !== undefined) }, req);
+        res.json({ success: true, member: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to update club member', error);
+    }
+});
+
+// Delete club member
+app.delete('/api/club-members/:id', rateLimit(RATE_LIMIT_ADMIN), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('DELETE FROM club_members WHERE id = $1 RETURNING *', [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Member not found' });
+        }
+        await logAudit(req.user.id, 'MEMBER_DELETED', 'club_member', id, { name: result.rows[0].name }, req);
+        res.json({ success: true, message: 'Member deleted successfully' });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to delete club member', error);
+    }
+});
+
+// Bulk create club members
+app.post('/api/club-members/bulk', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { members } = req.body;
+        if (!Array.isArray(members) || members.length === 0) {
+            return res.status(400).json({ success: false, message: 'Members array is required' });
+        }
+
+        const createdMembers = [];
+        for (const member of members) {
+            const { club_id, name, photo, contact, email, comments, registration_date, membership_type, payment_status, amount_paid, prorata_fee, member_category, ic_passport, nationality, roc_number, country } = member;
+            const result = await pool.query(
+                `INSERT INTO club_members (club_id, name, photo, contact, email, comments, registration_date, membership_type, payment_status, amount_paid, prorata_fee, member_category, ic_passport, nationality, roc_number, country)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING *`,
+                [club_id, name, photo || null, contact || '', email, comments || '', registration_date, membership_type || 'annual', payment_status || 'not_paid', amount_paid || 0, prorata_fee || 0, member_category || 'individual', ic_passport || '', nationality || '', roc_number || '', country || '']
+            );
+            createdMembers.push(result.rows[0]);
+        }
+        await logAudit(req.user.id, 'MEMBERS_BULK_CREATED', 'club_member', null, { count: createdMembers.length }, req);
+        res.status(201).json({ success: true, members: createdMembers });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to bulk create members', error);
+    }
+});
+
 // ===== SPA Fallback =====
 // Must come after API routes so client-side routing works
 app.get('*', (req, res, next) => {

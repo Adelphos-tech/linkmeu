@@ -330,7 +330,7 @@ const Membership = () => {
     const paid = clubMembers.filter(m => m.paymentStatus === 'paid').length;
     const partial = clubMembers.filter(m => m.paymentStatus === 'partial').length;
     const unpaid = clubMembers.filter(m => m.paymentStatus === 'not_paid').length;
-    const totalRevenue = clubMembers.reduce((sum, m) => sum + (m.amountPaid || 0), 0);
+    const totalRevenue = clubMembers.reduce((sum, m) => sum + (parseFloat(m.amountPaid) || 0), 0);
     return { total: clubMembers.length, paid, partial, unpaid, totalRevenue };
   };
 
@@ -773,15 +773,15 @@ const Membership = () => {
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm">
-                              <p className="font-semibold text-amber-500">${member.prorataFee?.toFixed(2) || '0.00'}</p>
+                              <p className="font-semibold text-amber-500">${(parseFloat(member.prorataFee) || 0).toFixed(2)}</p>
                               <p className="text-xs text-gray-500">Prorata</p>
                             </div>
                           </td>
                           <td className="px-6 py-4">
                             <div>
                               {getPaymentStatusBadge(member.paymentStatus)}
-                              {member.amountPaid > 0 && (
-                                <p className="text-xs text-gray-500 mt-1">${member.amountPaid} paid</p>
+                              {(parseFloat(member.amountPaid) || 0) > 0 && (
+                                <p className="text-xs text-gray-500 mt-1">${parseFloat(member.amountPaid).toFixed(2)} paid</p>
                               )}
                             </div>
                           </td>
