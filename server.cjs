@@ -105,6 +105,12 @@ app.use((req, res, next) => {
     next();
 });
 
+// Frontend static assets — serve before CORS so crossorigin attribute does not trigger CORS errors
+const STATIC_PATH = process.env.STATIC_PATH || '/var/www/linkmeu';
+if (fs.existsSync(STATIC_PATH)) {
+    app.use(express.static(STATIC_PATH));
+}
+
 // ===== CORS =====
 app.use(cors({
     origin: (origin, callback) => {
@@ -703,18 +709,271 @@ app.get('/api/stats', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
     }
 });
 
-// ===== Static Frontend =====
-const STATIC_PATH = process.env.STATIC_PATH || '/var/www/linkmeu';
-if (fs.existsSync(STATIC_PATH)) {
-    app.use(express.static(STATIC_PATH));
-    app.get('*', (req, res, next) => {
-        if (!req.path.startsWith('/api')) {
-            res.sendFile(path.join(STATIC_PATH, 'index.html'));
-        } else {
-            next();
+// ===== Events API =====
+
+// Get all events
+app.get('/api/events', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT * FROM events WHERE status != 'deleted' ORDER BY start_date ASC NULLS LAST`
+        );
+        res.json({ success: true, events: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch events', error);
+    }
+});
+
+// Get single event
+app.get('/api/events/:id', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid event ID' });
+
+        const result = await pool.query('SELECT * FROM events WHERE id = $1 AND status != $2', [id, 'deleted']);
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Event not found' });
+
+        res.json({ success: true, event: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch event', error);
+    }
+});
+
+// Create event (auth required)
+app.post('/api/events', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const {
+            title, description, eventType, startDate, endDate,
+            venue, capacity, logo, image, organisers, speakers, sponsors
+        } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ success: false, message: 'Title is required' });
         }
-    });
-}
+
+        const result = await pool.query(
+            `INSERT INTO events (title, description, event_type, start_date, end_date, venue, capacity, logo, image, owner_id, organisers, speakers, sponsors, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'active') RETURNING *`,
+            [
+                title, description || '', eventType || 'conference', startDate || null, endDate || null,
+                venue || '', parseInt(capacity) || 100, logo || null, image || null, req.user.id,
+                JSON.stringify(organisers || []), JSON.stringify(speakers || []), JSON.stringify(sponsors || [])
+            ]
+        );
+
+        await logAudit(req.user.id, 'EVENT_CREATED', 'event', result.rows[0].id, { title }, req);
+        res.status(201).json({ success: true, message: 'Event created', event: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to create event', error);
+    }
+});
+
+// Update event
+app.patch('/api/events/:id', rateLimit(RATE_LIMIT_CREATE), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid event ID' });
+
+        const eventResult = await pool.query('SELECT owner_id FROM events WHERE id = $1', [id]);
+        if (eventResult.rows.length === 0) return res.status(404).json({ success: false, message: 'Event not found' });
+
+        const isAdmin = ['admin', 'super_admin'].includes(req.user.role);
+        const isOwner = eventResult.rows[0].owner_id === req.user.id;
+        if (!isAdmin && !isOwner) {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+
+        const allowedFields = ['title', 'description', 'event_type', 'start_date', 'end_date', 'venue', 'capacity', 'logo', 'image', 'organisers', 'speakers', 'sponsors', 'status'];
+        const updates = [];
+        const values = [];
+        let paramIndex = 1;
+
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates.push(`${field} = $${paramIndex++}`);
+                values.push(req.body[field]);
+            }
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid fields to update' });
+        }
+
+        values.push(id);
+        const result = await pool.query(
+            `UPDATE events SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${paramIndex} RETURNING *`,
+            values
+        );
+
+        await logAudit(req.user.id, 'EVENT_UPDATED', 'event', parseInt(id), null, req);
+        res.json({ success: true, event: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to update event', error);
+    }
+});
+
+// Delete event (soft delete)
+app.delete('/api/events/:id', rateLimit(RATE_LIMIT_ADMIN), requireAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid event ID' });
+
+        const eventResult = await pool.query('SELECT owner_id FROM events WHERE id = $1', [id]);
+        if (eventResult.rows.length === 0) return res.status(404).json({ success: false, message: 'Event not found' });
+
+        const isAdmin = ['admin', 'super_admin'].includes(req.user.role);
+        const isOwner = eventResult.rows[0].owner_id === req.user.id;
+        if (!isAdmin && !isOwner) {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+
+        await pool.query("UPDATE events SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = $1", [id]);
+        await logAudit(req.user.id, 'EVENT_DELETED', 'event', parseInt(id), null, req);
+        res.json({ success: true, message: 'Event deleted' });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to delete event', error);
+    }
+});
+
+// ===== Attendees API =====
+
+// Get attendees by event
+app.get('/api/events/:id/attendees', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid event ID' });
+
+        const result = await pool.query(
+            'SELECT * FROM attendees WHERE event_id = $1 ORDER BY registered_at DESC',
+            [id]
+        );
+        res.json({ success: true, attendees: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch attendees', error);
+    }
+});
+
+// Register attendee
+app.post('/api/events/:id/attendees', rateLimit(RATE_LIMIT_CREATE), async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid event ID' });
+
+        const { name, email, contact, notes } = req.body;
+        if (!name || !email) {
+            return res.status(400).json({ success: false, message: 'Name and email are required' });
+        }
+
+        const result = await pool.query(
+            `INSERT INTO attendees (event_id, name, email, contact, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [id, name, email, contact || '', notes || '']
+        );
+
+        res.status(201).json({ success: true, attendee: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to register attendee', error);
+    }
+});
+
+// Update attendee status (check-in)
+app.patch('/api/attendees/:id/status', rateLimit(RATE_LIMIT_CREATE), async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!/^\d+$/.test(id)) return res.status(400).json({ success: false, message: 'Invalid attendee ID' });
+
+        const { attended } = req.body;
+        const result = await pool.query(
+            `UPDATE attendees SET attended = $1 WHERE id = $2 RETURNING *`,
+            [attended, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ success: false, message: 'Attendee not found' });
+
+        res.json({ success: true, attendee: result.rows[0] });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to update attendee', error);
+    }
+});
+
+// Search attendees
+app.get('/api/attendees/search', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const { eventId, q } = req.query;
+        if (!eventId || !q) {
+            return res.status(400).json({ success: false, message: 'eventId and q are required' });
+        }
+
+        const result = await pool.query(
+            `SELECT * FROM attendees WHERE event_id = $1 AND (name ILIKE $2 OR email ILIKE $2) ORDER BY name`,
+            [eventId, `%${q}%`]
+        );
+        res.json({ success: true, attendees: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to search attendees', error);
+    }
+});
+
+// ===== Clubs API =====
+
+// Get all clubs
+app.get('/api/clubs', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM clubs ORDER BY created_at DESC');
+        res.json({ success: true, clubs: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch clubs', error);
+    }
+});
+
+// Get single club with members
+app.get('/api/clubs/:id', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const clubResult = await pool.query('SELECT * FROM clubs WHERE id = $1', [id]);
+        if (clubResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Club not found' });
+        }
+        const membersResult = await pool.query(
+            'SELECT * FROM club_members WHERE club_id = $1 ORDER BY created_at DESC',
+            [id]
+        );
+        res.json({ success: true, club: clubResult.rows[0], members: membersResult.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch club', error);
+    }
+});
+
+// Get club members by club ID
+app.get('/api/clubs/:id/members', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+            'SELECT * FROM club_members WHERE club_id = $1 ORDER BY created_at DESC',
+            [id]
+        );
+        res.json({ success: true, members: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch club members', error);
+    }
+});
+
+// Get all club members
+app.get('/api/club-members', rateLimit(RATE_LIMIT_PUBLIC), async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM club_members ORDER BY created_at DESC');
+        res.json({ success: true, members: result.rows });
+    } catch (error) {
+        safeErrorResponse(res, 500, 'Failed to fetch club members', error);
+    }
+});
+
+// ===== SPA Fallback =====
+// Must come after API routes so client-side routing works
+app.get('*', (req, res, next) => {
+    if (!req.path.startsWith('/api')) {
+        res.sendFile(path.join(STATIC_PATH, 'index.html'));
+    } else {
+        next();
+    }
+});
 
 // ===== Error Handlers =====
 app.use((err, req, res, next) => {

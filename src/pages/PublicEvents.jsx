@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Calendar, MapPin, LogIn } from 'lucide-react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/database';
+import { Calendar, MapPin, LogIn, RefreshCw } from 'lucide-react';
+import { getAllEvents, getDatabaseStatus } from '../db/databaseAdapter';
 import { format } from 'date-fns';
 
 const PublicEvents = () => {
   const navigate = useNavigate();
-  const events = useLiveQuery(() => db.events.toArray(), []);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllEvents();
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-black">

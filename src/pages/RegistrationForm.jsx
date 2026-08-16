@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
-import { getEvent, saveAttendee } from '../db/database';
+import { getEvent, registerAttendee } from '../db/databaseAdapter';
 import { format } from 'date-fns';
 import Header from '../components/Header';
+import { useToast } from '../components/Toast';
 
 const RegistrationForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
   const [event, setEvent] = useState(null);
   const [attendees, setAttendees] = useState([]);
   const [formData, setFormData] = useState({
@@ -30,7 +32,7 @@ const RegistrationForm = () => {
       setEvent(eventData);
       
       // Get current attendees to check capacity
-      const { getAttendeesByEvent } = await import('../db/database');
+      const { getAttendeesByEvent } = await import('../db/databaseAdapter');
       const attendeeData = await getAttendeesByEvent(parseInt(id));
       setAttendees(attendeeData);
       
@@ -51,13 +53,13 @@ const RegistrationForm = () => {
     e.preventDefault();
 
     if (!formData.name || !formData.email) {
-      alert('Please fill in name and email');
+      toast.error('Please fill in name and email');
       return;
     }
 
     setLoading(true);
     try {
-      await saveAttendee({
+      await registerAttendee({
         eventId: parseInt(id),
         ...formData,
         attended: false,
@@ -71,7 +73,7 @@ const RegistrationForm = () => {
       }, 3000);
     } catch (error) {
       console.error('Error saving registration:', error);
-      alert('Failed to register. Please try again.');
+      toast.error('Failed to register. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -121,10 +123,12 @@ const RegistrationForm = () => {
 
         {/* Event Info */}
         <div className="bg-dark-lighter rounded-lg p-6 mb-6 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-3xl font-bold">EX</span>
+          <div className="flex items-center justify-center mb-4">
+            <span className="text-2xl font-bold text-white">Link</span>
+            <span className="text-2xl font-bold text-red-500">Me</span>
+            <span className="text-2xl font-bold text-white">U</span>
           </div>
-          <p className="text-sm text-gray-400 mb-4">EventsX</p>
+          <p className="text-xs text-gray-400 mb-4">Link Me. You Matter Most.</p>
 
           <h1 className="text-2xl font-bold mb-3 uppercase">{event.title}</h1>
           
@@ -168,7 +172,7 @@ const RegistrationForm = () => {
           )}
 
           <div className="text-xs text-gray-500 mt-4">
-            Powered by Robocorp
+            © 2025 LinkMeU
           </div>
         </div>
 

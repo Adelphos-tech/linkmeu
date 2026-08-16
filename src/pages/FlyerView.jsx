@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Download } from 'lucide-react';
-import { getEvent } from '../db/database';
+import { getEvent } from '../db/databaseAdapter';
 import { generateQRCode, generateRegistrationURL } from '../utils/qrcode';
 import { generateA5Flyer, downloadPDF } from '../utils/pdf';
 import { format } from 'date-fns';
@@ -60,13 +60,34 @@ const FlyerView = () => {
       <div className="max-w-md mx-auto px-4 py-6">
         {/* Flyer Preview */}
         <div className="bg-black border border-gray-800 rounded-lg p-6 mb-6">
-          {/* Header */}
+          {/* Header - Logo */}
           <div className="mb-6">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-3xl font-bold">EX</span>
-            </div>
-            <p className="text-sm text-gray-400 text-center">EventsX</p>
+            {event.logo ? (
+              <div className="flex flex-col items-center gap-2 mb-2">
+                <img 
+                  src={event.logo} 
+                  alt="Event Logo" 
+                  className="w-24 h-24 object-contain rounded-lg"
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2 mb-2">
+                <span className="text-3xl font-bold">EX</span>
+                <p className="text-sm text-gray-400 text-center">EventsX</p>
+              </div>
+            )}
           </div>
+
+          {/* Event Banner Image */}
+          {event.image && (
+            <div className="mb-6 rounded-lg overflow-hidden">
+              <img 
+                src={event.image} 
+                alt={event.title} 
+                className="w-full h-40 object-cover"
+              />
+            </div>
+          )}
 
           {/* Title */}
           <h1 className="text-2xl font-bold mb-4 uppercase">{event.title}</h1>

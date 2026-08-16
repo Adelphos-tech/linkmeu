@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Search, QrCode, X, Shield, Plus } from 'lucide-react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees, saveEvent } from '../db/database';
+import { getEvent, getAttendeesByEvent, updateAttendeeStatus, searchAttendees, addEvent } from '../db/databaseAdapter';
 import { useAuth } from '../context/AuthContext';
 import { format, isToday, parseISO } from 'date-fns';
 import Header from '../components/Header';

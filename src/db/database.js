@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-// Note: databaseAdapter is now imported lazily to prevent blocking React render
+import * as DatabaseAdapter from './databaseAdapter.js';
 
 // Define the IndexedDB database (kept as fallback)
 export const db = new Dexie('EventsXDatabase');
@@ -10,17 +10,9 @@ db.version(1).stores({
   attendees: '++id, eventId, name, email, contact, attended',
 });
 
-// Initialize database on first load
-// NOTE: No default super admin is seeded. Create accounts via the registration UI.
+// IndexedDB initialization - no seeded credentials in production
 db.on('ready', async () => {
-  // Database is ready for use
-
-  // Sample events disabled for production
-  // Uncomment below to enable demo/seed data for testing:
-  // const eventCount = await db.events.count();
-  // if (eventCount === 0) {
-  //   await seedSampleEvents();
-  // }
+  // Database ready - no auto-seeding in production
 });
 
 // Seed sample events for demonstration
@@ -198,7 +190,7 @@ export const searchAttendees = async (eventId, query) => {
   try {
     const attendees = await db.attendees.where('eventId').equals(eventId).toArray();
     const lowerQuery = query.toLowerCase();
-    return attendees.filter(a =>
+    return attendees.filter(a => 
       a.name.toLowerCase().includes(lowerQuery) ||
       a.email.toLowerCase().includes(lowerQuery) ||
       (a.contact && a.contact.toLowerCase().includes(lowerQuery))
@@ -213,13 +205,15 @@ export const searchAttendees = async (eventId, query) => {
 export const registerUser = async (userData) => {
   try {
     // Check if user already exists
-    const existingUser = await db.users.where('email').equals(userData.email).first();
+    const normalizedEmail = userData.email.toLowerCase();
+    const existingUser = await db.users.where('email').equals(normalizedEmail).first();
     if (existingUser) {
       throw new Error('User with this email already exists');
     }
-
+    
     const id = await db.users.add({
       ...userData,
+      email: normalizedEmail,
       role: 'owner',
       createdAt: new Date().toISOString()
     });
@@ -232,15 +226,16 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (email, password) => {
   try {
-    const user = await db.users.where('email').equals(email).first();
+    const normalizedEmail = email.toLowerCase();
+    const user = await db.users.where('email').equals(normalizedEmail).first();
     if (!user) {
       throw new Error('User not found');
     }
-
+    
     if (user.password !== password) {
       throw new Error('Invalid password');
     }
-
+    
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
@@ -270,43 +265,15 @@ export const getEventsByOwner = async (ownerId) => {
 
 // ==================== PRODUCTION DATABASE ADAPTER ====================
 // Export adapter functions that automatically switch between Neon and IndexedDB
-// Note: Import is done lazily to prevent blocking React render
 
-let DatabaseAdapter = null;
-
-const loadAdapter = async () => {
-  if (!DatabaseAdapter) {
-    DatabaseAdapter = await import('./databaseAdapter.js');
-  }
-  return DatabaseAdapter;
-};
-
-// Export production database functions (lazy loaded)
-export const getEventAnalytics = async (...args) => {
-  const adapter = await loadAdapter();
-  return adapter.getEventAnalytics(...args);
-};
-
-export const getDashboardStats = async (...args) => {
-  const adapter = await loadAdapter();
-  return adapter.getDashboardStats(...args);
-};
-
-export const getDatabaseMode = async () => {
-  const adapter = await loadAdapter();
-  return adapter.getDatabaseMode();
-};
-
-export const getDatabaseStatus = async () => {
-  const adapter = await loadAdapter();
-  return adapter.getDatabaseStatus();
-};
-
-export const migrateFromIndexedDBToNeon = async () => {
-  const adapter = await loadAdapter();
-  return adapter.migrateFromIndexedDBToNeon();
-};
+// Export production database functions
+export const {
+  getEventAnalytics,
+  getDashboardStats,
+  getDatabaseMode,
+  getDatabaseStatus,
+  migrateFromIndexedDBToNeon
+} = DatabaseAdapter;
 
 // Note: Main functions are automatically overridden by the adapter
 // The adapter will use Neon when available, IndexedDB as fallback
-

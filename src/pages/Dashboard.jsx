@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Calendar, MapPin, LogOut } from 'lucide-react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db, getEventsByOwner } from '../db/database';
+import { Plus, Calendar, MapPin, LogOut, RefreshCw } from 'lucide-react';
+import { getAllEvents, getDatabaseStatus } from '../db/databaseAdapter';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -22,8 +21,14 @@ const Dashboard = () => {
 
   const loadEvents = async () => {
     if (user) {
-      const userEvents = await getEventsByOwner(user.id);
-      setEvents(userEvents);
+      try {
+        const allEvents = await getAllEvents();
+        // Filter events by owner
+        const userEvents = allEvents.filter(e => e.ownerId === user.id);
+        setEvents(userEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+      }
     }
   };
 

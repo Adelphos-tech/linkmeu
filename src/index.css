@@ -14,11 +14,15 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000000;
-  color: #ffffff;
 }
 
-input, textarea, select {
+/* Dark theme styles - only applies in dark-themed areas */
+.bg-black input,
+.bg-black textarea,
+.bg-black select,
+.dark-theme input,
+.dark-theme textarea,
+.dark-theme select {
   background-color: #1a1a1a;
   color: #ffffff;
   border: 1px solid #2a2a2a;
@@ -28,14 +32,23 @@ input, textarea, select {
   outline: none;
 }
 
-input:focus, textarea:focus, select:focus {
+.bg-black input:focus,
+.bg-black textarea:focus,
+.bg-black select:focus,
+.dark-theme input:focus,
+.dark-theme textarea:focus,
+.dark-theme select:focus {
   border-color: #DC2626;
 }
 
-input::placeholder, textarea::placeholder {
+.bg-black input::placeholder,
+.bg-black textarea::placeholder,
+.dark-theme input::placeholder,
+.dark-theme textarea::placeholder {
   color: #666;
 }
 
+/* Button styles */
 button {
   cursor: pointer;
   transition: all 0.2s;
@@ -71,7 +84,7 @@ button:disabled {
   background-color: #3a3a3a;
 }
 
-/* Custom utilities for better mobile experience */
+/* Dark theme utilities */
 .dark-light {
   background-color: #1a1a1a;
 }
@@ -80,42 +93,142 @@ button:disabled {
   background-color: #2a2a2a;
 }
 
-/* Ensure proper mobile viewport */
+/* Line clamp utility */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Smooth animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Mobile optimizations */
 @media (max-width: 640px) {
   .max-w-4xl {
     max-width: 100%;
   }
-  
+
   .px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
-  /* Better mobile button sizing */
-  .btn-primary, .btn-secondary {
-    min-height: 44px; /* iOS touch target minimum */
+
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
-  /* Mobile-friendly text sizes */
+
   h1 {
     font-size: 1.5rem;
     line-height: 2rem;
   }
-  
+
   h2 {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-  
-  /* Better mobile spacing */
-  .space-y-4 > * + * {
+
+  .space-y-4>*+* {
     margin-top: 1rem;
   }
-  
-  .space-y-6 > * + * {
+
+  .space-y-6>*+* {
     margin-top: 1.5rem;
   }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #DC2626;
+  outline-offset: 2px;
+}
+
+/* Premium shadow utilities */
+.shadow-premium {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-hover {
+  transition: box-shadow 0.3s ease;
+}
+
+.shadow-hover:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Toast animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Horizontal scroll for categories */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fade edges for horizontal scroll */
+.scroll-fade-right {
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+}
+
+.scroll-fade-both {
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }

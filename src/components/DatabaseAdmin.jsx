@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Server, Activity, AlertCircle, CheckCircle, Clock, Settings } from 'lucide-react';
 import { getDatabaseStatus, getDashboardStats, getSystemInfo } from '../db/index.js';
-import { databaseSetup, validateEnvironment } from '../utils/databaseSetup.js';
 
 const DatabaseAdmin = () => {
   const [dbStatus, setDbStatus] = useState(null);
@@ -36,18 +35,8 @@ const DatabaseAdmin = () => {
   };
 
   const runSetup = async () => {
-    setLoading(true);
-    try {
-      const results = await databaseSetup.runSetup((progress) => {
-        setSetupResults({ ...progress });
-      });
-      setSetupResults(results);
-      await loadDatabaseInfo(); // Refresh info after setup
-    } catch (error) {
-      console.error('Setup failed:', error);
-    } finally {
-      setLoading(false);
-    }
+    // Setup is now done via Supabase SQL Editor
+    alert('Database setup is done via Supabase SQL Editor. Run scripts/supabase-schema.sql');
   };
 
   const getStatusIcon = (status) => {
@@ -266,7 +255,7 @@ const DatabaseAdmin = () => {
                   <p>1. Create a Neon account at https://console.neon.tech/</p>
                   <p>2. Create a new PostgreSQL database</p>
                   <p>3. Copy the connection string</p>
-                  <p>4. Update DATABASE_URL in your .env file (server-side only)</p>
+                  <p>4. Update VITE_DATABASE_URL in your .env file</p>
                   <p>5. Run the setup to migrate existing data</p>
                 </div>
               </div>

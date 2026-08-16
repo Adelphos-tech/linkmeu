@@ -18,50 +18,103 @@ export const generateA5Flyer = async (event, qrCodeDataURL) => {
   doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
   // Logo/Brand at top
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(24);
-  doc.setFont(undefined, 'bold');
-  doc.text('EX', margin, 20);
+  let currentY = 15;
   
-  doc.setFontSize(10);
-  doc.setFont(undefined, 'normal');
-  doc.text('EventsX', margin, 26);
+  if (event.logo) {
+    try {
+      // Add event logo centered
+      const logoSize = 25;
+      const logoX = (pageWidth - logoSize) / 2;
+      doc.addImage(event.logo, 'JPEG', logoX, currentY, logoSize, logoSize);
+      currentY += logoSize + 5;
+    } catch (e) {
+      console.warn('Could not add logo to PDF:', e);
+      // Fallback to text
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont(undefined, 'bold');
+      doc.text('EX', pageWidth / 2, currentY + 10, { align: 'center' });
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text('EventsX', pageWidth / 2, currentY + 16, { align: 'center' });
+      currentY += 20;
+    }
+  } else {
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont(undefined, 'bold');
+    doc.text('EX', pageWidth / 2, currentY + 10, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text('EventsX', pageWidth / 2, currentY + 16, { align: 'center' });
+    currentY += 20;
+  }
 
-  doc.setFontSize(7);
-  doc.setTextColor(150, 150, 150);
-  doc.text('Powered by Robocorp', margin, 31);
+  // Event Banner Image
+  if (event.image) {
+    try {
+      const imgWidth = pageWidth - 2 * margin;
+      const imgHeight = 40;
+      doc.addImage(event.image, 'JPEG', margin, currentY, imgWidth, imgHeight);
+      currentY += imgHeight + 5;
+    } catch (e) {
+      console.warn('Could not add event image to PDF:', e);
+    }
+  }
 
   // Event Title
-  doc.setFontSize(20);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
   doc.setFont(undefined, 'bold');
   const titleLines = doc.splitTextToSize(event.title || 'EVENT TITLE', pageWidth - 2 * margin);
-  doc.text(titleLines, margin, 40);
+  doc.text(titleLines, margin, currentY + 8);
+  currentY += titleLines.length * 7 + 10;
 
   // Event Description
-  doc.setFontSize(10);
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(9);
   doc.setFont(undefined, 'normal');
-  const descLines = doc.splitTextToSize(event.description || 'Event description here.', pageWidth - 2 * margin);
-  doc.text(descLines, margin, 55);
+  const descText = event.description || 'Event description here.';
+  const maxDescLength = 300;
+  const truncatedDesc = descText.length > maxDescLength ? descText.substring(0, maxDescLength) + '...' : descText;
+  const descLines = doc.splitTextToSize(truncatedDesc, pageWidth - 2 * margin);
+  const maxDescLines = Math.min(descLines.length, 8);
+  doc.text(descLines.slice(0, maxDescLines), margin, currentY);
+  currentY += maxDescLines * 4 + 5;
 
   // Venue
   doc.setTextColor(220, 38, 38);
   doc.setFontSize(9);
-  doc.text('📍 Venue', margin, 75);
+  doc.text('Venue', margin, currentY);
   doc.setTextColor(255, 255, 255);
-  doc.text(event.venue || 'Venue', margin + 20, 75);
+  const venueLines = doc.splitTextToSize(event.venue || 'Venue', pageWidth - 2 * margin);
+  doc.text(venueLines, margin, currentY + 5);
+  currentY += venueLines.length * 4 + 8;
 
   // Date & Time
   doc.setTextColor(220, 38, 38);
-  doc.text('📅 Date & Time', margin, 82);
+  doc.text('Date & Time', margin, currentY);
   doc.setTextColor(255, 255, 255);
-  const dateStr = event.date ? format(new Date(event.date), 'PPP') : 'Date';
-  doc.text(dateStr, margin + 20, 82);
+  let dateStr = 'Date';
+  if (event.startDate && event.endDate) {
+    if (event.startDate === event.endDate) {
+      dateStr = format(new Date(event.startDate), 'PPP');
+    } else {
+      dateStr = `${format(new Date(event.startDate), 'PPP')} - ${format(new Date(event.endDate), 'PPP')}`;
+    }
+  } else if (event.startDate) {
+    dateStr = format(new Date(event.startDate), 'PPP');
+  } else if (event.date) {
+    dateStr = format(new Date(event.date), 'PPP');
+  }
+  doc.text(dateStr, margin, currentY + 5);
+  currentY += 12;
 
   // QR Code
   if (qrCodeDataURL) {
-    const qrSize = 50;
+    const qrSize = 45;
     const qrX = (pageWidth - qrSize) / 2;
-    const qrY = 95;
+    const qrY = currentY + 5;
     
     // QR background
     doc.setFillColor(255, 255, 255);

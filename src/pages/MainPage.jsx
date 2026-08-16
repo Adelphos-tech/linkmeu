@@ -1,377 +1,718 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, DollarSign, User, Mail, CheckCircle, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { DollarSign, MapPin, Briefcase, Home, Film, Package, Phone, Mail, Plus, Calendar, ChevronRight, Sparkles, Search, Filter, Heart as HeartIcon, ArrowUpDown, SlidersHorizontal, Shield, ExternalLink, Eye, Share2, Menu, X } from 'lucide-react';
+import { getAllListings } from '../db/databaseAdapter';
+import { ListingGridSkeleton, CategoryTabsSkeleton } from '../components/Skeleton';
+import { useFavorites } from '../hooks/useFavorites';
+import { useToast } from '../components/Toast';
+import LeadCaptureModal from '../components/LeadCaptureModal';
+
+// Animation variants
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+};
+
+const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.1
+        }
+    }
+};
+
+const cardVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    visible: { 
+        opacity: 1, 
+        y: 0, 
+        scale: 1,
+        transition: {
+            type: "spring",
+            stiffness: 100,
+            damping: 15
+        }
+    }
+};
+
+const categoryTabVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: { 
+        opacity: 1, 
+        scale: 1,
+        transition: { type: "spring", stiffness: 200, damping: 20 }
+    }
+};
+
+// Platform support contact (shown for unpaid listings)
+const PLATFORM_CONTACT = {
+    phone: '+65 9019 1311',
+    email: 'linkmeucom@gmail.com'
+};
+
+// Mask contact info in text (phone numbers and emails) for unpaid listings
+const maskContactInfo = (text, isPaid) => {
+    if (!text || isPaid) return text;
+    
+    // Mask phone numbers (various formats)
+    let masked = text.replace(/(\+?\d{1,4}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g, '***-****-****');
+    
+    // Mask emails
+    masked = masked.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '****@****.***');
+    
+    // Mask WhatsApp/Telegram mentions with numbers
+    masked = masked.replace(/(whatsapp|telegram|wa|tele|call|contact|hp|phone|mobile|tel)[\s:]*(\+?\d[\d\s-]{6,})/gi, '$1: ***-****-****');
+    
+    return masked;
+};
 
 const MainPage = () => {
     const navigate = useNavigate();
-    const [activeCategory, setActiveCategory] = useState('parttime');
-    const [formData, setFormData] = useState({
-        fromDate: '',
-        toDate: '',
-        title: '',
-        budgetMin: '',
-        budgetMax: '',
-        revenue: '',
-        contact: '',
-        email: ''
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [allListings, setAllListings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [sortBy, setSortBy] = useState('newest');
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+    const { toggleFavorite, isFavorite, favoritesCount } = useFavorites();
+    const toast = useToast();
+    
+    // Lead capture modal state
+    const [showLeadModal, setShowLeadModal] = useState(false);
+    const [selectedListing, setSelectedListing] = useState(null);
+    
+    // Mobile menu state
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const categories = [
-        { id: 'parttime', label: 'Part-time Job' },
-        { id: 'business', label: 'Business for Sale' },
-        { id: 'property', label: 'Property for Rent' },
-        { id: 'wedding', label: 'Wedding Hall Booking' },
-        { id: 'events', label: 'Events', isLink: true }
+    // Handle listing click - show lead capture modal first
+    const handleListingClick = (listing) => {
+        setSelectedListing(listing);
+        setShowLeadModal(true);
+    };
+
+    // After lead is captured, navigate to listing
+    const handleLeadSuccess = () => {
+        console.log('🎯 handleLeadSuccess called, selectedListing:', selectedListing);
+        setShowLeadModal(false);
+        toast.success('Thank you!', 'Your enquiry has been submitted.');
+        if (selectedListing) {
+            // Store in sessionStorage to prevent showing modal again on ListingDetail
+            const submittedLeads = JSON.parse(sessionStorage.getItem('submittedLeads') || '[]');
+            if (!submittedLeads.includes(selectedListing.id)) {
+                submittedLeads.push(selectedListing.id);
+                sessionStorage.setItem('submittedLeads', JSON.stringify(submittedLeads));
+            }
+            console.log('🚀 Navigating to listing:', selectedListing.id);
+            navigate(`/listing/${selectedListing.id}`);
+        } else {
+            console.warn('⚠️ No selectedListing to navigate to');
+        }
+    };
+
+    const sortOptions = [
+        { id: 'newest', label: 'Newest First' },
+        { id: 'oldest', label: 'Oldest First' },
+        { id: 'price_low', label: 'Price: Low to High' },
+        { id: 'price_high', label: 'Price: High to Low' },
     ];
 
-    const handleCategoryClick = (cat) => {
-        if (cat.isLink) {
-            navigate('/events');
-        } else {
-            setActiveCategory(cat.id);
-        }
-    };
+    const categories = [
+        { id: 'all', label: 'All Listings', icon: Sparkles, color: 'from-gray-600 to-gray-700' },
+        { id: 'business', label: 'Business', subtitle: 'Buy | Sell | Invest', icon: DollarSign, color: 'from-emerald-500 to-emerald-600' },
+        { id: 'property', label: 'Properties', subtitle: 'Buy | Sell | Rent', icon: Home, color: 'from-blue-500 to-blue-600' },
+        { id: 'movies', label: 'Movies', subtitle: 'Buy | Sell | Distribute', icon: Film, color: 'from-purple-500 to-purple-600' },
+        { id: 'products', label: 'Products', subtitle: 'Buy | Sell | Distribute', icon: Package, color: 'from-orange-500 to-orange-600' },
+        { id: 'opportunity', label: 'Opportunity', subtitle: 'Hire | Join', icon: Briefcase, color: 'from-red-500 to-red-600' },
+        { id: 'wedding', label: 'Wedding', subtitle: 'Venues | Services', icon: HeartIcon, color: 'from-pink-500 to-pink-600' },
+    ];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        try {
-            const response = await fetch('/api/listings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    category: activeCategory,
-                    purpose: 'sale',
-                    fromDate: formData.fromDate,
-                    toDate: formData.toDate,
-                    title: formData.title,
-                    budgetMin: formData.budgetMin || null,
-                    budgetMax: formData.budgetMax || null,
-                    revenue: formData.revenue,
-                    contact: formData.contact,
-                    email: formData.email,
-                    sellerName: formData.contact,
-                    location: 'Singapore',
-                    country: 'Singapore',
-                    description: formData.title
-                })
-            });
-
-            const result = await response.json();
-            if (result.success) {
-                alert('Listing submitted successfully! Admin will review shortly.');
-                window.open(result.whatsappLink, '_blank');
+    // Fetch all listings on mount (public access - no auth required)
+    useEffect(() => {
+        const fetchListings = async () => {
+            setLoading(true);
+            try {
+                const data = await getAllListings();
+                setAllListings(data || []);
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                setAllListings([]);
             }
-        } catch (error) {
-            alert('Listing submitted! We will contact you shortly.');
-        }
+            setLoading(false);
+        };
+        fetchListings();
+    }, []);
 
-        setIsSubmitting(false);
+    // Filter listings by category, search, and favorites
+    const filteredListings = allListings
+        .filter(listing => {
+            const matchesCategory = selectedCategory === 'all' || listing.category === selectedCategory;
+            const matchesSearch = !searchQuery || 
+                listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                listing.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                listing.location?.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesFavorites = !showFavoritesOnly || isFavorite(listing.id);
+            return matchesCategory && matchesSearch && matchesFavorites;
+        })
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'oldest':
+                    return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+                case 'price_low':
+                    return (a.budgetMin || 0) - (b.budgetMin || 0);
+                case 'price_high':
+                    return (b.budgetMax || b.budgetMin || 0) - (a.budgetMax || a.budgetMin || 0);
+                case 'newest':
+                default:
+                    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+            }
+        });
+
+    // Group listings by category for display
+    const listingsByCategory = categories.slice(1).reduce((acc, cat) => {
+        acc[cat.id] = filteredListings.filter(l => l.category === cat.id);
+        return acc;
+    }, {});
+
+    // Get contact info based on approval status (active = approved)
+    // Only show listing owner's contact if the listing is approved (status === 'active')
+    const getContactInfo = (listing) => {
+        const isApproved = listing.status === 'active';
+        if (isApproved) {
+            return {
+                phone: listing.contact || PLATFORM_CONTACT.phone,
+                email: listing.email || PLATFORM_CONTACT.email,
+                isApproved: true
+            };
+        }
+        return {
+            phone: PLATFORM_CONTACT.phone,
+            email: PLATFORM_CONTACT.email,
+            isApproved: false
+        };
     };
+
+    const getCategoryInfo = (categoryId) => {
+        return categories.find(c => c.id === categoryId) || categories[0];
+    };
+
+    // Listing Card Component - Compact version
+    const ListingCard = ({ listing, index = 0 }) => {
+        const catInfo = getCategoryInfo(listing.category);
+        const Icon = catInfo.icon;
+
+        return (
+            <motion.div 
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                onClick={() => handleListingClick(listing)}
+                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer">
+                
+                {/* Image */}
+                {listing.images && listing.images.length > 0 ? (
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                        <img 
+                            src={listing.images[0]} 
+                            alt={listing.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                        
+                        {/* Category Badge - smaller */}
+                        <div className={`absolute top-2 left-2 px-2 py-0.5 bg-gradient-to-r ${catInfo.color} text-white text-[10px] font-medium rounded-full flex items-center gap-1`}>
+                            <Icon className="w-2.5 h-2.5" />
+                            <span className="hidden sm:inline">{catInfo.label}</span>
+                        </div>
+                        
+                        {/* Action Buttons - smaller */}
+                        <div className="absolute top-2 right-2 flex gap-1">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const shareUrl = `${window.location.origin}/listing/${listing.id}`;
+                                    navigator.clipboard.writeText(shareUrl);
+                                    toast.success('Link copied!');
+                                }}
+                                className="p-1.5 rounded-full backdrop-blur-sm bg-white/80 text-gray-600 hover:bg-white hover:text-blue-500 transition-all"
+                            >
+                                <Share2 className="w-3 h-3" />
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleFavorite(listing.id);
+                                }}
+                                className={`p-1.5 rounded-full backdrop-blur-sm transition-all ${
+                                    isFavorite(listing.id)
+                                        ? 'bg-red-500 text-white'
+                                        : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+                                }`}
+                            >
+                                <HeartIcon className={`w-3 h-3 ${isFavorite(listing.id) ? 'fill-current' : ''}`} />
+                            </button>
+                        </div>
+                        
+                        {/* Price Badge */}
+                        {(listing.budgetMin || listing.budgetMax) && (
+                            <div className="absolute bottom-2 left-2 px-2 py-1 bg-white/95 backdrop-blur-sm rounded-md">
+                                <span className="text-emerald-600 font-bold text-xs">
+                                    {listing.currency === 'SGD' ? 'S$' : listing.currency === 'MYR' ? 'RM' : '$'}
+                                    {listing.budgetMin?.toLocaleString() || '0'}
+                                    {listing.budgetMax && `+`}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className={`aspect-[4/3] bg-gradient-to-br ${catInfo.color} flex items-center justify-center relative`}>
+                        <Icon className="w-8 h-8 text-white/50" />
+                    </div>
+                )}
+                
+                {/* Content - Compact */}
+                <div className="p-3">
+                    <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 mb-1 group-hover:text-red-600 transition-colors">
+                        {maskContactInfo(listing.title, listing.isPaid)}
+                    </h3>
+                    
+                    <div className="flex items-center gap-1 text-gray-400 text-xs mb-2">
+                        <MapPin className="w-3 h-3" />
+                        <span className="truncate">{listing.location || 'Singapore'}</span>
+                    </div>
+                    
+                    {/* View Details Button */}
+                    <div className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium text-center group-hover:from-red-700 group-hover:to-red-800 transition-all flex items-center justify-center gap-1.5">
+                        <Eye className="w-3 h-3" />
+                        View Details
+                    </div>
+                </div>
+            </motion.div>
+        );
+    };
+
+    // Loading state - show skeleton
+    if (loading) {
+        return (
+            <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#faf8f5] via-[#f5f0eb] to-[#ebe5dc]">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(180,120,80,0.08)_0%,_transparent_50%)]"></div>
+                
+                {/* Header skeleton */}
+                <header className="relative bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-between h-16">
+                            <div className="flex items-center">
+                                <span className="text-2xl font-bold text-gray-900">Link</span>
+                                <span className="text-2xl font-bold text-red-600">Me</span>
+                                <span className="text-2xl font-bold text-gray-900">U</span>
+                            </div>
+                            <div className="w-32 h-10 bg-gray-200 rounded-xl animate-pulse"></div>
+                        </div>
+                    </div>
+                </header>
+                
+                {/* Content skeleton */}
+                <section className="relative py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <div className="h-12 bg-gray-200 rounded-xl w-96 mx-auto mb-4 animate-pulse"></div>
+                        <div className="h-6 bg-gray-200 rounded w-64 mx-auto mb-8 animate-pulse"></div>
+                        <div className="max-w-2xl mx-auto mb-8">
+                            <div className="h-14 bg-gray-200 rounded-2xl animate-pulse"></div>
+                        </div>
+                        <div className="flex justify-center mb-8">
+                            <CategoryTabsSkeleton />
+                        </div>
+                    </div>
+                </section>
+                
+                <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+                    <ListingGridSkeleton count={8} />
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-[#faf8f5] via-[#f5f0eb] to-[#ebe5dc]">
-            {/* Premium gradient overlays */}
+            {/* Background patterns */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(180,120,80,0.08)_0%,_transparent_50%)]"></div>
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(139,115,85,0.06)_0%,_transparent_50%)]"></div>
 
-            {/* Subtle grid pattern */}
-            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+            {/* Global Navigation Header */}
+            <header className="relative bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        {/* Logo */}
+                        <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+                            <div>
+                                <div className="flex items-center">
+                                    <span className="text-2xl font-bold text-gray-900">Link</span>
+                                    <span className="text-2xl font-bold text-red-600">Me</span>
+                                    <span className="text-2xl font-bold text-gray-900">U</span>
+                                </div>
+                                <p className="text-[10px] text-gray-500 -mt-0.5 tracking-wide">Link Me You Matter Most.</p>
+                            </div>
+                        </div>
 
-            {/* Header */}
-            <header className="relative px-6 lg:px-16 py-6">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <img
-                            src="/linkmeu-logo.png"
-                            alt="LinkMeU"
-                            className="h-14 w-auto drop-shadow-sm"
-                        />
-                    </div>
-                    <div className="text-right">
-                        <p className="text-gray-500 text-sm">1 listing per account, editable after login.</p>
-                        <p className="flex items-center justify-end gap-2 text-sm">
-                            <span className="text-gray-500">Submission fee:</span>
-                            <span className="font-bold text-gray-800 bg-amber-100 px-2 py-0.5 rounded">US$1</span>
-                            <span className="text-gray-300">•</span>
-                            <span className="text-gray-500">Admin approval required</span>
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        </p>
+                        {/* Navigation */}
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => navigate('/events')}
+                                className="hidden sm:flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                            >
+                                <Calendar className="w-4 h-4" />
+                                Events
+                            </button>
+                            
+                            <button
+                                onClick={() => navigate('/membership')}
+                                className="hidden sm:flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
+                            >
+                                <Shield className="w-4 h-4" />
+                                Membership
+                            </button>
+                            
+                            {/* Register Button - Prominent */}
+                            <button
+                                onClick={() => navigate('/register-listing')}
+                                className="hidden sm:flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl font-semibold transition-all shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30"
+                            >
+                                <Plus className="w-5 h-5" />
+                                Register Listing
+                            </button>
+                            
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="sm:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-all"
+                            >
+                                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                            </button>
+                        </div>
                     </div>
                 </div>
+                
+                {/* Mobile Menu Dropdown */}
+                <AnimatePresence>
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="sm:hidden bg-white border-t border-gray-100"
+                        >
+                            <div className="px-4 py-4 space-y-2">
+                                <button
+                                    onClick={() => {
+                                        navigate('/events');
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
+                                >
+                                    <Calendar className="w-5 h-5" />
+                                    <span className="font-medium">Events</span>
+                                </button>
+                                
+                                <button
+                                    onClick={() => {
+                                        navigate('/membership');
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition-all"
+                                >
+                                    <Shield className="w-5 h-5" />
+                                    <span className="font-medium">Membership</span>
+                                </button>
+                                
+                                <div className="pt-2 border-t border-gray-100">
+                                    <button
+                                        onClick={() => {
+                                            navigate('/register-listing');
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                        Register Listing
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </header>
 
-            {/* Main Content */}
-            <main className="relative max-w-7xl mx-auto px-6 lg:px-16 py-8 flex flex-col lg:flex-row gap-16">
-                {/* Left Side - Form */}
-                <div className="flex-1 max-w-2xl">
-                    {/* Premium badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50 rounded-full mb-6">
-                        <Sparkles className="w-4 h-4 text-amber-600" />
-                        <span className="text-sm font-medium text-amber-800">Premium Marketplace</span>
-                    </div>
-
-                    <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
-                        Create Your Listing
-                    </h1>
-                    <p className="text-gray-600 mb-2 text-lg leading-relaxed">
-                        Post a listing for part-time jobs, business buy/sell,<br className="hidden sm:block" />
-                        property rent, or wedding hall booking.
-                    </p>
-                    <p className="text-gray-400 mb-8 text-sm">
-                        Pay US$1 to submit and get admin approval required.
-                    </p>
-
-                    {/* Category Tabs - Premium Style */}
-                    <div className="flex flex-wrap gap-2 mb-10">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat.id}
-                                onClick={() => handleCategoryClick(cat)}
-                                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === cat.id
-                                        ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-lg shadow-gray-900/20'
-                                        : cat.isLink
-                                            ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:shadow-lg hover:shadow-red-600/20'
-                                            : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md border border-gray-200/50'
-                                    }`}
-                            >
-                                {cat.label}
-                                {cat.isLink && <span className="ml-1">→</span>}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Form - Premium Glass Style */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* From Date / To Date */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">From Date</label>
-                                <div className="relative">
-                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-amber-600 transition-colors" />
-                                    <input
-                                        type="date"
-                                        value={formData.fromDate}
-                                        onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-gray-700 shadow-sm"
-                                    />
-                                </div>
-                            </div>
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">To Date</label>
-                                <div className="relative">
-                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-amber-600 transition-colors" />
-                                    <input
-                                        type="date"
-                                        value={formData.toDate}
-                                        onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-gray-700 shadow-sm"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Title */}
-                        <div className="group">
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+            {/* Compact Search & Filter Bar - Desktop */}
+            <section className="hidden sm:block sticky top-16 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                    <div className="flex items-center gap-4">
+                        {/* Search */}
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                                 type="text"
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                placeholder="Enter description..."
-                                required
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search listings..."
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-gray-800 text-sm"
                             />
                         </div>
-
-                        {/* Budget / Revenue */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Budget</label>
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
-                                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            value={formData.budgetMin}
-                                            onChange={(e) => setFormData({ ...formData, budgetMin: e.target.value })}
-                                            className="w-full pl-8 pr-3 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                            placeholder="Min"
-                                        />
-                                    </div>
-                                    <div className="relative flex-1">
-                                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            value={formData.budgetMax}
-                                            onChange={(e) => setFormData({ ...formData, budgetMax: e.target.value })}
-                                            className="w-full pl-8 pr-3 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                            placeholder="Max"
-                                        />
-                                    </div>
-                                    <select className="px-3 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-600 shadow-sm cursor-pointer">
-                                        <option>$</option>
-                                        <option>S$</option>
-                                        <option>RM</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Expected Revenue / Profit</label>
-                                <input
-                                    type="text"
-                                    value={formData.revenue}
-                                    onChange={(e) => setFormData({ ...formData, revenue: e.target.value })}
-                                    className="w-full px-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                    placeholder="Enter budget, amount..."
-                                />
-                            </div>
+                        
+                        {/* Category Tabs */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                            {categories.map((cat) => {
+                                const Icon = cat.icon;
+                                const count = cat.id === 'all' ? filteredListings.length : listingsByCategory[cat.id]?.length || 0;
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => setSelectedCategory(cat.id)}
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${
+                                            selectedCategory === cat.id
+                                                ? `bg-gradient-to-r ${cat.color} text-white shadow-sm`
+                                                : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        <Icon className="w-3.5 h-3.5" />
+                                        {cat.label}
+                                        <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                            selectedCategory === cat.id ? 'bg-white/20' : 'bg-gray-200/80'
+                                        }`}>
+                                            {count}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
-
-                        {/* Contact / Email */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Contact</label>
-                                <div className="relative">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-amber-600 transition-colors" />
-                                    <input
-                                        type="text"
-                                        value={formData.contact}
-                                        onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                        placeholder="Contact"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div className="group">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-amber-600 transition-colors" />
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full pl-12 pr-4 py-3.5 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all shadow-sm"
-                                        placeholder="Email your r-email..."
-                                        required
-                                    />
-                                </div>
-                            </div>
+                        
+                        {/* Sort & Favorites */}
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-700 font-medium cursor-pointer"
+                            >
+                                {sortOptions.map(opt => (
+                                    <option key={opt.id} value={opt.id}>{opt.label}</option>
+                                ))}
+                            </select>
+                            
+                            <button
+                                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                                    showFavoritesOnly
+                                        ? 'bg-red-500 text-white'
+                                        : 'bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <HeartIcon className={`w-4 h-4 ${showFavoritesOnly ? 'fill-current' : ''}`} />
+                                {favoritesCount > 0 && (
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                        showFavoritesOnly ? 'bg-white/20' : 'bg-red-100 text-red-600'
+                                    }`}>
+                                        {favoritesCount}
+                                    </span>
+                                )}
+                            </button>
                         </div>
-
-                        {/* Footer text */}
-                        <p className="text-gray-400 text-sm">
-                            1 listing per account. Login required. Pay US$1 to submit. Admin approval required.
-                        </p>
-
-                        {/* Submit Button - Premium Gradient */}
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-[#8B2323] via-[#A52A2A] to-[#8B2323] text-white rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg shadow-red-900/30 hover:shadow-xl hover:shadow-red-900/40 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
-                        >
-                            <span className="text-xl">🇺🇸</span>
-                            <span>{isSubmitting ? 'Submitting...' : 'Pay & Submit Listing $1'}</span>
-                        </button>
-                    </form>
-                </div>
-
-                {/* Right Side - Premium Illustration */}
-                <div className="hidden lg:flex flex-1 items-center justify-center">
-                    <div className="relative">
-                        {/* Decorative elements */}
-                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-amber-200/30 to-orange-200/30 rounded-full blur-3xl"></div>
-                        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-br from-emerald-200/30 to-teal-200/30 rounded-full blur-2xl"></div>
-
-                        {/* Clipboard illustration */}
-                        <svg width="380" height="430" viewBox="0 0 400 450" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-2xl">
-                            {/* Clipboard base with gradient */}
-                            <defs>
-                                <linearGradient id="clipboardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#C9A87C" />
-                                    <stop offset="100%" stopColor="#A68B5B" />
-                                </linearGradient>
-                                <linearGradient id="paperGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="#FFFDF9" />
-                                    <stop offset="100%" stopColor="#FFF8F0" />
-                                </linearGradient>
-                                <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
-                                    <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#000" floodOpacity="0.1" />
-                                </filter>
-                            </defs>
-
-                            <rect x="80" y="40" width="240" height="320" rx="20" fill="url(#clipboardGrad)" />
-                            <rect x="95" y="55" width="210" height="290" rx="14" fill="url(#paperGrad)" />
-
-                            {/* Clipboard clip - premium metal look */}
-                            <rect x="140" y="22" width="120" height="45" rx="8" fill="#6B5B4F" />
-                            <rect x="145" y="27" width="110" height="35" rx="6" fill="#8B7B6B" />
-                            <rect x="155" y="35" width="90" height="20" rx="4" fill="#A8998B" />
-
-                            {/* Checklist items with premium styling */}
-                            {[80, 120, 160, 200, 240].map((y, i) => (
-                                <g key={i}>
-                                    <rect x="115" y={y} width="22" height="22" rx="6" stroke="#C4B5A5" strokeWidth="2" fill="white" />
-                                    {i < 3 && (
-                                        <path d={`M120 ${y + 11} L125 ${y + 16} L137 ${y + 5}`} stroke="#10B981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                    )}
-                                    <rect x="148" y={y + 5} width={140 - i * 15} height="10" rx="3" fill="#E8E0D8" />
-                                </g>
-                            ))}
-
-                            {/* Premium pencil */}
-                            <g transform="translate(250, 175) rotate(45)">
-                                <rect x="0" y="0" width="90" height="12" rx="2" fill="#FFD93D" />
-                                <rect x="0" y="0" width="90" height="6" fill="#FFE066" />
-                                <rect x="90" y="0" width="18" height="12" fill="#FFDDC1" />
-                                <polygon points="108,0 120,6 108,12" fill="#2D3436" />
-                                <rect x="0" y="0" width="14" height="12" rx="2" fill="#FF6B9C" />
-                            </g>
-
-                            {/* Floating cards with premium shadows */}
-                            <g transform="translate(290, 50)" filter="url(#cardShadow)">
-                                <rect x="0" y="0" width="75" height="55" rx="10" fill="white" />
-                                <rect x="12" y="12" width="50" height="6" rx="3" fill="#E8E0D8" />
-                                <rect x="12" y="24" width="35" height="6" rx="3" fill="#E8E0D8" />
-                                <rect x="50" y="35" width="14" height="14" rx="4" fill="#10B981" />
-                                <path d="M54 42 L57 45 L63 38" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none" />
-                            </g>
-
-                            <g transform="translate(315, 125)" filter="url(#cardShadow)">
-                                <rect x="0" y="0" width="75" height="55" rx="10" fill="white" />
-                                <circle cx="22" cy="20" r="14" fill="#EF4444" />
-                                <rect x="14" y="35" width="16" height="8" rx="2" fill="#EF4444" />
-                                <rect x="40" y="12" width="25" height="6" rx="3" fill="#E8E0D8" />
-                                <rect x="40" y="24" width="18" height="6" rx="3" fill="#E8E0D8" />
-                                <rect x="52" y="38" width="14" height="14" rx="4" fill="#10B981" />
-                            </g>
-
-                            <g transform="translate(335, 205)" filter="url(#cardShadow)">
-                                <rect x="0" y="0" width="60" height="50" rx="10" fill="white" />
-                                <rect x="5" y="5" width="50" height="22" rx="5" fill="#DDD" />
-                                <rect x="5" y="32" width="28" height="6" rx="3" fill="#E8E0D8" />
-                                <rect x="38" y="30" width="14" height="14" rx="4" fill="#10B981" />
-                            </g>
-
-                            {/* Premium green checkmark circle */}
-                            <circle cx="310" cy="330" r="38" fill="url(#checkGrad)" />
-                            <defs>
-                                <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#10B981" />
-                                    <stop offset="100%" stopColor="#059669" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M290 330 L303 343 L330 315" stroke="white" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                        </svg>
                     </div>
                 </div>
+            </section>
+
+            {/* Mobile-Only Compact Search & Filters - Shows at top on mobile */}
+            <section className="sm:hidden sticky top-16 z-40 bg-gradient-to-b from-[#faf8f5] via-[#faf8f5] to-transparent pb-4 pt-4 px-4">
+                {/* Search Bar */}
+                <div className="relative mb-3">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search listings..."
+                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all text-gray-800 text-sm"
+                    />
+                </div>
+                
+                {/* Category Pills - Horizontal scroll */}
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+                    {categories.map((cat) => {
+                        const Icon = cat.icon;
+                        const count = cat.id === 'all' ? filteredListings.length : listingsByCategory[cat.id]?.length || 0;
+                        return (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                                    selectedCategory === cat.id
+                                        ? `bg-gradient-to-r ${cat.color} text-white shadow-md`
+                                        : 'bg-white text-gray-600 border border-gray-200'
+                                }`}
+                            >
+                                <Icon className="w-3.5 h-3.5" />
+                                {cat.label.split(' ')[0]}
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                    selectedCategory === cat.id ? 'bg-white/20' : 'bg-gray-100'
+                                }`}>
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
+                </div>
+                
+                {/* Sort & Favorites Row */}
+                <div className="flex gap-2 mt-3">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs text-gray-700 font-medium"
+                    >
+                        {sortOptions.map(opt => (
+                            <option key={opt.id} value={opt.id}>{opt.label}</option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                            showFavoritesOnly
+                                ? 'bg-red-500 text-white'
+                                : 'bg-white border border-gray-200 text-gray-600'
+                        }`}
+                    >
+                        <HeartIcon className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-current' : ''}`} />
+                        {favoritesCount > 0 && (
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                showFavoritesOnly ? 'bg-white/20' : 'bg-red-100 text-red-600'
+                            }`}>
+                                {favoritesCount}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            </section>
+
+            {/* Listings Grid */}
+            <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-4">
+                {selectedCategory === 'all' ? (
+                    // Show all listings in a grid (no category grouping for cleaner look)
+                    <div>
+                        {filteredListings.length > 0 ? (
+                            <motion.div 
+                                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+                                initial="hidden"
+                                animate="visible"
+                                variants={staggerContainer}
+                            >
+                                {filteredListings.map((listing, index) => (
+                                    <ListingCard key={listing.id} listing={listing} index={index} />
+                                ))}
+                            </motion.div>
+                        ) : null}
+                        
+                        {filteredListings.length === 0 && (
+                            <div className="text-center py-16">
+                                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Search className="w-10 h-10 text-gray-400" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No listings found</h3>
+                                <p className="text-gray-500 mb-6">Be the first to post a listing!</p>
+                                <button
+                                    onClick={() => navigate('/register-listing')}
+                                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold"
+                                >
+                                    Create Listing
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    // Show filtered listings for selected category
+                    <div>
+                        {filteredListings.length > 0 ? (
+                            <motion.div 
+                                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+                                initial="hidden"
+                                animate="visible"
+                                variants={staggerContainer}
+                            >
+                                {filteredListings.map((listing, index) => (
+                                    <ListingCard key={listing.id} listing={listing} index={index} />
+                                ))}
+                            </motion.div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    {React.createElement(getCategoryInfo(selectedCategory).icon, { className: "w-8 h-8 text-gray-400" })}
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No listings in this category</h3>
+                                <p className="text-gray-500 text-sm mb-4">Be the first to post!</p>
+                                <button
+                                    onClick={() => navigate('/register-listing')}
+                                    className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-medium text-sm"
+                                >
+                                    Create Listing
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </main>
 
-            {/* Bottom decorative gradient */}
-            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-emerald-50/30 via-transparent to-transparent pointer-events-none"></div>
+            {/* Footer */}
+            <footer className="relative bg-gray-900 text-white py-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-xl font-bold">Link</span>
+                                <span className="text-xl font-bold text-red-500">Me</span>
+                                <span className="text-xl font-bold">U</span>
+                            </div>
+                            <p className="text-gray-400 text-sm">Link Me. You Matter Most.</p>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-4">Contact Support</h4>
+                            <div className="space-y-2 text-gray-400 text-sm">
+                                <p className="flex items-center gap-2">
+                                    <Phone className="w-4 h-4" />
+                                    +65 9019 1311
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <Mail className="w-4 h-4" />
+                                    linkmeucom@gmail.com
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-4">Quick Links</h4>
+                            <div className="space-y-2 text-gray-400 text-sm">
+                                <button onClick={() => navigate('/register-listing')} className="block hover:text-white transition-colors">
+                                    Register Listing
+                                </button>
+                                <button onClick={() => navigate('/events')} className="block hover:text-white transition-colors">
+                                    Events
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                        © 2024 LinkMeU. All rights reserved.
+                    </div>
+                </div>
+            </footer>
+
+            {/* Lead Capture Modal */}
+            <LeadCaptureModal
+                isOpen={showLeadModal}
+                onClose={() => setShowLeadModal(false)}
+                listing={selectedListing}
+                onSuccess={handleLeadSuccess}
+            />
         </div>
     );
 };

@@ -48,8 +48,10 @@ export const AuthProvider = ({ children }) => {
 
   const canEditEvent = (eventOwnerId) => {
     if (!user) return false;
-    // Only super admin can edit events
+    // Super admin can edit any event
     if (user.role === 'superadmin') return true;
+    // Event owner can edit their own event
+    if (user.id === eventOwnerId) return true;
     return false;
   };
 

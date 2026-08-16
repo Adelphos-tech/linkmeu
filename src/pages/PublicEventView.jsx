@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Users, QrCode, Share2, Check } from 'lucide-react';
-import { getEvent, getAttendeesByEvent } from '../db/database';
+import { getEvent, getAttendeesByEvent } from '../db/databaseAdapter';
 import { format } from 'date-fns';
 import { generateRegistrationURL } from '../utils/qrcode';
 

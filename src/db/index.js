@@ -1,9 +1,8 @@
-// Main Database Interface - Production Ready with Neon + IndexedDB Fallback
+// Main Database Interface - Production Ready with API Backend
 import * as DatabaseAdapter from './databaseAdapter.js';
 
 // ==================== MAIN DATABASE INTERFACE ====================
-// This file provides a clean interface that automatically switches between
-// Neon (production) and IndexedDB (fallback) based on availability
+// This file provides a clean interface using Supabase for production
 
 // User Operations
 export const registerUser = DatabaseAdapter.registerUser;
@@ -28,10 +27,15 @@ export const searchAttendees = DatabaseAdapter.searchAttendees;
 export const getEventAnalytics = DatabaseAdapter.getEventAnalytics;
 export const getDashboardStats = DatabaseAdapter.getDashboardStats;
 
+// Club Operations
+export const getAllClubs = DatabaseAdapter.getAllClubs;
+export const getClub = DatabaseAdapter.getClub;
+export const getClubMembers = DatabaseAdapter.getClubMembers;
+export const getAllClubMembers = DatabaseAdapter.getAllClubMembers;
+
 // Database Management
 export const getDatabaseMode = DatabaseAdapter.getDatabaseMode;
 export const getDatabaseStatus = DatabaseAdapter.getDatabaseStatus;
-export const migrateFromIndexedDBToNeon = DatabaseAdapter.migrateFromIndexedDBToNeon;
 
 // ==================== UTILITY FUNCTIONS ====================
 
@@ -42,10 +46,10 @@ export const initializeProductionDatabase = async () => {
     const status = await getDatabaseStatus();
     console.log(`📊 Database Status:`, status);
     
-    if (status.mode === 'neon') {
-      console.log('✅ Production mode: Using Neon PostgreSQL');
+    if (status.mode === 'api') {
+      console.log('✅ Production mode: Using API Backend');
     } else {
-      console.log('⚠️ Development mode: Using IndexedDB fallback');
+      console.log('⚠️ Fallback mode: Using IndexedDB');
     }
     
     return status;
@@ -72,7 +76,7 @@ export const getSystemInfo = async () => {
       baseUrl: import.meta.env.BASE_URL
     },
     features: {
-      neonEnabled: mode === 'neon',
+      apiEnabled: mode === 'api',
       analyticsEnabled: import.meta.env.VITE_ENABLE_ANALYTICS === 'true',
       notificationsEnabled: import.meta.env.VITE_ENABLE_NOTIFICATIONS === 'true'
     }

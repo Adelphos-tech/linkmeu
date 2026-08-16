@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Eye, EyeOff } from 'lucide-react';
-import { registerUser } from '../db/database';
+import { registerUser } from '../db/databaseAdapter';
 import { useAuth } from '../context/AuthContext';
+import PhoneInput from '../components/PhoneInput';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -11,8 +12,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    contact: '',
-    countryCode: '+65'
+    contact: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -49,14 +49,14 @@ const Register = () => {
       const userId = await registerUser({
         email: formData.email,
         password: formData.password,
-        contact: `${formData.countryCode} ${formData.contact}`
+        contact: formData.contact
       });
 
       // Auto-login after registration
       const user = {
         id: userId,
         email: formData.email,
-        contact: `${formData.countryCode} ${formData.contact}`,
+        contact: formData.contact,
         role: 'owner'
       };
       
@@ -74,11 +74,12 @@ const Register = () => {
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-5xl font-bold">EX</span>
+          <div className="flex items-center justify-center mb-2">
+            <span className="text-4xl font-bold text-white">Link</span>
+            <span className="text-4xl font-bold text-red-500">Me</span>
+            <span className="text-4xl font-bold text-white">U</span>
           </div>
-          <h1 className="text-3xl font-bold">EventsX</h1>
-          <p className="text-gray-400 mt-2">Create your account</p>
+          <p className="text-gray-400 mt-1">Create your account</p>
         </div>
 
         {/* Register Form */}
@@ -149,32 +150,13 @@ const Register = () => {
 
             <div>
               <label className="block text-sm font-medium mb-2">Contact Number *</label>
-              <div className="flex gap-2">
-                <select
-                  value={formData.countryCode}
-                  onChange={(e) => handleChange('countryCode', e.target.value)}
-                  className="w-32"
-                >
-                  <option value="+65">+65 (SG)</option>
-                  <option value="+1">+1 (US)</option>
-                  <option value="+44">+44 (UK)</option>
-                  <option value="+91">+91 (IN)</option>
-                  <option value="+86">+86 (CN)</option>
-                  <option value="+81">+81 (JP)</option>
-                  <option value="+82">+82 (KR)</option>
-                  <option value="+61">+61 (AU)</option>
-                  <option value="+49">+49 (DE)</option>
-                  <option value="+33">+33 (FR)</option>
-                </select>
-                <input
-                  type="tel"
-                  value={formData.contact}
-                  onChange={(e) => handleChange('contact', e.target.value)}
-                  placeholder="Phone number"
-                  className="flex-1"
-                  required
-                />
-              </div>
+              <PhoneInput
+                value={formData.contact}
+                onChange={(value) => handleChange('contact', value || '')}
+                defaultCountry="SG"
+                placeholder="Phone number"
+                required
+              />
             </div>
 
             <button
@@ -198,7 +180,7 @@ const Register = () => {
         </div>
 
         <p className="text-center text-xs text-gray-500 mt-6">
-          Powered by Robocorp
+          © 2025 LinkMeU. All rights reserved.
         </p>
       </div>
     </div>

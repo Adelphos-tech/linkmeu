@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
-import { loginUser } from '../db/database';
+import { loginUser } from '../db/databaseAdapter';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -49,11 +49,12 @@ const Login = () => {
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-5xl font-bold">EX</span>
+          <div className="flex items-center justify-center mb-2">
+            <span className="text-4xl font-bold text-white">Link</span>
+            <span className="text-4xl font-bold text-red-500">Me</span>
+            <span className="text-4xl font-bold text-white">U</span>
           </div>
-          <h1 className="text-3xl font-bold">EventsX</h1>
-          <p className="text-gray-400 mt-2">Event Management System</p>
+          <p className="text-gray-400 mt-1">Link Me. You Matter Most.</p>
         </div>
 
         {/* Login Form */}
@@ -118,7 +119,7 @@ const Login = () => {
         </div>
 
         <p className="text-center text-xs text-gray-500 mt-6">
-          Powered by Robocorp
+          © 2025 LinkMeU. All rights reserved.
         </p>
       </div>
     </div>
